@@ -1,8 +1,6 @@
-import Image from "next/image";
+import ProductCard from "@/components/ProductCard";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-
-export const dynamic = 'force-dynamic';
 
 export default async function Home() {
   // Fetch products by categories
@@ -229,38 +227,4 @@ export default async function Home() {
   );
 }
 
-function ProductCard({ product }: { product: any }) {
-  return (
-    <Link href={`/products/${product.id}`} className="group flex flex-col">
-      <div className="relative aspect-square rounded-[2rem] bg-white border border-stone-100 overflow-hidden mb-4 block shadow-[0_8px_30px_rgb(0,0,0,0.02)] group-hover:shadow-[0_20px_50px_rgba(10,26,15,0.08)] transition-all duration-700">
-        <img 
-          src={product.image_url || '/placeholder.jpg'} 
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" 
-          alt={product.name} 
-        />
-        {product.is_preorder && (
-          <div className="absolute top-4 left-4 px-3 py-1.5 bg-white/10 backdrop-blur-md border border-white/20 text-white text-[7px] font-bold uppercase tracking-widest rounded-full shadow-xl z-10">
-            Pre-order Open
-          </div>
-        )}
-      </div>
-      <div className="px-2 space-y-1">
-        <div className="flex justify-between items-baseline">
-          <h3 className="text-sm font-display font-bold text-primary leading-none tracking-tight group-hover:text-accent transition-colors">{product.name}</h3>
-          <div className="flex flex-col items-end">
-             <span className="text-xs font-bold text-on-background">৳{Number(product.price_per_unit)}</span>
-             {Number(product.regular_price) > Number(product.price_per_unit) && (
-                <span className="text-[9px] text-stone-300 line-through font-bold">৳{Number(product.regular_price)}</span>
-             )}
-          </div>
-        </div>
-        {product.categories?.slug === 'mango' && product.harvest_date && (
-          <p className="text-[9px] font-bold text-accent">
-            ডেলিভারি: {new Date(product.harvest_date).toLocaleDateString('bn-BD', { day: 'numeric', month: 'short' })} থেকে
-          </p>
-        )}
-        <p className="text-[10px] text-stone-400 line-clamp-1 font-medium">{product.short_description}</p>
-      </div>
-    </Link>
-  );
-}
+
