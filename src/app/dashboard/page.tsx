@@ -232,221 +232,205 @@ function OrdersTab({ orders, loading, checkFraud, fraudResults, fraudLoading, se
       </div>
     </div>
   );
-}
-
-function ProductsTab({ products, loading, setIsAddModalOpen, setEditingProduct, setIsEditModalOpen, deleteProduct, units, fetchUnits, lots, fetchLots, categories }: any) {
+}function ProductsTab({ products, loading, setIsAddModalOpen, setEditingProduct, setIsEditModalOpen, deleteProduct, units, fetchUnits, lots, fetchLots, categories }: any) {
   const [activeSubTab, setActiveSubTab] = useState('list');
   const [newUnitName, setNewUnitName] = useState('');
   const [isLotModalOpen, setIsLotModalOpen] = useState(false);
 
   const addUnit = async () => {
-    if(!newUnitName) return;
+    if (!newUnitName) return;
     const res = await fetch("/api/admin/units", { method: "POST", body: JSON.stringify({ name: newUnitName }) });
-    if(res.ok) { setNewUnitName(''); fetchUnits(); }
+    if (res.ok) { setNewUnitName(''); fetchUnits(); }
   };
 
   const deleteUnit = async (id: number) => {
-    if(confirm("Delete Unit?")) {
+    if (confirm("Delete Unit?")) {
       await fetch(`/api/admin/units?id=${id}`, { method: "DELETE" }); fetchUnits();
     }
   };
 
-  if (loading) return <div className="p-20 text-center text-stone-400 animate-pulse uppercase font-black text-[10px] tracking-widest">Accessing Inventory...</div>;
+  if (loading) {
+    return <div className="p-20 text-center text-stone-400 animate-pulse uppercase font-black text-[10px] tracking-widest">Accessing Inventory...</div>;
+  }
 
   return (
     <div className="space-y-8 animate-fade-in">
-       {/* Feature Header */}
-       <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-6 bg-white p-6 md:p-8 rounded-[2rem] md:rounded-[3rem] border border-stone-100 shadow-sm">
-          <div className="flex gap-2 md:gap-4 p-1.5 md:p-2 bg-stone-100 rounded-2xl overflow-x-auto">
-             <button onClick={() => setActiveSubTab('list')} className={`whitespace-nowrap px-4 md:px-6 py-2.5 rounded-xl text-[8px] md:text-[9px] font-black uppercase tracking-widest transition-all ${activeSubTab === 'list' ? 'bg-white text-primary shadow-sm' : 'text-stone-400'}`}>Product Ledger</button>
-             <button onClick={() => setActiveSubTab('units')} className={`whitespace-nowrap px-4 md:px-6 py-2.5 rounded-xl text-[8px] md:text-[9px] font-black uppercase tracking-widest transition-all ${activeSubTab === 'units' ? 'bg-white text-primary shadow-sm' : 'text-stone-400'}`}>Units</button>
-             <button onClick={() => setActiveSubTab('lots')} className={`whitespace-nowrap px-4 md:px-6 py-2.5 rounded-xl text-[8px] md:text-[9px] font-black uppercase tracking-widest transition-all ${activeSubTab === 'lots' ? 'bg-white text-primary shadow-sm' : 'text-stone-400'}`}>Lots</button>
-          </div>
-          <button onClick={() => setIsAddModalOpen(true)} className="px-6 py-4 bg-primary text-white text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl hover:scale-105 transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-3">
-             <span className="material-symbols-outlined text-lg">add</span> New Catalog Item
-          </button>
-       </div>
+      {/* Feature Header */}
+      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-6 bg-white p-6 md:p-8 rounded-[2rem] md:rounded-[3rem] border border-stone-100 shadow-sm">
+        <div className="flex gap-2 md:gap-4 p-1.5 md:p-2 bg-stone-100 rounded-2xl overflow-x-auto">
+          <button onClick={() => setActiveSubTab('list')} className={`whitespace-nowrap px-4 md:px-6 py-2.5 rounded-xl text-[8px] md:text-[9px] font-black uppercase tracking-widest transition-all ${activeSubTab === 'list' ? 'bg-white text-primary shadow-sm' : 'text-stone-400'}`}>Product Ledger</button>
+          <button onClick={() => setActiveSubTab('units')} className={`whitespace-nowrap px-4 md:px-6 py-2.5 rounded-xl text-[8px] md:text-[9px] font-black uppercase tracking-widest transition-all ${activeSubTab === 'units' ? 'bg-white text-primary shadow-sm' : 'text-stone-400'}`}>Units</button>
+          <button onClick={() => setActiveSubTab('lots')} className={`whitespace-nowrap px-4 md:px-6 py-2.5 rounded-xl text-[8px] md:text-[9px] font-black uppercase tracking-widest transition-all ${activeSubTab === 'lots' ? 'bg-white text-primary shadow-sm' : 'text-stone-400'}`}>Lots</button>
+        </div>
+        <button onClick={() => setIsAddModalOpen(true)} className="px-6 py-4 bg-primary text-white text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl hover:scale-105 transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-3">
+          <span className="material-symbols-outlined text-lg">add</span> New Catalog Item
+        </button>
+      </div>
 
-       {activeSubTab === 'list' && (
-          <div className="bg-white rounded-[2rem] md:rounded-[3rem] border border-stone-100 shadow-sm overflow-hidden">
-             <div className="overflow-x-auto">
-               <table className="w-full text-left min-w-[900px]">
-                  <thead className="bg-stone-50 border-b border-stone-100">
-                     <tr>
-                        <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest">Visual</th>
-                        <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest">Product Details</th>
-                        <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest">Inventory</th>
-                        <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest">Pricing</th>
-                        <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest">Status</th>
-                        <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest text-right">Actions</th>
-                     </tr>
-                  </thead>
-                  <tbody className="divide-y divide-stone-50">
-                     {products.map((product: any) => (
-                        <tr key={product.id} className="hover:bg-stone-50/50 transition-colors group">
-                           <td className="px-8 py-6">
-                              <div className="w-16 h-16 rounded-2xl overflow-hidden border border-stone-100">
-                                 <img src={product.image_url || '/placeholder.jpg'} className="w-full h-full object-cover" />
-                              </div>
-                           </td>
-                           <td className="px-8 py-6">
-                              <span className="text-[11px] font-black text-primary uppercase">{product.name}</span>
-                              <p className="text-[8px] text-stone-400 mt-1 uppercase font-bold tracking-widest">{product.categories?.name} • {product.units?.name}</p>
-                           </td>
-                           <td className="px-8 py-6">
-                              <div className="flex flex-col">
-                                 <span className={`text-[11px] font-black ${Number(product.available_stock) < 10 ? 'text-red-500' : 'text-primary'}`}>
-                                    {Number(product.available_stock)} Remaining
-                                 </span>
-                                 <p className="text-[8px] text-stone-400 mt-1 font-bold uppercase tracking-widest">Lot Size: {product.lot_size}</p>
-                              </div>
-                           </td>
-                           <td className="px-8 py-6">
-                              <div className="flex flex-col">
-                                 <span className="text-[12px] font-black text-primary">৳{product.price_per_unit}</span>
-                                 {Number(product.regular_price) > Number(product.price_per_unit) && (
-                                    <span className="text-[9px] text-stone-300 line-through font-bold">৳{product.regular_price}</span>
-                                 )}
-                                 <p className="text-[8px] text-stone-400 mt-1 font-bold uppercase tracking-widest">Pack: ৳{product.packaging_charge || 0}</p>
-                              </div>
-                           </td>
-                           <td className="px-8 py-6">
-                              <div className="flex gap-2">
-                                 {product.is_preorder && <span className="px-3 py-1 bg-orange-100 text-orange-600 rounded-full text-[8px] font-black uppercase">Pre-Order</span>}
-                                 <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase ${Number(product.available_stock) > 0 ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'}`}>
-                                    {Number(product.available_stock) > 0 ? 'Active' : 'Out'}
-                                 </span>
-                              </div>
-                           </td>
-                           <td className="px-8 py-6 text-right">
-                              <div className="flex items-center justify-end gap-2">
-                                 <button onClick={() => { setEditingProduct(product); setIsEditModalOpen(true); }} className="p-2 hover:bg-stone-50 rounded-xl text-stone-300 hover:text-primary transition-all"><span className="material-symbols-outlined text-lg">edit</span></button>
-                                 <button onClick={() => deleteProduct(product.id)} className="p-2 hover:bg-red-50 rounded-xl text-stone-300 hover:text-red-500 transition-all"><span className="material-symbols-outlined text-lg">delete</span></button>
-                              </div>
-                           </td>
-                        </tr>
-                     ))}
-                  </tbody>
-               </table>
-             </div>
+      {activeSubTab === 'list' && (
+        <div className="bg-white rounded-[2rem] md:rounded-[3rem] border border-stone-100 shadow-sm overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left min-w-[900px]">
+              <thead className="bg-stone-50 border-b border-stone-100">
+                <tr>
+                  <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest">Visual</th>
+                  <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest">Product Details</th>
+                  <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest">Inventory</th>
+                  <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest">Pricing</th>
+                  <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest">Status</th>
+                  <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-stone-50">
+                {products.map((product: any) => (
+                  <tr key={product.id} className="hover:bg-stone-50/50 transition-colors group">
+                    <td className="px-8 py-6">
+                      <div className="w-16 h-16 rounded-2xl bg-stone-100 border border-stone-200 overflow-hidden group-hover:scale-110 transition-transform shadow-sm">
+                        <img src={product.image_url || '/placeholder.jpg'} className="w-full h-full object-cover" alt="" />
+                      </div>
+                    </td>
+                    <td className="px-8 py-6">
+                      <div className="flex flex-col">
+                        <span className="text-[11px] font-black text-primary uppercase tracking-tight">{product.name}</span>
+                        <span className="text-[8px] font-bold text-stone-400 uppercase mt-1">ID: #{product.id} • {product.categories?.name}</span>
+                      </div>
+                    </td>
+                    <td className="px-8 py-6">
+                      <div className="flex flex-col">
+                        <span className="text-[11px] font-bold text-primary">{product.stock} {product.units?.name}</span>
+                        <span className="text-[8px] font-black text-emerald-600 uppercase mt-1">Available</span>
+                      </div>
+                    </td>
+                    <td className="px-8 py-6">
+                      <div className="flex flex-col">
+                        <span className="text-[11px] font-black text-primary">৳{Number(product.price_per_unit)}</span>
+                        <span className="text-[8px] font-bold text-stone-400 line-through">৳{Number(product.regular_price)}</span>
+                      </div>
+                    </td>
+                    <td className="px-8 py-6">
+                      <div className="flex items-center gap-2">
+                        <span className={`w-2 h-2 rounded-full ${product.stock > 0 ? 'bg-emerald-500' : 'bg-red-500'}`}></span>
+                        <span className="text-[9px] font-black text-primary uppercase tracking-widest">{product.stock > 0 ? 'In Stock' : 'Sold Out'}</span>
+                      </div>
+                    </td>
+                    <td className="px-8 py-6 text-right">
+                      <div className="flex justify-end gap-2">
+                        <button onClick={() => { setEditingProduct(product); setIsEditModalOpen(true); }} className="p-2 hover:bg-stone-100 rounded-lg text-stone-300 hover:text-primary transition-all"><span className="material-symbols-outlined text-lg">edit</span></button>
+                        <button onClick={() => deleteProduct(product.id)} className="p-2 hover:bg-red-50 rounded-lg text-stone-300 hover:text-red-500 transition-all"><span className="material-symbols-outlined text-lg">delete</span></button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-       )}
-                               <button onClick={() => deleteProduct(product.id)} className="p-2 hover:bg-red-50 rounded-xl text-stone-300 hover:text-red-500 transition-all"><span className="material-symbols-outlined text-lg">delete</span></button>
-                            </div>
-                         </td>
-                      </tr>
-                   ))}
-                </tbody>
-             </table>
-          </div>
-       )}
+        </div>
+      )}
 
-       {activeSubTab === 'units' && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-             <div className="bg-white p-10 rounded-[3rem] border border-stone-100 shadow-sm space-y-8">
-                <h3 className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">New Unit Entry</h3>
-                <div className="flex gap-4">
-                   <input value={newUnitName} onChange={(e)=>setNewUnitName(e.target.value)} placeholder="e.g. Kilogram, Piece, Liter" className="flex-1 px-6 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold outline-none focus:border-primary" />
-                   <button onClick={addUnit} className="px-8 py-4 bg-primary text-white text-[10px] font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-primary/20">Add Unit</button>
+      {activeSubTab === 'units' && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="bg-white p-10 rounded-[3rem] border border-stone-100 shadow-sm h-fit space-y-6">
+            <h3 className="text-[10px] font-black text-primary uppercase tracking-widest">Create New Unit</h3>
+            <input value={newUnitName} onChange={(e) => setNewUnitName(e.target.value)} placeholder="e.g. KG, Piece, Box" className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold outline-none focus:border-primary" />
+            <button onClick={addUnit} className="w-full py-4 bg-primary text-white text-[10px] font-black uppercase tracking-widest rounded-2xl shadow-lg">Register Unit</button>
+          </div>
+          <div className="md:col-span-2 bg-white rounded-[3rem] border border-stone-100 shadow-sm overflow-hidden">
+            <table className="w-full text-left">
+              <thead className="bg-stone-50 border-b border-stone-100">
+                <tr>
+                  <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest">Unit Title</th>
+                  <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-stone-50">
+                {units.map((unit: any) => (
+                  <tr key={unit.id}>
+                    <td className="px-8 py-5 text-[11px] font-bold text-primary uppercase tracking-widest">{unit.name}</td>
+                    <td className="px-8 py-5 text-right">
+                      <button onClick={() => deleteUnit(unit.id)} className="text-red-400 hover:text-red-600 text-[10px] font-black uppercase">Remove</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {activeSubTab === 'lots' && (
+        <div className="bg-white rounded-[3rem] border border-stone-100 shadow-sm overflow-hidden">
+          <div className="p-8 border-b border-stone-50 flex justify-between items-center">
+            <h3 className="text-[10px] font-black text-primary uppercase tracking-widest">Packaging & Lot Presets</h3>
+            <button onClick={() => setIsLotModalOpen(true)} className="px-6 py-3 bg-primary text-white text-[9px] font-black uppercase tracking-widest rounded-xl">Add Preset</button>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left min-w-[800px]">
+              <thead className="bg-stone-50 border-b border-stone-100">
+                <tr>
+                  <th className="px-8 py-5 text-[9px] font-black text-stone-400 uppercase tracking-widest">Preset Name</th>
+                  <th className="px-8 py-5 text-[9px] font-black text-stone-400 uppercase tracking-widest">Category</th>
+                  <th className="px-8 py-5 text-[9px] font-black text-stone-400 uppercase tracking-widest">Size (KG/Unit)</th>
+                  <th className="px-8 py-5 text-[9px] font-black text-stone-400 uppercase tracking-widest">Pkg Charge</th>
+                  <th className="px-8 py-5 text-[9px] font-black text-stone-400 uppercase tracking-widest text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-stone-50">
+                {lots.map((lot: any) => (
+                  <tr key={lot.id} className="hover:bg-stone-50/50">
+                    <td className="px-8 py-5 text-[11px] font-bold text-primary">{lot.name}</td>
+                    <td className="px-8 py-5 text-[11px] font-bold text-primary">{lot.categories?.name}</td>
+                    <td className="px-8 py-5 text-[11px] font-bold text-primary">{Number(lot.size)}</td>
+                    <td className="px-8 py-5 text-[11px] font-bold text-primary">৳{lot.packaging_charge}</td>
+                    <td className="px-8 py-5 text-right">
+                      <button className="text-stone-300 hover:text-red-500 transition-colors"><span className="material-symbols-outlined text-lg">delete</span></button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Lot Modal */}
+      {isLotModalOpen && (
+        <div className="fixed inset-0 bg-primary/40 backdrop-blur-sm z-50 flex items-center justify-center p-6">
+          <div className="bg-white rounded-[3rem] w-full max-w-lg shadow-2xl overflow-hidden">
+            <form onSubmit={async (e) => {
+              e.preventDefault();
+              const fd = new FormData(e.currentTarget);
+              const data = Object.fromEntries(fd.entries());
+              const res = await fetch("/api/admin/lots", { method: "POST", body: JSON.stringify(data) });
+              if (res.ok) { setIsLotModalOpen(false); fetchLots(); }
+            }} className="p-10 space-y-8">
+              <h2 className="text-xl font-black text-primary uppercase tracking-tight">Create Lot Configuration</h2>
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <label className="text-[8px] font-black uppercase text-stone-400 ml-1">Lot Name</label>
+                  <input name="name" required placeholder="e.g. Standard 5kg Box" className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold" />
                 </div>
-             </div>
-             <div className="bg-white rounded-[3rem] border border-stone-100 shadow-sm overflow-hidden">
-                <table className="w-full text-left">
-                   <thead className="bg-stone-50 border-b border-stone-100">
-                      <tr>
-                         <th className="px-8 py-5 text-[9px] font-black text-stone-400 uppercase tracking-widest">Unit Label</th>
-                         <th className="px-8 py-5 text-[9px] font-black text-stone-400 uppercase tracking-widest text-right">Actions</th>
-                      </tr>
-                   </thead>
-                   <tbody className="divide-y divide-stone-50">
-                      {units.map((unit: any) => (
-                         <tr key={unit.id}>
-                            <td className="px-8 py-5 text-[11px] font-bold text-primary">{unit.name}</td>
-                            <td className="px-8 py-5 text-right">
-                               <button onClick={() => deleteUnit(unit.id)} className="text-red-400 hover:text-red-600 transition-colors"><span className="material-symbols-outlined text-lg">delete</span></button>
-                            </td>
-                         </tr>
-                      ))}
-                   </tbody>
-                </table>
-             </div>
-          </div>
-       )}
-
-       {activeSubTab === 'lots' && (
-          <div className="space-y-8">
-             <div className="bg-white rounded-[3rem] border border-stone-100 shadow-sm overflow-hidden">
-                <div className="p-8 border-b border-stone-50 flex justify-between items-center">
-                   <h2 className="text-[10px] font-black text-primary uppercase tracking-widest">Predefined Lot Configuration</h2>
-                   <button onClick={() => setIsLotModalOpen(true)} className="px-6 py-3 bg-primary text-white text-[9px] font-black uppercase tracking-widest rounded-xl shadow-lg">New Lot Config</button>
+                <div className="space-y-2">
+                  <label className="text-[8px] font-black uppercase text-stone-400 ml-1">Category Mapping</label>
+                  <select name="category_id" required className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold appearance-none">
+                    {categories.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                  </select>
                 </div>
-                <table className="w-full text-left">
-                   <thead className="bg-stone-50 border-b border-stone-100">
-                      <tr>
-                         <th className="px-8 py-5 text-[9px] font-black text-stone-400 uppercase tracking-widest">Lot Name</th>
-                         <th className="px-8 py-5 text-[9px] font-black text-stone-400 uppercase tracking-widest">Category</th>
-                         <th className="px-8 py-5 text-[9px] font-black text-stone-400 uppercase tracking-widest">Weight/Size</th>
-                         <th className="px-8 py-5 text-[9px] font-black text-stone-400 uppercase tracking-widest">Pkg Charge</th>
-                         <th className="px-8 py-5 text-[9px] font-black text-stone-400 uppercase tracking-widest text-right">Actions</th>
-                      </tr>
-                   </thead>
-                   <tbody className="divide-y divide-stone-50">
-                      {lots.map((lot: any) => (
-                         <tr key={lot.id}>
-                            <td className="px-8 py-5 text-[11px] font-black text-primary uppercase">{lot.name}</td>
-                            <td className="px-8 py-5 text-[10px] font-bold text-stone-400 uppercase tracking-widest">{lot.categories?.name}</td>
-                            <td className="px-8 py-5 text-[11px] font-bold text-primary">{Number(lot.size)}</td>
-                            <td className="px-8 py-5 text-[11px] font-bold text-emerald-600">৳{lot.packaging_charge}</td>
-                            <td className="px-8 py-5 text-right space-x-2">
-                               <button className="text-stone-300 hover:text-red-500 transition-colors"><span className="material-symbols-outlined text-lg">delete</span></button>
-                            </td>
-                         </tr>
-                      ))}
-                   </tbody>
-                </table>
-             </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-[8px] font-black uppercase text-stone-400 ml-1">Weight/Size</label>
+                    <input name="size" type="number" step="0.01" required className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[8px] font-black uppercase text-stone-400 ml-1">Pkg Charge (৳)</label>
+                    <input name="packaging_charge" type="number" step="0.01" required className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold" />
+                  </div>
+                </div>
+              </div>
+              <button type="submit" className="w-full py-4 bg-primary text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl shadow-lg">Save Configuration</button>
+            </form>
           </div>
-       )}
-
-       {/* Lot Modal */}
-       {isLotModalOpen && (
-          <div className="fixed inset-0 bg-primary/40 backdrop-blur-sm z-50 flex items-center justify-center p-6">
-             <div className="bg-white rounded-[3rem] w-full max-w-lg shadow-2xl overflow-hidden">
-                <form onSubmit={async (e) => {
-                   e.preventDefault();
-                   const fd = new FormData(e.currentTarget);
-                   const data = Object.fromEntries(fd.entries());
-                   const res = await fetch("/api/admin/lots", { method: "POST", body: JSON.stringify(data) });
-                   if(res.ok) { setIsLotModalOpen(false); fetchLots(); }
-                }} className="p-10 space-y-8">
-                   <h2 className="text-xl font-black text-primary uppercase tracking-tight">Create Lot Configuration</h2>
-                   <div className="space-y-6">
-                      <div className="space-y-2">
-                         <label className="text-[8px] font-black uppercase text-stone-400 ml-1">Lot Name</label>
-                         <input name="name" required placeholder="e.g. Standard 5kg Box" className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold" />
-                      </div>
-                      <div className="space-y-2">
-                         <label className="text-[8px] font-black uppercase text-stone-400 ml-1">Category Mapping</label>
-                         <select name="category_id" required className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold appearance-none">
-                            {categories.map((c:any) => <option key={c.id} value={c.id}>{c.name}</option>)}
-                         </select>
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                         <div className="space-y-2">
-                            <label className="text-[8px] font-black uppercase text-stone-400 ml-1">Weight/Size</label>
-                            <input name="size" type="number" step="0.01" required className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold" />
-                         </div>
-                         <div className="space-y-2">
-                            <label className="text-[8px] font-black uppercase text-stone-400 ml-1">Pkg Charge (৳)</label>
-                            <input name="packaging_charge" type="number" step="0.01" required className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold" />
-                         </div>
-                      </div>
-                   </div>
-                   <button type="submit" className="w-full py-4 bg-primary text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl shadow-lg">Save Configuration</button>
-                </form>
-             </div>
-          </div>
-       )}
+        </div>
+      )}
     </div>
   );
 }
