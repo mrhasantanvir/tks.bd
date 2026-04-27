@@ -45,6 +45,7 @@ model addresses {
 model districts {
   id                  Int         @id @default(autoincrement())
   name                String      @unique @db.VarChar(50)
+  name_bn             String?     @db.VarChar(100)
   is_dhaka            Boolean?    @default(false)
   home_delivery_rate  Decimal?    @default(120.00) @db.Decimal(10, 2)
   point_delivery_rate Decimal?    @default(60.00) @db.Decimal(10, 2)
@@ -56,6 +57,8 @@ model upazilas {
   id          Int         @id @default(autoincrement())
   district_id Int
   name        String      @db.VarChar(100)
+  name_bn     String?     @db.VarChar(100)
+  post_code   String?     @db.VarChar(10)
   addresses   addresses[]
   districts   districts   @relation(fields: [district_id], references: [id])
 
