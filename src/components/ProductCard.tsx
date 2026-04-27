@@ -28,7 +28,7 @@ export default function ProductCard({ product }: ProductCardProps) {
     image_url: product.image_url,
     allow_home_delivery: product.allow_home_delivery ?? true,
     allow_point_delivery: product.allow_point_delivery ?? true,
-    available_couriers: JSON.parse(product.available_couriers || '["Steadfast", "Sundarban"]'),
+    available_couriers: JSON.parse(product.available_couriers || '["Steadfast Logistics", "Sundarban Courier"]'),
     payment_policy: product.payment_policy || 'cod',
     partial_advance_val: product.partial_advance_val ? Number(product.partial_advance_val) : null,
   });
