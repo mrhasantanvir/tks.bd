@@ -233,8 +233,6 @@ function OrdersTab({ orders, loading, checkFraud, fraudResults, fraudLoading, se
     </div>
   );
 }
-;
-}
 
 function ProductsTab({ products, loading, setIsAddModalOpen, setEditingProduct, setIsEditModalOpen, deleteProduct, units, fetchUnits, lots, fetchLots, categories }: any) {
   const [activeSubTab, setActiveSubTab] = useState('list');
