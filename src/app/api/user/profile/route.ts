@@ -24,3 +24,22 @@ export async function GET() {
     return NextResponse.json({ error: "Invalid session" }, { status: 401 });
   }
 }
+
+export async function PUT(req: Request) {
+  const sessionCookie = cookies().get("user_session");
+  if (!sessionCookie) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  try {
+    const session = JSON.parse(sessionCookie.value);
+    const { full_name } = await req.json();
+    
+    const user = await prisma.users.update({
+      where: { id: session.id },
+      data: { full_name }
+    });
+
+    return NextResponse.json({ success: true, user });
+  } catch (err) {
+    return NextResponse.json({ error: "Update failed" }, { status: 500 });
+  }
+}
