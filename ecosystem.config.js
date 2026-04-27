@@ -3,7 +3,7 @@ module.exports = {
     {
       name: 'tks-bd',
       script: 'node_modules/next/dist/bin/next',
-      args: 'start -p 3001',
+      args: 'start -p 3060',
       instances: 'max',
       exec_mode: 'cluster',
       env: {
