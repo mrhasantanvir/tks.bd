@@ -439,11 +439,22 @@ function CouriersTab({ couriers, toggleCourier, configureCourier, shippingConfig
   const [activeSubTab, setActiveSubTab] = useState('list');
 
   return (
-    <div className="space-y-10 animate-fade-in">
-       <div className="flex gap-4 p-2 bg-stone-100 rounded-2xl w-fit">
-          <button onClick={() => setActiveSubTab('list')} className={`px-6 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${activeSubTab === 'list' ? 'bg-white text-primary shadow-sm' : 'text-stone-400'}`}>Partner List</button>
-          <button onClick={() => setActiveSubTab('charges')} className={`px-6 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${activeSubTab === 'charges' ? 'bg-white text-primary shadow-sm' : 'text-stone-400'}`}>Shipping Charges</button>
-       </div>
+     <div className="space-y-10 animate-fade-in">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-white p-6 md:p-8 rounded-[2.5rem] md:rounded-[3.5rem] border border-stone-100 shadow-sm">
+           <div className="flex gap-4 p-2 bg-stone-100 rounded-2xl w-fit overflow-x-auto max-w-full">
+              <button onClick={() => setActiveSubTab('list')} className={`px-6 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${activeSubTab === 'list' ? 'bg-white text-primary shadow-sm' : 'text-stone-400'}`}>Partner List</button>
+              <button onClick={() => setActiveSubTab('charges')} className={`px-6 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${activeSubTab === 'charges' ? 'bg-white text-primary shadow-sm' : 'text-stone-400'}`}>Shipping Charges</button>
+           </div>
+           <button onClick={() => {
+              const name = prompt("Enter Courier Name:");
+              const type = confirm("Is this an Online Courier (API)?") ? "online" : "offline";
+              if (name) {
+                fetch("/api/admin/couriers", { method: "POST", body: JSON.stringify({ name, type }) }).then(() => window.location.reload());
+              }
+           }} className="px-6 py-4 bg-primary text-white text-[9px] font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-primary/20 flex items-center gap-2">
+              <span className="material-symbols-outlined text-lg">add_box</span> Add Partner
+           </button>
+        </div>
 
        {activeSubTab === 'list' && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -485,7 +496,7 @@ function CouriersTab({ couriers, toggleCourier, configureCourier, shippingConfig
                             <span className="text-[11px] font-black text-primary">{config.categories?.name || 'All Products'}</span>
                             <p className="text-[8px] text-stone-400 mt-1 font-bold">{config.couriers?.name || 'Any Courier'}</p>
                          </td>
-                         <td className="px-8 py-6 text-center">
+<td className="px-8 py-6 text-center">
                             <span className="text-[11px] font-bold text-emerald-600">৳{config.dhaka_office_rate} / ৳{config.dhaka_home_rate}</span>
                          </td>
                          <td className="px-8 py-6 text-center">
@@ -504,39 +515,51 @@ function CouriersTab({ couriers, toggleCourier, configureCourier, shippingConfig
   );
 }
 
-function ReviewsTab({ reviews, toggleReview, deleteReview, setEditingReview, setIsReviewModalOpen }: any) {
+function ReviewsTab({ reviews, toggleReview, deleteReview, setEditingReview, setIsReviewModalOpen, setIsAddReviewModalOpen }: any) {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-fade-in">
-      {reviews.map((review: any) => (
-        <div key={review.id} className="bg-white rounded-[2.5rem] border border-stone-100 shadow-sm p-8 flex gap-6 group">
-           <div className="w-16 h-16 rounded-full bg-stone-100 shrink-0 overflow-hidden border-2 border-stone-50">
-              <img src={review.image_url || `https://api.dicebear.com/7.x/initials/svg?seed=${review.user_name}`} alt="" className="w-full h-full object-cover" />
-           </div>
-           <div className="flex-1 space-y-3">
-              <div className="flex justify-between items-start">
-                 <div>
-                    <h3 className="text-[11px] font-black text-primary uppercase tracking-widest">{review.user_name || 'System User'}</h3>
-                    <div className="flex text-accent mt-1">
-                       {[...Array(5)].map((_, i) => (
-                         <span key={i} className={`material-symbols-outlined text-[10px] ${i < review.rating ? '' : 'text-stone-100'}`} style={{fontVariationSettings: "'FILL' 1"}}>star</span>
-                       ))}
-                    </div>
-                 </div>
-                 <div className="flex gap-2">
-                    <button onClick={() => { setEditingReview(review); setIsReviewModalOpen(true); }} className="p-2 hover:bg-stone-50 rounded-lg text-stone-300 hover:text-primary transition-all"><span className="material-symbols-outlined text-sm">edit</span></button>
-                    <button onClick={() => deleteReview(review.id)} className="p-2 hover:bg-red-50 rounded-lg text-stone-300 hover:text-red-500 transition-all"><span className="material-symbols-outlined text-sm">delete</span></button>
-                 </div>
-              </div>
-              <p className="text-[11px] text-stone-500 italic leading-relaxed">"{review.comment}"</p>
-              <div className="flex justify-between items-center pt-4 border-t border-stone-50">
-                 <button onClick={() => toggleReview(review.id, !review.is_visible)} className={`text-[8px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full ${review.is_visible ? 'bg-emerald-50 text-emerald-600' : 'bg-orange-50 text-orange-600'}`}>
-                   {review.is_visible ? 'Public' : 'Hidden'}
-                 </button>
-                 <span className="text-[8px] font-bold text-stone-300 uppercase tracking-widest">{new Date(review.created_at).toLocaleDateString()}</span>
-              </div>
-           </div>
-        </div>
-      ))}
+    <div className="space-y-10 animate-fade-in">
+      <div className="flex justify-between items-center bg-white p-6 md:p-8 rounded-[2rem] md:rounded-[3.5rem] border border-stone-100 shadow-sm">
+          <div>
+             <h2 className="text-sm font-black text-primary uppercase tracking-[0.2em]">Customer Testimonials</h2>
+             <p className="text-[8px] font-bold text-stone-400 uppercase tracking-widest mt-1">Manage public feedback & ratings</p>
+          </div>
+          <button onClick={() => setIsAddReviewModalOpen(true)} className="px-6 py-4 bg-primary text-white text-[9px] font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-primary/20 flex items-center gap-2">
+             <span className="material-symbols-outlined text-lg">add</span> New Review
+          </button>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {reviews.map((review: any) => (
+          <div key={review.id} className="bg-white rounded-[2.5rem] border border-stone-100 shadow-sm p-6 md:p-8 flex flex-col md:flex-row gap-6 group">
+             <div className="w-16 h-16 rounded-full bg-stone-100 shrink-0 overflow-hidden border-2 border-stone-50">
+                <img src={review.image_url || `https://api.dicebear.com/7.x/initials/svg?seed=${review.user_name}`} alt="" className="w-full h-full object-cover" />
+             </div>
+             <div className="flex-1 space-y-3 text-center md:text-left">
+                <div className="flex flex-col md:flex-row justify-between items-center md:items-start gap-4">
+                   <div>
+                      <h3 className="text-[11px] font-black text-primary uppercase tracking-widest">{review.user_name || 'System User'}</h3>
+                      <div className="flex justify-center md:justify-start text-accent mt-1">
+                         {[...Array(5)].map((_, i) => (
+                           <span key={i} className={`material-symbols-outlined text-[10px] ${i < review.rating ? '' : 'text-stone-100'}`} style={{fontVariationSettings: "'FILL' 1"}}>star</span>
+                         ))}
+                      </div>
+                   </div>
+                   <div className="flex gap-2">
+                      <button onClick={() => { setEditingReview(review); setIsReviewModalOpen(true); }} className="p-2 hover:bg-stone-50 rounded-lg text-stone-300 hover:text-primary transition-all"><span className="material-symbols-outlined text-sm">edit</span></button>
+                      <button onClick={() => deleteReview(review.id)} className="p-2 hover:bg-red-50 rounded-lg text-stone-300 hover:text-red-500 transition-all"><span className="material-symbols-outlined text-sm">delete</span></button>
+                   </div>
+                </div>
+                <p className="text-[11px] text-stone-500 italic leading-relaxed">"{review.comment}"</p>
+                <div className="flex justify-between items-center pt-4 border-t border-stone-50">
+                   <button onClick={() => toggleReview(review.id, !review.is_visible)} className={`text-[8px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full ${review.is_visible ? 'bg-emerald-50 text-emerald-600' : 'bg-orange-50 text-orange-600'}`}>
+                     {review.is_visible ? 'Public' : 'Hidden'}
+                   </button>
+                   <span className="text-[8px] font-bold text-stone-300 uppercase tracking-widest">{new Date(review.created_at).toLocaleDateString()}</span>
+                </div>
+             </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -546,9 +569,9 @@ function SettingsTab({ settings, saveSetting, uploadImage }: any) {
 
   return (
     <div className="space-y-10 animate-fade-in">
-       <div className="flex gap-4 p-2 bg-stone-100 rounded-2xl w-fit">
+       <div className="flex gap-4 p-2 bg-stone-100 rounded-2xl w-fit overflow-x-auto max-w-full">
           {['sms', 'seo', 'social', 'contact'].map(tab => (
-             <button key={tab} onClick={() => setActiveSubTab(tab)} className={`px-6 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${activeSubTab === tab ? 'bg-white text-primary shadow-sm' : 'text-stone-400'}`}>{tab}</button>
+             <button key={tab} onClick={() => setActiveSubTab(tab)} className={`px-6 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${activeSubTab === tab ? 'bg-white text-primary shadow-sm' : 'text-stone-400'}`}>{tab}</button>
           ))}
        </div>
 
@@ -698,6 +721,7 @@ function DashboardContent() {
   const [isShippingModalOpen, setIsShippingModalOpen] = useState(false);
   const [editingShippingConfig, setEditingShippingConfig] = useState<any>(null);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [isAddReviewModalOpen, setIsAddReviewModalOpen] = useState(false);
   const [editingReview, setEditingReview] = useState<any>(null);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [bookingOrder, setBookingOrder] = useState<any>(null);
@@ -797,6 +821,16 @@ function DashboardContent() {
     try { const res = await fetch("/api/admin/settings"); if (res.ok) setSettings((await res.json()).settings || []); } catch (e) {}
   }
 
+  const checkFraud = async (m: string) => { 
+      setFraudLoading(p=>({...p,[m]:true})); 
+      const r = await fetch(`/api/admin/fraud?mobile=${m}`); 
+      if(r.ok) {
+        const data = await r.json();
+        setFraudResults(p=>({...p,[m]:data}));
+      }
+      setFraudLoading(p=>({...p,[m]:false})); 
+  };
+
   const handleBookCourier = async (courierId: number) => {
     setBookingLoading(true);
     try {
@@ -868,6 +902,16 @@ function DashboardContent() {
     if (res.ok) { setIsShippingModalOpen(false); fetchShippingConfigs(); }
   };
 
+  const handleAddReview = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const fd = new FormData(e.currentTarget);
+    const data = Object.fromEntries(fd.entries());
+    const file = (e.currentTarget.elements.namedItem('file') as HTMLInputElement)?.files?.[0];
+    if (file) { const url = await handleUpload(file); if (url) (data as any).image_url = url; }
+    const res = await fetch("/api/admin/reviews", { method: "POST", body: JSON.stringify(data) });
+    if (res.ok) { setIsAddReviewModalOpen(false); fetchReviews(); }
+  };
+
   const handleEditReview = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
@@ -914,23 +958,17 @@ function DashboardContent() {
         setIsOpen={setIsSidebarOpen}
       />
       
-      <main className="flex-1 p-4 md:p-12 lg:pl-72 transition-all w-full max-w-full overflow-hidden">
+      <main className="flex-1 transition-all w-full max-w-full overflow-hidden">
         <AdminHeader activeTab={activeTab} user={user} setIsSidebarOpen={setIsSidebarOpen} />
         
-        {activeTab === 'overview' && <OverviewTab stats={dashboardStats} announcements={announcements} />}
-        {activeTab === 'orders' && <OrdersTab orders={orders} loading={ordersLoading} checkFraud={async (m:string) => { 
-          setFraudLoading(p=>({...p,[m]:true})); 
-          const r = await fetch(`/api/admin/fraud?mobile=${m}`); 
-          if(r.ok) {
-            const data = await r.json();
-            setFraudResults(p=>({...p,[m]:data}));
-          }
-          setFraudLoading(p=>({...p,[m]:false})); 
-        }} fraudResults={fraudResults} fraudLoading={fraudLoading} setBookingOrder={setBookingOrder} setIsBookingModalOpen={setIsBookingModalOpen} />}
-        {activeTab === 'products' && <ProductsTab products={products} loading={productsLoading} setIsAddModalOpen={setIsAddModalOpen} setEditingProduct={setEditingProduct} setIsEditModalOpen={setIsEditModalOpen} deleteProduct={deleteProduct} units={units} fetchUnits={fetchUnits} lots={lots} fetchLots={fetchLots} categories={categories} />}
-        {activeTab === 'reviews' && <ReviewsTab reviews={reviews} toggleReview={toggleReview} deleteReview={deleteReview} setEditingReview={setEditingReview} setIsReviewModalOpen={setIsReviewModalOpen} />}
-        {activeTab === 'couriers' && <CouriersTab couriers={couriers} toggleCourier={toggleCourier} configureCourier={(c:any)=>{setEditingCourier(c); setIsCourierApiModalOpen(true);}} shippingConfigs={shippingConfigs} setEditingShippingConfig={setEditingShippingConfig} setIsShippingModalOpen={setIsShippingModalOpen} />}
-        {activeTab === 'settings' && <SettingsTab settings={settings} saveSetting={saveSetting} />}
+        <div className="flex-1 p-6 lg:p-12 min-h-screen">
+             {activeTab === 'overview' && <OverviewTab stats={dashboardStats} announcements={announcements} />}
+             {activeTab === 'orders' && <OrdersTab orders={orders} loading={ordersLoading} checkFraud={checkFraud} fraudResults={fraudResults} fraudLoading={fraudLoading} setBookingOrder={setBookingOrder} setIsBookingModalOpen={setIsBookingModalOpen} />}
+             {activeTab === 'products' && <ProductsTab products={products} loading={productsLoading} setIsAddModalOpen={setIsAddModalOpen} setEditingProduct={setEditingProduct} setIsEditModalOpen={setIsEditModalOpen} deleteProduct={deleteProduct} units={units} fetchUnits={fetchUnits} lots={lots} fetchLots={fetchLots} categories={categories} />}
+             {activeTab === 'reviews' && <ReviewsTab reviews={reviews} toggleReview={toggleReview} deleteReview={deleteReview} setEditingReview={setEditingReview} setIsReviewModalOpen={setIsReviewModalOpen} setIsAddReviewModalOpen={setIsAddReviewModalOpen} />}
+             {activeTab === 'couriers' && <CouriersTab couriers={couriers} toggleCourier={toggleCourier} configureCourier={(c:any)=>{setEditingCourier(c); setIsCourierApiModalOpen(true);}} shippingConfigs={shippingConfigs} setEditingShippingConfig={setEditingShippingConfig} setIsShippingModalOpen={setIsShippingModalOpen} />}
+             {activeTab === 'settings' && <SettingsTab settings={settings} saveSetting={saveSetting} uploadImage={handleUpload} />}
+        </div>
 
         {/* MODALS: Product Add/Edit (FULL FEATURED) */}
         {(isAddModalOpen || isEditModalOpen) && (
@@ -1135,10 +1173,10 @@ function DashboardContent() {
 
         {isShippingModalOpen && (
           <div className="fixed inset-0 bg-primary/40 backdrop-blur-sm z-50 flex items-center justify-center p-6">
-            <div className="bg-white rounded-[3rem] w-full max-w-xl shadow-2xl overflow-hidden">
+            <div className="bg-white rounded-[3rem] w-full max-w-xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto">
                <form onSubmit={saveShippingConfig} className="p-10 space-y-8">
                   <h2 className="text-xl font-black text-primary uppercase tracking-tight">{editingShippingConfig ? 'Edit Rate Rule' : 'Add Rate Rule'}</h2>
-                  <div className="grid grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                      <select name="category_id" defaultValue={editingShippingConfig?.category_id} className="px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold">
                         <option value="">All Categories</option>
                         {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -1148,7 +1186,7 @@ function DashboardContent() {
                         {couriers.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                      </select>
                   </div>
-                  <div className="grid grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                      <div>
                         <label className="block text-[8px] font-black uppercase text-stone-400 mb-2">Dhaka Office / Home</label>
                         <div className="flex gap-2">
@@ -1170,6 +1208,32 @@ function DashboardContent() {
           </div>
         )}
 
+        {isAddReviewModalOpen && (
+          <div className="fixed inset-0 bg-primary/40 backdrop-blur-sm z-50 flex items-center justify-center p-6">
+            <div className="bg-white rounded-[3rem] w-full max-w-lg shadow-2xl overflow-hidden">
+               <form onSubmit={handleAddReview} className="p-10 space-y-8">
+                  <div className="flex justify-between items-center">
+                    <h2 className="text-xl font-black text-primary uppercase tracking-tight">Post New Review</h2>
+                    <button type="button" onClick={() => setIsAddReviewModalOpen(false)} className="material-symbols-outlined text-stone-300">close</button>
+                  </div>
+                  <div className="space-y-6">
+                     <input name="user_name" required placeholder="Customer Name" className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold" />
+                     <select name="rating" required className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold">
+                        <option value="5">5 Stars</option>
+                        <option value="4">4 Stars</option>
+                        <option value="3">3 Stars</option>
+                        <option value="2">2 Stars</option>
+                        <option value="1">1 Star</option>
+                     </select>
+                     <textarea name="comment" required placeholder="What did they say about the harvest?" className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold min-h-[100px]" />
+                     <input type="file" name="file" className="text-[10px] text-stone-400" />
+                  </div>
+                  <button type="submit" className="w-full py-5 bg-primary text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-3xl shadow-xl shadow-primary/20">Publish Testimonial</button>
+               </form>
+            </div>
+          </div>
+        )}
+
         {isCourierApiModalOpen && (
           <div className="fixed inset-0 bg-primary/40 backdrop-blur-sm z-50 flex items-center justify-center p-6">
             <div className="bg-white rounded-[3rem] w-full max-w-lg shadow-2xl overflow-hidden">
@@ -1179,7 +1243,7 @@ function DashboardContent() {
                     e.preventDefault();
                     const fd = new FormData(e.currentTarget);
                     const config = Object.fromEntries(fd.entries());
-                    await fetch("/api/admin/couriers", { method: "PUT", body: JSON.stringify({ id: editingCourier.id, api_config: config }) });
+                    await fetch("/api/admin/couriers", { method: "PUT", body: JSON.stringify({ id: editingCourier.id, api_config: JSON.stringify(config) }) });
                     setIsCourierApiModalOpen(false);
                     fetchCouriers();
                   }} className="space-y-6">
