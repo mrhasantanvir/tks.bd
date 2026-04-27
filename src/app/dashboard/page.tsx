@@ -1160,7 +1160,7 @@ function DashboardContent() {
       <Sidebar 
         activeTab={activeTab} 
         setActiveTab={(t:string) => router.push(`/dashboard?tab=${t}`, {scroll:false})} 
-        handleLogout={async () => { await fetch("/api/auth/logout", {method:"POST"}); router.push("/"); }}
+        handleLogout={async () => { await fetch("/api/auth/logout", {method:"POST"}); window.location.href = "/"; }}
         isOpen={isSidebarOpen}
         setIsOpen={setIsSidebarOpen}
         role={user?.role}

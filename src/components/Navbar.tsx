@@ -2,11 +2,24 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useCart } from "@/context/CartContext";
+import { useEffect, useState } from "react";
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
+  const { cart } = useCart();
   const pathname = usePathname();
+  const router = useRouter();
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    fetch("/api/user/profile").then(res => res.json()).then(data => setUser(data.user)).catch(() => setUser(null));
+  }, [pathname]);
+
+  const handleLogout = async () => {
+    await fetch("/api/auth/logout", { method: "POST" });
+    window.location.href = "/";
+  };
 
   // Hide Navbar in Admin Dashboard
   if (pathname?.startsWith('/dashboard')) return null;
@@ -36,8 +49,23 @@ export default function Navbar() {
         </div>
 
         <div className="flex items-center gap-4">
-          <Link href="/checkout" className="material-symbols-outlined text-primary hover:text-accent transition-colors text-2xl">local_mall</Link>
-          <Link href="/dashboard" className="hidden md:block material-symbols-outlined text-primary hover:text-accent transition-colors text-2xl">person_outline</Link>
+          <Link href="/checkout" className="relative group">
+            <span className="material-symbols-outlined text-primary group-hover:text-accent transition-colors text-2xl">local_mall</span>
+            {cart.length > 0 && (
+              <span className="absolute -top-2 -right-2 bg-accent text-primary text-[8px] font-black w-5 h-5 flex items-center justify-center rounded-full shadow-lg border-2 border-white animate-bounce-short">
+                {cart.length}
+              </span>
+            )}
+          </Link>
+          
+          {user ? (
+            <div className="hidden md:flex items-center gap-4">
+              <Link href="/dashboard" className="material-symbols-outlined text-primary hover:text-accent transition-colors text-2xl">person_outline</Link>
+              <button onClick={handleLogout} className="text-[8px] font-black uppercase tracking-widest text-stone-400 hover:text-red-500 transition-colors">Sign Out</button>
+            </div>
+          ) : (
+            <Link href="/dashboard" className="hidden md:block material-symbols-outlined text-primary hover:text-accent transition-colors text-2xl">login</Link>
+          )}
           
           {/* Mobile Menu Button */}
           <button 
@@ -58,7 +86,14 @@ export default function Navbar() {
           <Link href="/#gur" onClick={() => setIsOpen(false)} className="text-sm font-bold text-stone-500 uppercase tracking-widest border-b border-stone-50 pb-2">Organic Gur</Link>
           <Link href="/#reviews" onClick={() => setIsOpen(false)} className="text-sm font-bold text-stone-500 uppercase tracking-widest border-b border-stone-50 pb-2">Reviews</Link>
           <Link href="/#contact" onClick={() => setIsOpen(false)} className="text-sm font-bold text-stone-500 uppercase tracking-widest border-b border-stone-50 pb-2">About Us</Link>
-          <Link href="/dashboard" onClick={() => setIsOpen(false)} className="text-sm font-bold text-accent uppercase tracking-widest">My Account</Link>
+          {user ? (
+            <>
+              <Link href="/dashboard" onClick={() => setIsOpen(false)} className="text-sm font-bold text-accent uppercase tracking-widest">My Dashboard</Link>
+              <button onClick={handleLogout} className="text-sm font-bold text-red-500 uppercase tracking-widest text-left">Sign Out</button>
+            </>
+          ) : (
+            <Link href="/dashboard" onClick={() => setIsOpen(false)} className="text-sm font-bold text-accent uppercase tracking-widest">Login / Register</Link>
+          )}
         </div>
       )}
     </nav>

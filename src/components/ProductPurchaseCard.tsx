@@ -182,13 +182,28 @@ export default function ProductPurchaseCard({ product, lots }: ProductPurchaseCa
          </div>
       </div>
 
-      <button 
-        onClick={handleAddToCart}
-        className={`w-full py-6 text-white font-black text-[11px] uppercase tracking-[0.3em] rounded-3xl transition-all shadow-2xl active:scale-[0.98] flex items-center justify-center gap-4 hover:translate-y-[-2px] ${product.is_preorder ? 'bg-amber-500 hover:bg-amber-600 shadow-amber-200' : 'bg-primary hover:bg-primary-light shadow-primary/20'}`}
-      >
-        {product.is_preorder ? 'Initiate Pre-order' : 'Add to Fresh Cart'}
-        <span className="material-symbols-outlined text-lg">{product.is_preorder ? 'lock_clock' : 'shopping_basket'}</span>
-      </button>
+      <div className="flex flex-col gap-4">
+        <button 
+          onClick={handleAddToCart}
+          className={`w-full py-6 text-white font-black text-[11px] uppercase tracking-[0.3em] rounded-3xl transition-all shadow-2xl active:scale-[0.98] flex items-center justify-center gap-4 hover:translate-y-[-2px] ${product.is_preorder ? 'bg-amber-500 hover:bg-amber-600 shadow-amber-200' : 'bg-primary hover:bg-primary-light shadow-primary/20'}`}
+        >
+          {product.is_preorder ? 'Initiate Pre-order' : 'Add to Fresh Cart'}
+          <span className="material-symbols-outlined text-lg">{product.is_preorder ? 'lock_clock' : 'shopping_basket'}</span>
+        </button>
+
+        {!product.is_preorder && (
+          <button 
+            onClick={() => {
+              handleAddToCart();
+              window.location.href = "/checkout";
+            }}
+            className="w-full py-6 bg-accent text-primary font-black text-[11px] uppercase tracking-[0.3em] rounded-3xl transition-all shadow-2xl shadow-accent/20 active:scale-[0.98] flex items-center justify-center gap-4 hover:translate-y-[-2px]"
+          >
+            Express Buy Now
+            <span className="material-symbols-outlined text-lg">bolt</span>
+          </button>
+        )}
+      </div>
       
       <div className="flex flex-col items-center gap-2">
          <p className="text-[9px] font-black text-stone-300 uppercase tracking-[0.3em]">
