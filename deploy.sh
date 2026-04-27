@@ -20,11 +20,14 @@ npx prisma generate
 
 # 4. Build the application
 echo "🏗️  Building Next.js application..."
+rm -rf .next
 npm run build
 
-# 5. Zero-Downtime Reload with PM2
-echo "🔄 Reloading Application (Zero Downtime)..."
-pm2 reload ecosystem.config.js --env production
+# 5. Force Restart with PM2 (To ensure port change)
+echo "🔄 Restarting Application (Fresh Start)..."
+pm2 delete tks-bd || true
+pm2 start ecosystem.config.js --env production
+pm2 save
 
 # 6. Success
 echo "✅ Deployment Successful! Site is live and updated."
