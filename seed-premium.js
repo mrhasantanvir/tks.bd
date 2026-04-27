@@ -2,6 +2,12 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 async function main() {
+  console.log('🧹 Cleaning old data...');
+  await prisma.product.deleteMany({});
+  await prisma.category.deleteMany({});
+  await prisma.unit.deleteMany({});
+  await prisma.lot.deleteMany({});
+
   console.log('🌱 Seeding premium product data...');
 
   // 1. Create or Update Categories
