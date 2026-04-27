@@ -106,59 +106,72 @@ export default async function Home() {
           </div>
         )}
 
-        {/* Section Wrapper */}
-        <div className="max-w-7xl mx-auto px-6 md:px-20">
+        {/* Mangoes Section (Amber Spark) */}
+        <section id="mangoes" className="relative py-12 md:py-20 bg-[#fffdf5] overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-full opacity-[0.03] -z-10" style={{backgroundImage: 'radial-gradient(#b45309 0.5px, transparent 0.5px)', backgroundSize: '30px 30px'}}></div>
+          <div className="absolute -top-24 -left-24 w-96 h-96 bg-amber-200/20 rounded-full blur-[100px]"></div>
           
-          {/* Mangoes Section (Compact) */}
-          <section id="mangoes" className="py-6 border-b border-stone-50">
-            <div className="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
+          <div className="max-w-7xl mx-auto px-6 md:px-20">
+            <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-4">
               <div className="space-y-2">
-                <h2 className="text-2xl font-display font-bold text-primary">Rajshahi Mango Varieties</h2>
-                <div className="h-1 w-16 bg-accent"></div>
+                <h2 className="text-3xl md:text-4xl font-display font-black text-primary tracking-tight">Rajshahi Mango Varieties</h2>
+                <div className="h-1.5 w-24 bg-amber-400 rounded-full"></div>
               </div>
-              <p className="text-[9px] font-bold text-stone-300 uppercase tracking-widest">Hand-picked Excellence</p>
+              <p className="text-[10px] font-black text-stone-300 uppercase tracking-[0.3em]">Direct from Orchard</p>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-16">
               {mangoes.map((item) => (
                 <ProductCard key={item.id} product={item} />
               ))}
-              {mangoes.length === 0 && <p className="col-span-4 text-center py-8 text-stone-300 italic">Seasonal mangoes arriving soon...</p>}
+              {mangoes.length === 0 && <p className="col-span-4 text-center py-12 text-stone-300 italic">Seasonal mangoes arriving soon...</p>}
             </div>
-          </section>
+          </div>
+        </section>
 
-          {/* Tea Section (Compact) */}
-          <section id="tea" className="py-6 border-b border-stone-50">
-            <div className="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
+        {/* Tea Section (Emerald Mist) */}
+        <section id="tea" className="relative py-12 md:py-20 bg-[#f4faf5] overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/50 via-transparent to-transparent -z-10"></div>
+          <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-emerald-200/20 rounded-full blur-[100px]"></div>
+          
+          <div className="max-w-7xl mx-auto px-6 md:px-20">
+            <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-4">
               <div className="space-y-2">
-                <h2 className="text-2xl font-display font-bold text-primary">Premium Tea Garden</h2>
-                <div className="h-1 w-16 bg-accent"></div>
+                <h2 className="text-3xl md:text-4xl font-display font-black text-primary tracking-tight">Premium Tea Garden</h2>
+                <div className="h-1.5 w-24 bg-emerald-500 rounded-full"></div>
               </div>
-              <p className="text-[9px] font-bold text-stone-300 uppercase tracking-widest">Pure Organic Brew</p>
+              <p className="text-[10px] font-black text-stone-300 uppercase tracking-[0.3em]">Pure Organic Brew</p>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-16">
               {teas.map((item) => (
                 <ProductCard key={item.id} product={item} />
               ))}
-              {teas.length === 0 && <p className="col-span-4 text-center py-8 text-stone-300 italic">Selected teas being cured...</p>}
+              {teas.length === 0 && <p className="col-span-4 text-center py-12 text-stone-300 italic">Selected teas being cured...</p>}
             </div>
-          </section>
+          </div>
+        </section>
 
-          {/* Gur Section (Compact) */}
-          <section id="gur" className="py-6 border-b border-stone-50">
-            <div className="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
+        {/* Gur Section (Earthy Essence) */}
+        <section id="gur" className="relative py-12 md:py-20 bg-[#f9f7f4] overflow-hidden border-b border-stone-100">
+          <div className="absolute inset-0 opacity-[0.02] -z-10" style={{backgroundImage: 'url("https://www.transparenttextures.com/patterns/natural-paper.png")'}}></div>
+          
+          <div className="max-w-7xl mx-auto px-6 md:px-20">
+            <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-4">
               <div className="space-y-2">
-                <h2 className="text-2xl font-display font-bold text-primary">Heritage Date-Palm Gur</h2>
-                <div className="h-1 w-16 bg-accent"></div>
+                <h2 className="text-3xl md:text-4xl font-display font-black text-primary tracking-tight">Heritage Date-Palm Gur</h2>
+                <div className="h-1.5 w-24 bg-[#8b4513] rounded-full"></div>
               </div>
-              <p className="text-[9px] font-bold text-stone-300 uppercase tracking-widest">Natural Sweetness</p>
+              <p className="text-[10px] font-black text-stone-300 uppercase tracking-[0.3em]">Natural Sweetness</p>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-16">
               {gurs.map((item) => (
                 <ProductCard key={item.id} product={item} />
               ))}
-              {gurs.length === 0 && <p className="col-span-4 text-center py-8 text-stone-300 italic">Pure gur arriving this winter...</p>}
+              {gurs.length === 0 && <p className="col-span-4 text-center py-12 text-stone-300 italic">Pure gur arriving this winter...</p>}
             </div>
-          </section>
+          </div>
+        </section>
+
+        <div className="max-w-7xl mx-auto px-6 md:px-20">
 
           {/* Scrolling Customer Reviews Section (Compact & Mobile Ready) */}
           <section id="reviews" className="py-8 border-b border-stone-100 overflow-hidden">
