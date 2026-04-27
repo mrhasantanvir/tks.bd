@@ -235,7 +235,12 @@ function ProductCard({ product }: { product: any }) {
       <div className="px-2 space-y-1">
         <div className="flex justify-between items-baseline">
           <h3 className="text-sm font-display font-bold text-primary leading-none tracking-tight group-hover:text-accent transition-colors">{product.name}</h3>
-          <span className="text-xs font-bold text-on-background">৳{Number(product.price_per_unit)}</span>
+          <div className="flex flex-col items-end">
+             <span className="text-xs font-bold text-on-background">৳{Number(product.price_per_unit)}</span>
+             {Number(product.regular_price) > Number(product.price_per_unit) && (
+                <span className="text-[9px] text-stone-300 line-through font-bold">৳{Number(product.regular_price)}</span>
+             )}
+          </div>
         </div>
         {product.categories?.slug === 'mango' && product.harvest_date && (
           <p className="text-[9px] font-bold text-accent">

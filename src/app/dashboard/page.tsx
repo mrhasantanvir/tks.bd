@@ -1,1733 +1,1274 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
-export default function DashboardPage() {
-  const [user, setUser] = useState<any>(null);
-  const [announcements, setAnnouncements] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const router = useRouter();
+// --- Sub-Components ---
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const res = await fetch("/api/user/profile");
-        if (res.ok) {
-          const data = await res.json();
-          setUser(data.user);
-          setAnnouncements(data.announcements);
-          
-          // Initial fetch for system lookups
-          fetchCategories();
-          fetchUnits();
-        } else {
-          router.push("/auth/login");
-        }
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchData();
-  }, []);
+function Sidebar({ activeTab, setActiveTab, handleLogout }: any) {
+  const menuItems = [
+    { id: 'overview', icon: 'dashboard', label: 'Overview' },
+    { id: 'orders', icon: 'shopping_cart', label: 'Orders' },
+    { id: 'products', icon: 'inventory_2', label: 'Products' },
+    { id: 'reviews', icon: 'rate_review', label: 'Reviews' },
+    { id: 'couriers', icon: 'local_shipping', label: 'Couriers' },
+    { id: 'settings', icon: 'settings', label: 'Site Settings' },
+    { id: 'reports', icon: 'analytics', label: 'Reports' },
+  ];
 
-  async function fetchCategories() {
-    try {
-      const res = await fetch("/api/admin/categories");
-      if (res.ok) {
-        const data = await res.json();
-        setCategories(data.categories || []);
-      }
-    } catch (err) { console.error(err); }
-  }
+  return (
+    <aside className="w-64 bg-primary text-white flex flex-col fixed h-full z-40 transition-all duration-300">
+      <div className="p-8">
+        <Link href="/" className="flex items-center gap-3 group">
+          <img src="/logo.png" alt="Logo" className="w-10 h-10 object-contain" />
+          <div className="flex flex-col">
+            <span className="text-sm font-black tracking-widest text-white uppercase">TK Solution</span>
+            <span className="text-[7px] font-bold text-stone-500 uppercase tracking-[0.2em] mt-1">Make Your Life Easier</span>
+          </div>
+        </Link>
+      </div>
+      <nav className="flex-1 px-4 space-y-2">
+        {menuItems.map((item) => (
+          <button
+            key={item.id}
+            onClick={() => setActiveTab(item.id)}
+            className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${activeTab === item.id ? 'bg-white/10 text-accent' : 'text-white/60 hover:bg-white/5 hover:text-white'}`}
+          >
+            <span className="material-symbols-outlined text-xl">{item.icon}</span>
+            {item.label}
+          </button>
+        ))}
+      </nav>
+      <div className="p-8 border-t border-white/5">
+        <button onClick={handleLogout} className="w-full flex items-center gap-4 text-red-300 hover:text-red-400 text-[10px] font-bold uppercase tracking-widest transition-colors">
+          <span className="material-symbols-outlined text-xl">logout</span> Logout
+        </button>
+      </div>
+    </aside>
+  );
+}
 
-  async function fetchUnits() {
-    try {
-      const res = await fetch("/api/admin/units");
-      if (res.ok) {
-        const data = await res.json();
-        setUnits(data.units || []);
-      }
-    } catch (err) { console.error(err); }
-  }
+function AdminHeader({ activeTab, user }: any) {
+  const titles: Record<string, string> = {
+    overview: "Administrator Overview",
+    orders: "Fulfillment Command Center",
+    products: "Inventory & Catalog",
+    reviews: "Customer Trust & Feedback",
+    couriers: "Logistics & Partners",
+    settings: "Global Site Configuration",
+    reports: "Operational Insights"
+  };
 
-  const handleLogout = async () => {
-    const res = await fetch("/api/auth/logout", { method: "POST" });
-    if (res.ok) {
-      router.push("/");
+  return (
+    <header className="flex justify-between items-center mb-12">
+      <div>
+        <h1 className="text-3xl font-display font-bold text-primary tracking-tighter">{titles[activeTab] || "Dashboard"}</h1>
+        <p className="text-xs font-bold text-stone-400 uppercase tracking-widest mt-2">
+          Welcome back, {user?.name || 'Administrator'}. System status: <span className="text-emerald-500 animate-pulse">Operational</span>
+        </p>
+      </div>
+      <div className="flex items-center gap-6">
+        <div className="flex flex-col items-end">
+          <span className="text-[10px] font-black text-primary uppercase tracking-widest">{user?.name}</span>
+          <span className="text-[8px] font-bold text-stone-400 uppercase tracking-widest mt-1">System Root Access</span>
+        </div>
+        <div className="w-12 h-12 rounded-2xl bg-stone-100 flex items-center justify-center text-primary font-black border border-stone-200 shadow-sm">
+          {user?.name?.charAt(0) || 'A'}
+        </div>
+      </div>
+    </header>
+  );
+}
+
+// --- Tab Components ---
+
+function OverviewTab({ stats, announcements }: any) {
+  const statCards = [
+    { label: 'Total Sales', value: `৳ ${stats?.totalSales?.toLocaleString() || '0'}`, icon: 'payments', color: 'bg-emerald-50 text-emerald-600' },
+    { label: 'Pending Orders', value: stats?.activeOrders || '0', icon: 'pending_actions', color: 'bg-orange-50 text-orange-600' },
+    { label: 'Total Customers', value: stats?.totalCustomers || '0', icon: 'person', color: 'bg-blue-50 text-blue-600' },
+    { label: 'Avg Rating', value: stats?.avgRating?.toFixed(1) || '5.0', icon: 'stars', color: 'bg-purple-50 text-purple-600' },
+  ];
+
+  return (
+    <div className="space-y-10 animate-fade-in">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        {statCards.map((stat, i) => (
+          <div key={i} className="bg-white p-8 rounded-[2.5rem] border border-stone-100 shadow-sm hover:shadow-xl hover:translate-y-[-4px] transition-all duration-300">
+            <div className={`w-14 h-14 rounded-2xl ${stat.color} flex items-center justify-center mb-6`}>
+              <span className="material-symbols-outlined text-2xl">{stat.icon}</span>
+            </div>
+            <h3 className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1">{stat.label}</h3>
+            <p className="text-2xl font-display font-black text-primary tracking-tight">{stat.value}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+         <div className="lg:col-span-2 bg-white rounded-[3rem] border border-stone-100 shadow-sm overflow-hidden p-10">
+            <h2 className="text-sm font-black text-primary uppercase tracking-[0.2em] mb-6">Live Transaction Stream</h2>
+            <div className="aspect-[2/1] bg-stone-50 rounded-[2rem] border-2 border-dashed border-stone-200 flex items-center justify-center">
+               <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest text-center px-10">
+                  Analytics engine is collecting data from the soil... <br/>Transaction insights will sprout soon.
+               </p>
+            </div>
+         </div>
+         <div className="bg-primary rounded-[3rem] p-10 text-white shadow-2xl flex flex-col justify-between">
+            <div>
+              <h3 className="text-lg font-black uppercase tracking-[0.2em] mb-8">Broadcast Center</h3>
+              <div className="space-y-6">
+                 {announcements?.map((ann: any, i: number) => (
+                   <div key={i} className="flex gap-4 group">
+                     <div className="w-1 h-8 bg-accent rounded-full group-hover:h-12 transition-all"></div>
+                     <div>
+                       <p className="text-[11px] font-bold leading-relaxed">{ann.message || ann.content}</p>
+                       <span className="text-[8px] text-white/40 uppercase tracking-widest mt-2 block">System Root Broadcast</span>
+                     </div>
+                   </div>
+                 )) || <p className="text-[10px] text-white/40 italic">No active broadcasts.</p>}
+              </div>
+            </div>
+            <div className="mt-10 pt-10 border-t border-white/10 text-center">
+               <span className="text-[8px] font-black text-accent uppercase tracking-widest">TKS.bd Core System v1.0</span>
+            </div>
+         </div>
+      </div>
+    </div>
+  );
+}
+
+function OrdersTab({ orders, loading, checkFraud, fraudResults, fraudLoading, setBookingOrder, setIsBookingModalOpen }: any) {
+  if (loading) return <div className="p-20 text-center text-stone-400 animate-pulse uppercase font-black text-[10px] tracking-widest">Accessing Order Ledger...</div>;
+  
+  return (
+    <div className="bg-white rounded-[3rem] border border-stone-100 shadow-sm overflow-hidden animate-fade-in">
+      <table className="w-full text-left">
+        <thead className="bg-stone-50 border-b border-stone-100">
+          <tr>
+            <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest">Order ID</th>
+            <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest">Customer</th>
+            <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest">Total</th>
+            <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest">Status</th>
+            <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest">Fraud Check</th>
+            <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-stone-50">
+          {orders.map((order: any) => (
+            <tr key={order.id} className="hover:bg-stone-50/50 transition-colors group">
+              <td className="px-8 py-6">
+                <span className="text-[11px] font-black text-primary">#{order.id}</span>
+                <p className="text-[8px] text-stone-400 mt-1 uppercase font-bold">{new Date(order.created_at).toLocaleDateString()}</p>
+              </td>
+              <td className="px-8 py-6">
+                <span className="text-[11px] font-bold text-stone-700">{order.users?.full_name || 'Guest User'}</span>
+                <p className="text-[9px] text-stone-400 mt-1 font-bold">{order.users?.mobile_number}</p>
+              </td>
+              <td className="px-8 py-6">
+                <span className="text-[12px] font-black text-primary">৳{order.grand_total}</span>
+              </td>
+              <td className="px-8 py-6">
+                <span className={`px-4 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest ${
+                  order.order_status === 'pending' ? 'bg-orange-100 text-orange-600' : 
+                  order.order_status === 'confirmed' ? 'bg-emerald-100 text-emerald-600' : 'bg-stone-100 text-stone-600'
+                }`}>
+                  {order.order_status}
+                </span>
+              </td>
+              <td className="px-8 py-6">
+                {fraudResults[order.users?.mobile_number] ? (
+                  <div className="flex items-center gap-2">
+                     <span className={`text-[9px] font-black uppercase ${fraudResults[order.users?.mobile_number].total_orders > 3 ? 'text-emerald-500' : 'text-stone-400'}`}>
+                       {fraudResults[order.users?.mobile_number].total_orders} Orders
+                     </span>
+                  </div>
+                ) : (
+                  <button 
+                    onClick={() => checkFraud(order.users?.mobile_number)}
+                    disabled={fraudLoading[order.users?.mobile_number]}
+                    className="text-[8px] font-black text-primary uppercase tracking-widest hover:underline disabled:opacity-50"
+                  >
+                    {fraudLoading[order.users?.mobile_number] ? 'Checking...' : 'Check History'}
+                  </button>
+                )}
+              </td>
+              <td className="px-8 py-6 text-right flex items-center justify-end gap-3">
+                <button 
+                  onClick={() => { setBookingOrder(order); setIsBookingModalOpen(true); }}
+                  className="px-4 py-2 bg-stone-100 rounded-xl text-[9px] font-black uppercase tracking-widest text-primary hover:bg-primary hover:text-white transition-all flex items-center gap-2"
+                >
+                   <span className="material-symbols-outlined text-sm">local_shipping</span> Book
+                </button>
+                <button className="p-3 hover:bg-stone-50 rounded-xl text-stone-300 hover:text-primary transition-all">
+                  <span className="material-symbols-outlined text-xl">visibility</span>
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function ProductsTab({ products, loading, setIsAddModalOpen, setEditingProduct, setIsEditModalOpen, deleteProduct, units, fetchUnits, lots, fetchLots, categories }: any) {
+  const [activeSubTab, setActiveSubTab] = useState('list');
+  const [newUnitName, setNewUnitName] = useState('');
+  const [isLotModalOpen, setIsLotModalOpen] = useState(false);
+
+  const addUnit = async () => {
+    if(!newUnitName) return;
+    const res = await fetch("/api/admin/units", { method: "POST", body: JSON.stringify({ name: newUnitName }) });
+    if(res.ok) { setNewUnitName(''); fetchUnits(); }
+  };
+
+  const deleteUnit = async (id: number) => {
+    if(confirm("Delete Unit?")) {
+      await fetch(`/api/admin/units?id=${id}`, { method: "DELETE" }); fetchUnits();
     }
   };
 
-  const [activeTab, setActiveTab] = useState("overview");
+  if (loading) return <div className="p-20 text-center text-stone-400 animate-pulse uppercase font-black text-[10px] tracking-widest">Accessing Inventory...</div>;
+
+  return (
+    <div className="space-y-8 animate-fade-in">
+       {/* Feature Header */}
+       <div className="flex flex-wrap items-center justify-between gap-6 bg-white p-8 rounded-[3rem] border border-stone-100 shadow-sm">
+          <div className="flex gap-4 p-2 bg-stone-100 rounded-2xl">
+             <button onClick={() => setActiveSubTab('list')} className={`px-6 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${activeSubTab === 'list' ? 'bg-white text-primary shadow-sm' : 'text-stone-400'}`}>Product Ledger</button>
+             <button onClick={() => setActiveSubTab('units')} className={`px-6 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${activeSubTab === 'units' ? 'bg-white text-primary shadow-sm' : 'text-stone-400'}`}>Unit Management</button>
+             <button onClick={() => setActiveSubTab('lots')} className={`px-6 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${activeSubTab === 'lots' ? 'bg-white text-primary shadow-sm' : 'text-stone-400'}`}>Lot Presets</button>
+          </div>
+          <button onClick={() => setIsAddModalOpen(true)} className="px-8 py-4 bg-primary text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl hover:scale-105 transition-all shadow-xl shadow-primary/20 flex items-center gap-3">
+             <span className="material-symbols-outlined text-lg">add</span> New Catalog Item
+          </button>
+       </div>
+
+       {activeSubTab === 'list' && (
+          <div className="bg-white rounded-[3rem] border border-stone-100 shadow-sm overflow-hidden">
+             <table className="w-full text-left">
+                <thead className="bg-stone-50 border-b border-stone-100">
+                   <tr>
+                      <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest">Visual</th>
+                      <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest">Product Details</th>
+                      <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest">Inventory</th>
+                      <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest">Pricing</th>
+                      <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest">Status</th>
+                      <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest text-right">Actions</th>
+                   </tr>
+                </thead>
+                <tbody className="divide-y divide-stone-50">
+                   {products.map((product: any) => (
+                      <tr key={product.id} className="hover:bg-stone-50/50 transition-colors group">
+                         <td className="px-8 py-6">
+                            <div className="w-16 h-16 rounded-2xl overflow-hidden border border-stone-100">
+                               <img src={product.image_url || '/placeholder.jpg'} className="w-full h-full object-cover" />
+                            </div>
+                         </td>
+                         <td className="px-8 py-6">
+                            <span className="text-[11px] font-black text-primary uppercase">{product.name}</span>
+                            <p className="text-[8px] text-stone-400 mt-1 uppercase font-bold tracking-widest">{product.categories?.name} • {product.units?.name}</p>
+                         </td>
+                         <td className="px-8 py-6">
+                            <div className="flex flex-col">
+                               <span className={`text-[11px] font-black ${Number(product.available_stock) < 10 ? 'text-red-500' : 'text-primary'}`}>
+                                  {Number(product.available_stock)} Remaining
+                               </span>
+                               <p className="text-[8px] text-stone-400 mt-1 font-bold uppercase tracking-widest">Lot Size: {product.lot_size}</p>
+                            </div>
+                         </td>
+                         <td className="px-8 py-6">
+                            <div className="flex flex-col">
+                               <span className="text-[12px] font-black text-primary">৳{product.price_per_unit}</span>
+                               {Number(product.regular_price) > Number(product.price_per_unit) && (
+                                  <span className="text-[9px] text-stone-300 line-through font-bold">৳{product.regular_price}</span>
+                               )}
+                               <p className="text-[8px] text-stone-400 mt-1 font-bold uppercase tracking-widest">Pack: ৳{product.packaging_charge || 0}</p>
+                            </div>
+                         </td>
+                         <td className="px-8 py-6">
+                            <div className="flex gap-2">
+                               {product.is_preorder && <span className="px-3 py-1 bg-orange-100 text-orange-600 rounded-full text-[8px] font-black uppercase">Pre-Order</span>}
+                               <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase ${Number(product.available_stock) > 0 ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'}`}>
+                                  {Number(product.available_stock) > 0 ? 'Active' : 'Out'}
+                               </span>
+                            </div>
+                         </td>
+                         <td className="px-8 py-6 text-right">
+                            <div className="flex items-center justify-end gap-2">
+                               <button onClick={() => { setEditingProduct(product); setIsEditModalOpen(true); }} className="p-2 hover:bg-stone-50 rounded-xl text-stone-300 hover:text-primary transition-all"><span className="material-symbols-outlined text-lg">edit</span></button>
+                               <button onClick={() => deleteProduct(product.id)} className="p-2 hover:bg-red-50 rounded-xl text-stone-300 hover:text-red-500 transition-all"><span className="material-symbols-outlined text-lg">delete</span></button>
+                            </div>
+                         </td>
+                      </tr>
+                   ))}
+                </tbody>
+             </table>
+          </div>
+       )}
+
+       {activeSubTab === 'units' && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+             <div className="bg-white p-10 rounded-[3rem] border border-stone-100 shadow-sm space-y-8">
+                <h3 className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">New Unit Entry</h3>
+                <div className="flex gap-4">
+                   <input value={newUnitName} onChange={(e)=>setNewUnitName(e.target.value)} placeholder="e.g. Kilogram, Piece, Liter" className="flex-1 px-6 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold outline-none focus:border-primary" />
+                   <button onClick={addUnit} className="px-8 py-4 bg-primary text-white text-[10px] font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-primary/20">Add Unit</button>
+                </div>
+             </div>
+             <div className="bg-white rounded-[3rem] border border-stone-100 shadow-sm overflow-hidden">
+                <table className="w-full text-left">
+                   <thead className="bg-stone-50 border-b border-stone-100">
+                      <tr>
+                         <th className="px-8 py-5 text-[9px] font-black text-stone-400 uppercase tracking-widest">Unit Label</th>
+                         <th className="px-8 py-5 text-[9px] font-black text-stone-400 uppercase tracking-widest text-right">Actions</th>
+                      </tr>
+                   </thead>
+                   <tbody className="divide-y divide-stone-50">
+                      {units.map((unit: any) => (
+                         <tr key={unit.id}>
+                            <td className="px-8 py-5 text-[11px] font-bold text-primary">{unit.name}</td>
+                            <td className="px-8 py-5 text-right">
+                               <button onClick={() => deleteUnit(unit.id)} className="text-red-400 hover:text-red-600 transition-colors"><span className="material-symbols-outlined text-lg">delete</span></button>
+                            </td>
+                         </tr>
+                      ))}
+                   </tbody>
+                </table>
+             </div>
+          </div>
+       )}
+
+       {activeSubTab === 'lots' && (
+          <div className="space-y-8">
+             <div className="bg-white rounded-[3rem] border border-stone-100 shadow-sm overflow-hidden">
+                <div className="p-8 border-b border-stone-50 flex justify-between items-center">
+                   <h2 className="text-[10px] font-black text-primary uppercase tracking-widest">Predefined Lot Configuration</h2>
+                   <button onClick={() => setIsLotModalOpen(true)} className="px-6 py-3 bg-primary text-white text-[9px] font-black uppercase tracking-widest rounded-xl shadow-lg">New Lot Config</button>
+                </div>
+                <table className="w-full text-left">
+                   <thead className="bg-stone-50 border-b border-stone-100">
+                      <tr>
+                         <th className="px-8 py-5 text-[9px] font-black text-stone-400 uppercase tracking-widest">Lot Name</th>
+                         <th className="px-8 py-5 text-[9px] font-black text-stone-400 uppercase tracking-widest">Category</th>
+                         <th className="px-8 py-5 text-[9px] font-black text-stone-400 uppercase tracking-widest">Weight/Size</th>
+                         <th className="px-8 py-5 text-[9px] font-black text-stone-400 uppercase tracking-widest">Pkg Charge</th>
+                         <th className="px-8 py-5 text-[9px] font-black text-stone-400 uppercase tracking-widest text-right">Actions</th>
+                      </tr>
+                   </thead>
+                   <tbody className="divide-y divide-stone-50">
+                      {lots.map((lot: any) => (
+                         <tr key={lot.id}>
+                            <td className="px-8 py-5 text-[11px] font-black text-primary uppercase">{lot.name}</td>
+                            <td className="px-8 py-5 text-[10px] font-bold text-stone-400 uppercase tracking-widest">{lot.categories?.name}</td>
+                            <td className="px-8 py-5 text-[11px] font-bold text-primary">{Number(lot.size)}</td>
+                            <td className="px-8 py-5 text-[11px] font-bold text-emerald-600">৳{lot.packaging_charge}</td>
+                            <td className="px-8 py-5 text-right space-x-2">
+                               <button className="text-stone-300 hover:text-red-500 transition-colors"><span className="material-symbols-outlined text-lg">delete</span></button>
+                            </td>
+                         </tr>
+                      ))}
+                   </tbody>
+                </table>
+             </div>
+          </div>
+       )}
+
+       {/* Lot Modal */}
+       {isLotModalOpen && (
+          <div className="fixed inset-0 bg-primary/40 backdrop-blur-sm z-50 flex items-center justify-center p-6">
+             <div className="bg-white rounded-[3rem] w-full max-w-lg shadow-2xl overflow-hidden">
+                <form onSubmit={async (e) => {
+                   e.preventDefault();
+                   const fd = new FormData(e.currentTarget);
+                   const data = Object.fromEntries(fd.entries());
+                   const res = await fetch("/api/admin/lots", { method: "POST", body: JSON.stringify(data) });
+                   if(res.ok) { setIsLotModalOpen(false); fetchLots(); }
+                }} className="p-10 space-y-8">
+                   <h2 className="text-xl font-black text-primary uppercase tracking-tight">Create Lot Configuration</h2>
+                   <div className="space-y-6">
+                      <div className="space-y-2">
+                         <label className="text-[8px] font-black uppercase text-stone-400 ml-1">Lot Name</label>
+                         <input name="name" required placeholder="e.g. Standard 5kg Box" className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold" />
+                      </div>
+                      <div className="space-y-2">
+                         <label className="text-[8px] font-black uppercase text-stone-400 ml-1">Category Mapping</label>
+                         <select name="category_id" required className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold appearance-none">
+                            {categories.map((c:any) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                         </select>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                         <div className="space-y-2">
+                            <label className="text-[8px] font-black uppercase text-stone-400 ml-1">Weight/Size</label>
+                            <input name="size" type="number" step="0.01" required className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold" />
+                         </div>
+                         <div className="space-y-2">
+                            <label className="text-[8px] font-black uppercase text-stone-400 ml-1">Pkg Charge (৳)</label>
+                            <input name="packaging_charge" type="number" step="0.01" required className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold" />
+                         </div>
+                      </div>
+                   </div>
+                   <button type="submit" className="w-full py-4 bg-primary text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl shadow-lg">Save Configuration</button>
+                </form>
+             </div>
+          </div>
+       )}
+    </div>
+  );
+}
+
+function CouriersTab({ couriers, toggleCourier, configureCourier, shippingConfigs, setEditingShippingConfig, setIsShippingModalOpen }: any) {
+  const [activeSubTab, setActiveSubTab] = useState('list');
+
+  return (
+    <div className="space-y-10 animate-fade-in">
+       <div className="flex gap-4 p-2 bg-stone-100 rounded-2xl w-fit">
+          <button onClick={() => setActiveSubTab('list')} className={`px-6 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${activeSubTab === 'list' ? 'bg-white text-primary shadow-sm' : 'text-stone-400'}`}>Partner List</button>
+          <button onClick={() => setActiveSubTab('charges')} className={`px-6 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${activeSubTab === 'charges' ? 'bg-white text-primary shadow-sm' : 'text-stone-400'}`}>Shipping Charges</button>
+       </div>
+
+       {activeSubTab === 'list' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {couriers.map((courier: any) => (
+              <div key={courier.id} className="bg-white rounded-[2.5rem] border border-stone-100 shadow-sm p-8 flex flex-col items-center text-center">
+                 <div className={`w-20 h-20 rounded-3xl mb-6 flex items-center justify-center ${courier.is_active ? 'bg-emerald-50 text-emerald-600' : 'bg-stone-50 text-stone-300'}`}>
+                    <span className="material-symbols-outlined text-4xl">local_shipping</span>
+                 </div>
+                 <h3 className="text-sm font-black text-primary uppercase tracking-widest mb-1">{courier.name}</h3>
+                 <p className="text-[8px] font-bold text-stone-400 uppercase tracking-widest mb-6">{courier.type} Partner</p>
+                 <div className="w-full flex gap-3">
+                    <button onClick={() => toggleCourier(courier.id, !courier.is_active)} className={`flex-1 py-3 rounded-xl text-[8px] font-black uppercase tracking-widest transition-all ${courier.is_active ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'}`}>{courier.is_active ? 'Deactivate' : 'Activate'}</button>
+                    {courier.type === 'online' && <button onClick={() => configureCourier(courier)} className="px-4 py-3 bg-stone-100 rounded-xl text-stone-600 hover:bg-primary hover:text-white transition-all"><span className="material-symbols-outlined text-sm">settings</span></button>}
+                 </div>
+              </div>
+            ))}
+          </div>
+       )}
+
+       {activeSubTab === 'charges' && (
+          <div className="bg-white rounded-[3rem] border border-stone-100 shadow-sm overflow-hidden">
+             <div className="p-8 border-b border-stone-50 flex justify-between items-center">
+                <h2 className="text-[10px] font-black text-primary uppercase tracking-widest">Rate Management Matrix</h2>
+                <button onClick={() => { setEditingShippingConfig(null); setIsShippingModalOpen(true); }} className="px-6 py-3 bg-primary text-white text-[9px] font-black uppercase tracking-widest rounded-xl">Add New Rate Rule</button>
+             </div>
+             <table className="w-full text-left">
+                <thead className="bg-stone-50">
+                   <tr>
+                      <th className="px-8 py-5 text-[9px] font-black text-stone-400 uppercase tracking-widest">Category / Courier</th>
+                      <th className="px-8 py-5 text-[9px] font-black text-stone-400 uppercase tracking-widest text-center">Dhaka (Office/Home)</th>
+                      <th className="px-8 py-5 text-[9px] font-black text-stone-400 uppercase tracking-widest text-center">Outside (Office/Home)</th>
+                      <th className="px-8 py-5 text-[9px] font-black text-stone-400 uppercase tracking-widest text-right">Actions</th>
+                   </tr>
+                </thead>
+                <tbody className="divide-y divide-stone-50">
+                   {shippingConfigs.map((config: any) => (
+                      <tr key={config.id} className="hover:bg-stone-50/50 transition-colors">
+                         <td className="px-8 py-6">
+                            <span className="text-[11px] font-black text-primary">{config.categories?.name || 'All Products'}</span>
+                            <p className="text-[8px] text-stone-400 mt-1 font-bold">{config.couriers?.name || 'Any Courier'}</p>
+                         </td>
+                         <td className="px-8 py-6 text-center">
+                            <span className="text-[11px] font-bold text-emerald-600">৳{config.dhaka_office_rate} / ৳{config.dhaka_home_rate}</span>
+                         </td>
+                         <td className="px-8 py-6 text-center">
+                            <span className="text-[11px] font-bold text-orange-600">৳{config.outside_office_rate} / ৳{config.outside_home_rate}</span>
+                         </td>
+                         <td className="px-8 py-6 text-right">
+                            <button onClick={() => { setEditingShippingConfig(config); setIsShippingModalOpen(true); }} className="text-primary hover:underline text-[9px] font-black uppercase">Edit</button>
+                         </td>
+                      </tr>
+                   ))}
+                </tbody>
+             </table>
+          </div>
+       )}
+    </div>
+  );
+}
+
+function ReviewsTab({ reviews, toggleReview, deleteReview, setEditingReview, setIsReviewModalOpen }: any) {
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-fade-in">
+      {reviews.map((review: any) => (
+        <div key={review.id} className="bg-white rounded-[2.5rem] border border-stone-100 shadow-sm p-8 flex gap-6 group">
+           <div className="w-16 h-16 rounded-full bg-stone-100 shrink-0 overflow-hidden border-2 border-stone-50">
+              <img src={review.image_url || `https://api.dicebear.com/7.x/initials/svg?seed=${review.user_name}`} alt="" className="w-full h-full object-cover" />
+           </div>
+           <div className="flex-1 space-y-3">
+              <div className="flex justify-between items-start">
+                 <div>
+                    <h3 className="text-[11px] font-black text-primary uppercase tracking-widest">{review.user_name || 'System User'}</h3>
+                    <div className="flex text-accent mt-1">
+                       {[...Array(5)].map((_, i) => (
+                         <span key={i} className={`material-symbols-outlined text-[10px] ${i < review.rating ? '' : 'text-stone-100'}`} style={{fontVariationSettings: "'FILL' 1"}}>star</span>
+                       ))}
+                    </div>
+                 </div>
+                 <div className="flex gap-2">
+                    <button onClick={() => { setEditingReview(review); setIsReviewModalOpen(true); }} className="p-2 hover:bg-stone-50 rounded-lg text-stone-300 hover:text-primary transition-all"><span className="material-symbols-outlined text-sm">edit</span></button>
+                    <button onClick={() => deleteReview(review.id)} className="p-2 hover:bg-red-50 rounded-lg text-stone-300 hover:text-red-500 transition-all"><span className="material-symbols-outlined text-sm">delete</span></button>
+                 </div>
+              </div>
+              <p className="text-[11px] text-stone-500 italic leading-relaxed">"{review.comment}"</p>
+              <div className="flex justify-between items-center pt-4 border-t border-stone-50">
+                 <button onClick={() => toggleReview(review.id, !review.is_visible)} className={`text-[8px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full ${review.is_visible ? 'bg-emerald-50 text-emerald-600' : 'bg-orange-50 text-orange-600'}`}>
+                   {review.is_visible ? 'Public' : 'Hidden'}
+                 </button>
+                 <span className="text-[8px] font-bold text-stone-300 uppercase tracking-widest">{new Date(review.created_at).toLocaleDateString()}</span>
+              </div>
+           </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function SettingsTab({ settings, saveSetting, uploadImage }: any) {
+  const [activeSubTab, setActiveSubTab] = useState('sms');
+
+  return (
+    <div className="space-y-10 animate-fade-in">
+       <div className="flex gap-4 p-2 bg-stone-100 rounded-2xl w-fit">
+          {['sms', 'seo', 'social', 'contact'].map(tab => (
+             <button key={tab} onClick={() => setActiveSubTab(tab)} className={`px-6 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${activeSubTab === tab ? 'bg-white text-primary shadow-sm' : 'text-stone-400'}`}>{tab}</button>
+          ))}
+       </div>
+
+       <div className="bg-white rounded-[3rem] border border-stone-100 shadow-sm overflow-hidden">
+          <div className="p-10 border-b border-stone-50 bg-stone-50/30 flex justify-between items-center">
+             <div>
+               <h2 className="text-sm font-black text-primary uppercase tracking-[0.2em]">{activeSubTab.toUpperCase()} Configuration</h2>
+               <p className="text-[8px] font-bold text-stone-400 uppercase tracking-widest mt-1">Manage global system parameters</p>
+             </div>
+             <span className="material-symbols-outlined text-3xl text-stone-200">settings</span>
+          </div>
+          
+          <div className="p-10">
+             {activeSubTab === 'sms' && (
+                <div className="grid grid-cols-1 lg:grid-cols-5 gap-10">
+                   <div className="lg:col-span-2 space-y-6">
+                      <div>
+                         <label className="block text-[8px] font-black text-primary uppercase tracking-widest mb-2 ml-1">Gateway API URL</label>
+                         <input defaultValue={settings.find((s:any) => s.key === 'sms_api_url')?.value || ''} onBlur={(e) => saveSetting('sms_api_url', e.target.value)} placeholder="https://..." className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold outline-none focus:border-primary" />
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                         <div>
+                            <label className="block text-[8px] font-black text-primary uppercase tracking-widest mb-2 ml-1">API Key</label>
+                            <input defaultValue={settings.find((s:any) => s.key === 'sms_api_key')?.value || ''} onBlur={(e) => saveSetting('sms_api_key', e.target.value)} className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold" />
+                         </div>
+                         <div>
+                            <label className="block text-[8px] font-black text-primary uppercase tracking-widest mb-2 ml-1">Sender ID</label>
+                            <input defaultValue={settings.find((s:any) => s.key === 'sms_sender_id')?.value || ''} onBlur={(e) => saveSetting('sms_sender_id', e.target.value)} className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold" />
+                         </div>
+                      </div>
+                   </div>
+                   <div className="lg:col-span-3 space-y-6">
+                       <div className="p-6 bg-emerald-50 rounded-[2rem] border border-emerald-100 mb-4">
+                          <p className="text-[9px] font-black text-emerald-800 uppercase tracking-widest mb-3 flex items-center gap-2">
+                             <span className="material-symbols-outlined text-sm">info</span> Dynamic Variables Guide
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                             {[
+                                { tag: '{customer_name}', label: 'Receiver Name' },
+                                { tag: '{order_id}', label: 'Order Number' },
+                                { tag: '{product_names}', label: 'Products' },
+                                { tag: '{total_amount}', label: 'Grand Total' }
+                             ].map(v => (
+                                <span key={v.tag} className="px-3 py-1.5 bg-white border border-emerald-100 rounded-lg text-[8px] font-bold text-emerald-700">
+                                   <code className="font-black text-emerald-900">{v.tag}</code>: {v.label}
+                                </span>
+                             ))}
+                          </div>
+                       </div>
+                       {[ { key: 'sms_template_order_confirm', label: 'Order Confirm (Customer)' }, { key: 'sms_template_order_shipped', label: 'Shipment Alert (Customer)' } ].map(tpl => (
+                          <div key={tpl.key}>
+                             <label className="block text-[8px] font-black text-primary uppercase tracking-widest mb-2 ml-1">{tpl.label}</label>
+                             <textarea defaultValue={settings.find((s:any) => s.key === tpl.key)?.value || ''} onBlur={(e) => saveSetting(tpl.key, e.target.value)} className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold min-h-[80px]" placeholder={`Example: Dear {customer_name}, your order #{order_id} for {product_names} has been confirmed.`} />
+                          </div>
+                       ))}
+                   </div>
+                </div>
+             )}
+
+             {activeSubTab === 'seo' && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                   <div className="space-y-6">
+                      <div>
+                         <label className="block text-[8px] font-black text-primary uppercase tracking-widest mb-2 ml-1">Meta Title</label>
+                         <input defaultValue={settings.find((s:any) => s.key === 'seo_title')?.value || ''} onBlur={(e) => saveSetting('seo_title', e.target.value)} className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold" />
+                      </div>
+                      <div>
+                         <label className="block text-[8px] font-black text-primary uppercase tracking-widest mb-2 ml-1">Meta Keywords</label>
+                         <input defaultValue={settings.find((s:any) => s.key === 'seo_keywords')?.value || ''} onBlur={(e) => saveSetting('seo_keywords', e.target.value)} className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold" />
+                      </div>
+                   </div>
+                   <div className="space-y-6">
+                      <div>
+                         <label className="block text-[8px] font-black text-primary uppercase tracking-widest mb-2 ml-1">Meta Description</label>
+                         <textarea defaultValue={settings.find((s:any) => s.key === 'seo_description')?.value || ''} onBlur={(e) => saveSetting('seo_description', e.target.value)} className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold min-h-[120px]" />
+                      </div>
+                   </div>
+                </div>
+             )}
+
+             {activeSubTab === 'social' && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                   {['facebook', 'instagram', 'youtube', 'whatsapp'].map(platform => (
+                      <div key={platform}>
+                         <label className="block text-[8px] font-black text-primary uppercase tracking-widest mb-2 ml-1">{platform} Link</label>
+                         <input 
+                            defaultValue={settings.find((s:any) => s.key === `social_${platform}`)?.value || ''} 
+                            onBlur={(e) => saveSetting(`social_${platform}`, e.target.value)}
+                            placeholder={`https://${platform}.com/...`}
+                            className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold" 
+                         />
+                      </div>
+                   ))}
+                </div>
+             )}
+
+             {activeSubTab === 'contact' && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                   <div className="space-y-6">
+                      <div>
+                         <label className="block text-[8px] font-black text-primary uppercase tracking-widest mb-2 ml-1">Support Phone</label>
+                         <input defaultValue={settings.find((s:any) => s.key === 'contact_phone')?.value || ''} onBlur={(e) => saveSetting('contact_phone', e.target.value)} className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold" />
+                      </div>
+                      <div>
+                         <label className="block text-[8px] font-black text-primary uppercase tracking-widest mb-2 ml-1">Support Email</label>
+                         <input defaultValue={settings.find((s:any) => s.key === 'contact_email')?.value || ''} onBlur={(e) => saveSetting('contact_email', e.target.value)} className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold" />
+                      </div>
+                   </div>
+                   <div>
+                      <label className="block text-[8px] font-black text-primary uppercase tracking-widest mb-2 ml-1">Office Address</label>
+                      <textarea defaultValue={settings.find((s:any) => s.key === 'contact_address')?.value || ''} onBlur={(e) => saveSetting('contact_address', e.target.value)} className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold min-h-[120px]" />
+                   </div>
+                </div>
+             )}
+          </div>
+       </div>
+    </div>
+  );
+}
+
+// --- Main Dashboard Controller ---
+
+function DashboardContent() {
+  const [user, setUser] = useState<any>(null);
+  const [announcements, setAnnouncements] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [dashboardStats, setDashboardStats] = useState<any>(null);
   const [orders, setOrders] = useState<any[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
   const [products, setProducts] = useState<any[]>([]);
   const [productsLoading, setProductsLoading] = useState(false);
   const [categories, setCategories] = useState<any[]>([]);
   const [units, setUnits] = useState<any[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("All Categories");
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [lots, setLots] = useState<any[]>([]);
   const [settings, setSettings] = useState<any[]>([]);
-  const [settingsLoading, setSettingsLoading] = useState(false);
   const [reviews, setReviews] = useState<any[]>([]);
-  const [reviewsLoading, setReviewsLoading] = useState(false);
-  const [packages, setPackages] = useState<any[]>([]);
-  const [packagesLoading, setPackagesLoading] = useState(false);
-  const [dashboardStats, setDashboardStats] = useState<any>(null);
+  const [couriers, setCouriers] = useState<any[]>([]);
+  const [shippingConfigs, setShippingConfigs] = useState<any[]>([]);
   const [fraudResults, setFraudResults] = useState<Record<string, any>>({});
   const [fraudLoading, setFraudLoading] = useState<Record<string, boolean>>({});
-  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
-  const [isUnitModalOpen, setIsUnitModalOpen] = useState(false);
-  const [isLotModalOpen, setIsLotModalOpen] = useState(false);
-  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
-  const [editingReview, setEditingReview] = useState<any>(null);
-  const [shippingConfigs, setShippingConfigs] = useState<any[]>([]);
+  
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<any>(null);
+  const [isCourierApiModalOpen, setIsCourierApiModalOpen] = useState(false);
+  const [editingCourier, setEditingCourier] = useState<any>(null);
   const [isShippingModalOpen, setIsShippingModalOpen] = useState(false);
   const [editingShippingConfig, setEditingShippingConfig] = useState<any>(null);
-  const [productsError, setProductsError] = useState<string | null>(null);
-  const [lots, setLots] = useState<any[]>([]);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [editingReview, setEditingReview] = useState<any>(null);
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+  const [bookingOrder, setBookingOrder] = useState<any>(null);
+  const [bookingLoading, setBookingLoading] = useState(false);
 
-  const checkFraud = async (mobile: string) => {
-    setFraudLoading(prev => ({ ...prev, [mobile]: true }));
-    try {
-      const res = await fetch("/api/admin/fraud-check", {
-        method: "POST",
-        body: JSON.stringify({ phone: mobile })
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setFraudResults(prev => ({ ...prev, [mobile]: data.data }));
-      } else {
-        const err = await res.json();
-        alert(err.error || "Fraud check failed. Ensure credentials are set in settings.");
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setFraudLoading(prev => ({ ...prev, [mobile]: false }));
-    }
-  };
+  // Special Mango Logic States
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string>('');
+  const [isMangoCategory, setIsMangoCategory] = useState(false);
+  const [filteredLots, setFilteredLots] = useState<any[]>([]);
+  const [selectedLotId, setSelectedLotId] = useState<string>('');
+
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const activeTab = searchParams.get("tab") || "overview";
 
   useEffect(() => {
-    if (activeTab === 'overview' || activeTab === 'reports') {
-      fetchStats();
+    async function init() {
+      try {
+        const res = await fetch("/api/user/profile");
+        if (res.ok) {
+          const data = await res.json();
+          setUser(data.user);
+          setAnnouncements(data.announcements);
+        } else router.push("/auth/login");
+      } catch (err) { console.error(err); }
+      finally { setLoading(false); }
     }
-    if (activeTab === 'orders') {
-      fetchOrders();
-    }
-    if (activeTab === 'products') {
-      fetchProducts();
-      fetchLots();
-    }
-    if (activeTab === 'settings') {
-      fetchSettings();
-    }
-    if (activeTab === 'reviews') {
-      fetchReviews();
-    }
-    if (activeTab === 'couriers') {
-      fetchPackages();
-      fetchShippingConfigs();
-    }
+    init();
+  }, []);
+
+  useEffect(() => {
+    if (activeTab === 'overview') fetchDashboardStats();
+    if (activeTab === 'orders') fetchOrders();
+    if (activeTab === 'products') { fetchProducts(); fetchCategories(); fetchUnits(); fetchCouriers(); fetchLots(); }
+    if (activeTab === 'reviews') fetchReviews();
+    if (activeTab === 'couriers') { fetchCouriers(); fetchShippingConfigs(); fetchCategories(); }
+    if (activeTab === 'settings') fetchSettings();
   }, [activeTab]);
 
-  async function fetchStats() {
-    try {
-      const res = await fetch("/api/admin/stats");
-      if (res.ok) {
-        const data = await res.json();
-        setDashboardStats(data.stats);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  }
+  useEffect(() => {
+     const cat = categories.find(c => c.id == selectedCategoryId);
+     const isMango = cat?.name?.toLowerCase().includes('mango') || cat?.name?.includes('আম');
+     setIsMangoCategory(!!isMango);
+     if (isMango) {
+        setFilteredLots(lots.filter((l: any) => l.category_id == selectedCategoryId));
+     } else {
+        setFilteredLots([]);
+     }
+  }, [selectedCategoryId, categories, lots]);
 
-  async function fetchShippingConfigs() {
-    try {
-      const res = await fetch("/api/admin/shipping-configs");
-      if (res.ok) {
-        const data = await res.json();
-        setShippingConfigs(data.configs || []);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  }
+  useEffect(() => {
+     if (isEditModalOpen && editingProduct) {
+        setSelectedCategoryId(editingProduct.category_id);
+     }
+  }, [isEditModalOpen, editingProduct]);
 
-  async function fetchPackages() {
-    setPackagesLoading(true);
-    try {
-      const res = await fetch("/api/admin/packages");
-      if (res.ok) {
-        const data = await res.json();
-        setPackages(data.packages);
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setPackagesLoading(false);
-    }
-  }
-
-  async function fetchReviews() {
-    setReviewsLoading(true);
-    try {
-      const res = await fetch("/api/admin/reviews");
-      if (res.ok) {
-        const data = await res.json();
-        setReviews(data.reviews);
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setReviewsLoading(false);
-    }
-  }
-
-  async function fetchSettings() {
-    setSettingsLoading(true);
-    try {
-      const res = await fetch("/api/admin/settings");
-      if (res.ok) {
-        const data = await res.json();
-        setSettings(data.settings);
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setSettingsLoading(false);
-    }
-  }
-
-  async function fetchLots() {
-    try {
-      const res = await fetch("/api/admin/lots");
-      if (res.ok) {
-        const data = await res.json();
-        setLots(data.lots || []);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
-  async function fetchProducts() {
-    setProductsLoading(true);
-    setProductsError(null);
-    try {
-      const res = await fetch("/api/products");
-      if (res.ok) {
-        const data = await res.json();
-        setProducts(data.products || data);
-      } else {
-        setProductsError("Could not retrieve products from the server.");
-      }
-    } catch (err) {
-      console.error(err);
-      setProductsError("Network error while fetching products.");
-    } finally {
-      setProductsLoading(false);
-    }
-  }
-
-  const filteredProducts = (products || []).filter(p => {
-    if (!p) return false;
-    const name = p.name || "";
-    const matchesSearch = name.toLowerCase().includes(searchQuery.toLowerCase());
-    const cat = p.categories || {};
-    const categoryName = cat.name || p.category || "Unassigned";
-    const catMatch = categoryFilter === "All Categories" || 
-                    categoryName.toLowerCase() === categoryFilter.toLowerCase() ||
-                    (categoryFilter === "Unassigned" && (categoryName === "Unassigned" || !p.category_id));
-    return matchesSearch && catMatch;
-  });
-
-  async function handleAddProduct(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const data = Object.fromEntries(formData.entries());
-    const res = await fetch("/api/admin/products", { method: "POST", body: JSON.stringify(data) });
-    if (res.ok) { setIsAddModalOpen(false); fetchProducts(); }
-    else { alert("Failed to add product"); }
+  async function fetchDashboardStats() {
+    try { const res = await fetch("/api/admin/stats"); if (res.ok) setDashboardStats((await res.json()).stats); } catch (e) {}
   }
 
   async function fetchOrders() {
     setOrdersLoading(true);
-    try {
-      const res = await fetch("/api/admin/orders");
-      if (res.ok) {
-        const data = await res.json();
-        setOrders(data.orders);
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setOrdersLoading(false);
-    }
+    try { const res = await fetch("/api/admin/orders"); if (res.ok) setOrders((await res.json()).orders || []); } catch (e) {} finally { setOrdersLoading(false); }
   }
 
-  if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-[#f8faf9]">
-      <div className="flex flex-col items-center gap-4">
-        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-        <p className="text-[10px] font-bold text-primary uppercase tracking-widest">Synchronizing System...</p>
-      </div>
-    </div>
-  );
+  async function fetchProducts() {
+    setProductsLoading(true);
+    try { const res = await fetch("/api/products"); if (res.ok) { const d = await res.json(); setProducts(d.products || d); } } catch (e) {} finally { setProductsLoading(false); }
+  }
+
+  async function fetchCategories() {
+    try { const res = await fetch("/api/admin/categories"); if (res.ok) setCategories((await res.json()).categories || []); } catch (e) {}
+  }
+
+  async function fetchUnits() {
+    try { const res = await fetch("/api/admin/units"); if (res.ok) setUnits((await res.json()).units || []); } catch (e) {}
+  }
+
+  async function fetchLots() {
+    try { const res = await fetch("/api/admin/lots"); if (res.ok) setLots((await res.json()).lots || []); } catch (e) {}
+  }
+
+  async function fetchReviews() {
+    try { const res = await fetch("/api/admin/reviews"); if (res.ok) setReviews((await res.json()).reviews || []); } catch (e) {}
+  }
+
+  async function fetchCouriers() {
+    try { const res = await fetch("/api/admin/couriers"); if (res.ok) setCouriers((await res.json()).couriers || []); } catch (e) {}
+  }
+
+  async function fetchShippingConfigs() {
+    try { const res = await fetch("/api/admin/shipping-configs"); if (res.ok) setShippingConfigs((await res.json()).configs || []); } catch (e) {}
+  }
+
+  async function fetchSettings() {
+    try { const res = await fetch("/api/admin/settings"); if (res.ok) setSettings((await res.json()).settings || []); } catch (e) {}
+  }
+
+  const handleBookCourier = async (courierId: number) => {
+    setBookingLoading(true);
+    try {
+      const res = await fetch("/api/admin/orders/book-courier", {
+        method: "POST",
+        body: JSON.stringify({ order_id: bookingOrder.id, courier_id: courierId })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert(`Booking Successful! Tracking: ${data.tracking_number}`);
+        setIsBookingModalOpen(false);
+        fetchOrders();
+      } else alert(data.error);
+    } catch (e) { alert("Booking failed"); }
+    finally { setBookingLoading(false); }
+  };
+
+  const handleUpload = async (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    const res = await fetch("/api/admin/upload", { method: "POST", body: formData });
+    if (res.ok) return (await res.json()).url;
+    return null;
+  };
+
+  const handleAddProduct = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const fd = new FormData(e.currentTarget);
+    const data = Object.fromEntries(fd.entries());
+    const file = (e.currentTarget.elements.namedItem('file') as HTMLInputElement)?.files?.[0];
+    if (file) { const url = await handleUpload(file); if (url) (data as any).image_url = url; }
+    
+    // Formatting multi-selects and numbers
+    const selCouriers = couriers.filter(c => fd.get(`courier_id_${c.id}`) === 'on').map(c => c.name);
+    (data as any).available_couriers = JSON.stringify(selCouriers);
+    (data as any).allow_home_delivery = fd.get("allow_home_delivery") === "on";
+    (data as any).allow_point_delivery = fd.get("allow_point_delivery") === "on";
+    (data as any).is_preorder = fd.get("is_preorder") === "on";
+    
+    const res = await fetch("/api/admin/products", { method: "POST", body: JSON.stringify(data) });
+    if (res.ok) { setIsAddModalOpen(false); fetchProducts(); }
+  };
+
+  const handleEditProduct = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const fd = new FormData(e.currentTarget);
+    const data = Object.fromEntries(fd.entries());
+    const file = (e.currentTarget.elements.namedItem('file') as HTMLInputElement)?.files?.[0];
+    if (file) { const url = await handleUpload(file); if (url) (data as any).image_url = url; }
+    
+    const selCouriers = couriers.filter(c => fd.get(`courier_id_${c.id}`) === 'on').map(c => c.name);
+    (data as any).available_couriers = JSON.stringify(selCouriers);
+    (data as any).allow_home_delivery = fd.get("allow_home_delivery") === "on";
+    (data as any).allow_point_delivery = fd.get("allow_point_delivery") === "on";
+    (data as any).is_preorder = fd.get("is_preorder") === "on";
+    (data as any).id = editingProduct.id;
+    
+    const res = await fetch("/api/admin/products", { method: "PUT", body: JSON.stringify(data) });
+    if (res.ok) { setIsEditModalOpen(false); fetchProducts(); }
+  };
+
+  const saveShippingConfig = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const fd = new FormData(e.currentTarget);
+    const data = Object.fromEntries(fd.entries());
+    const method = editingShippingConfig ? "PUT" : "POST";
+    if (editingShippingConfig) (data as any).id = editingShippingConfig.id;
+    const res = await fetch("/api/admin/shipping-configs", { method, body: JSON.stringify(data) });
+    if (res.ok) { setIsShippingModalOpen(false); fetchShippingConfigs(); }
+  };
+
+  const handleEditReview = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const fd = new FormData(e.currentTarget);
+    const data = Object.fromEntries(fd.entries());
+    (data as any).id = editingReview.id;
+    const file = (e.currentTarget.elements.namedItem('file') as HTMLInputElement)?.files?.[0];
+    if (file) { const url = await handleUpload(file); if (url) (data as any).image_url = url; }
+    const res = await fetch("/api/admin/reviews", { method: "PUT", body: JSON.stringify(data) });
+    if (res.ok) { setIsReviewModalOpen(false); fetchReviews(); }
+  };
+
+  const toggleCourier = async (id: number, active: boolean) => {
+    await fetch("/api/admin/couriers", { method: "PUT", body: JSON.stringify({ id, is_active: active }) }); fetchCouriers();
+  };
+
+  const toggleReview = async (id: number, visible: boolean) => {
+    await fetch("/api/admin/reviews", { method: "PUT", body: JSON.stringify({ id, is_visible: visible }) }); fetchReviews();
+  };
+
+  const deleteReview = async (id: number) => { if (confirm("Delete?")) { await fetch(`/api/admin/reviews?id=${id}`, { method: "DELETE" }); fetchReviews(); } };
+  
+  const deleteProduct = async (id: number) => { if (confirm("Delete?")) { await fetch(`/api/admin/products?id=${id}`, { method: "DELETE" }); fetchProducts(); } };
+
+  const saveSetting = async (key: string, value: string) => {
+    await fetch("/api/admin/settings", { method: "POST", body: JSON.stringify({ key, value }) });
+  };
+
+  if (loading) return <div className="min-h-screen flex items-center justify-center bg-stone-50"><div className="animate-spin w-12 h-12 border-4 border-primary border-t-transparent rounded-full"></div></div>;
 
   return (
-    <div className="min-h-screen bg-[#f8faf9] flex">
-      {/* Sidebar Navigation */}
-      <aside className="w-64 bg-primary text-white flex flex-col fixed h-full z-40 transition-all duration-300">
-        <div className="p-8">
-          <Link href="/" className="flex items-center gap-3 group">
-            <img src="/logo.png" alt="Logo" className="w-10 h-10 object-contain" />
-            <div className="flex flex-col">
-              <span className="text-sm font-black tracking-widest text-white uppercase">TK Solution</span>
-              <span className="text-[7px] font-bold text-stone-500 uppercase tracking-[0.2em] mt-1">Make Your Life Easier</span>
-            </div>
-          </Link>
-        </div>
-
-        <nav className="flex-1 px-4 space-y-2">
-          {[
-            { id: 'overview', icon: 'dashboard', label: 'Overview' },
-            { id: 'orders', icon: 'shopping_cart', label: 'Orders' },
-            { id: 'products', icon: 'inventory_2', label: 'Products' },
-            { id: 'reviews', icon: 'rate_review', label: 'Reviews' },
-            { id: 'couriers', icon: 'local_shipping', label: 'Couriers' },
-            { id: 'settings', icon: 'settings', label: 'Site Settings' },
-            { id: 'reports', icon: 'analytics', label: 'Reports' },
-          ].map((item) => (
-            <button
-              key={item.id}
-              onClick={() => setActiveTab(item.id)}
-              className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${activeTab === item.id ? 'bg-white/10 text-accent' : 'text-white/60 hover:bg-white/5 hover:text-white'}`}
-            >
-              <span className="material-symbols-outlined text-xl">{item.icon}</span>
-              {item.label}
-            </button>
-          ))}
-        </nav>
-
-        <div className="p-8 border-t border-white/5">
-          <button 
-            onClick={handleLogout}
-            className="w-full flex items-center gap-4 text-red-300 hover:text-red-400 text-[10px] font-bold uppercase tracking-widest transition-colors"
-          >
-            <span className="material-symbols-outlined text-xl">logout</span>
-            Logout
-          </button>
-        </div>
-      </aside>
-
-      {/* Main Content Area */}
+    <div className="min-h-screen bg-stone-50 flex">
+      <Sidebar activeTab={activeTab} setActiveTab={(t:string) => router.push(`/dashboard?tab=${t}`, {scroll:false})} handleLogout={async () => { await fetch("/api/auth/logout", {method:"POST"}); router.push("/"); }} />
       <main className="flex-1 ml-64 p-12">
-        <header className="flex justify-between items-center mb-12">
-          <div>
-            <h1 className="text-3xl font-display font-bold text-primary tracking-tighter">
-              {activeTab === 'overview' && "Administrator Overview"}
-              {activeTab === 'orders' && "Order Management"}
-              {activeTab === 'products' && "Inventory Control"}
-              {activeTab === 'reviews' && "Customer Diaries"}
-              {activeTab === 'couriers' && "Logistics & Shipping"}
-              {activeTab === 'settings' && "Global Site Settings"}
-              {activeTab === 'reports' && "Analytical Reports"}
-            </h1>
-            <p className="text-stone-400 font-bold uppercase tracking-widest text-[9px] mt-2">
-              System Governance • {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-            </p>
-          </div>
-          <div className="flex items-center gap-4 bg-white p-2 pr-6 rounded-2xl border border-stone-100 shadow-sm">
-             <div className="w-10 h-10 rounded-xl bg-stone-50 flex items-center justify-center text-primary border border-stone-100">
-               <span className="material-symbols-outlined">person_pin</span>
-             </div>
-             <div>
-               <p className="text-[10px] font-black text-primary uppercase tracking-tight">{user?.full_name || 'System Root'}</p>
-               <p className="text-[7px] text-stone-400 font-bold uppercase tracking-widest">Master Admin Access</p>
-             </div>
-          </div>
-        </header>
+        <AdminHeader activeTab={activeTab} user={user} />
+        
+        {activeTab === 'overview' && <OverviewTab stats={dashboardStats} announcements={announcements} />}
+        {activeTab === 'orders' && <OrdersTab orders={orders} loading={ordersLoading} checkFraud={async (m:string) => { 
+          setFraudLoading(p=>({...p,[m]:true})); 
+          const r = await fetch(`/api/admin/fraud?mobile=${m}`); 
+          if(r.ok) {
+            const data = await r.json();
+            setFraudResults(p=>({...p,[m]:data}));
+          }
+          setFraudLoading(p=>({...p,[m]:false})); 
+        }} fraudResults={fraudResults} fraudLoading={fraudLoading} setBookingOrder={setBookingOrder} setIsBookingModalOpen={setIsBookingModalOpen} />}
+        {activeTab === 'products' && <ProductsTab products={products} loading={productsLoading} setIsAddModalOpen={setIsAddModalOpen} setEditingProduct={setEditingProduct} setIsEditModalOpen={setIsEditModalOpen} deleteProduct={deleteProduct} units={units} fetchUnits={fetchUnits} lots={lots} fetchLots={fetchLots} categories={categories} />}
+        {activeTab === 'reviews' && <ReviewsTab reviews={reviews} toggleReview={toggleReview} deleteReview={deleteReview} setEditingReview={setEditingReview} setIsReviewModalOpen={setIsReviewModalOpen} />}
+        {activeTab === 'couriers' && <CouriersTab couriers={couriers} toggleCourier={toggleCourier} configureCourier={(c:any)=>{setEditingCourier(c); setIsCourierApiModalOpen(true);}} shippingConfigs={shippingConfigs} setEditingShippingConfig={setEditingShippingConfig} setIsShippingModalOpen={setIsShippingModalOpen} />}
+        {activeTab === 'settings' && <SettingsTab settings={settings} saveSetting={saveSetting} />}
 
-        {activeTab === 'overview' && (
-          <div className="space-y-12 animate-fade-in">
-            {/* System Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-              {[
-                { label: 'Total Sales', val: `৳ ${dashboardStats?.totalSales || 0}`, icon: 'payments', color: 'text-emerald-500' },
-                { label: 'Active Orders', val: dashboardStats?.activeOrders || 0, icon: 'shopping_bag', color: 'text-amber-500' },
-                { label: 'Total Customers', val: dashboardStats?.totalCustomers || 0, icon: 'group', color: 'text-blue-500' },
-                { label: 'Avg Rating', val: Number(dashboardStats?.avgRating || 0).toFixed(1), icon: 'star', color: 'text-accent' },
-              ].map((stat, i) => (
-                <div key={i} className="bg-white p-6 rounded-2xl border border-stone-100 shadow-sm space-y-2">
-                  <span className={`material-symbols-outlined ${stat.color} text-2xl`}>{stat.icon}</span>
-                  <p className="text-[9px] font-bold text-stone-400 uppercase tracking-widest">{stat.label}</p>
-                  <p className="text-2xl font-display font-bold text-primary">{stat.val}</p>
-                </div>
-              ))}
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              <div className="lg:col-span-2 bg-white p-8 rounded-2xl border border-stone-100 shadow-sm">
-                <h2 className="text-xs font-bold text-primary uppercase tracking-[0.2em] mb-6">Recent Activity</h2>
-                <div className="py-20 text-center space-y-4">
-                  <div className="w-16 h-16 bg-stone-50 rounded-full flex items-center justify-center mx-auto">
-                    <span className="material-symbols-outlined text-stone-200 text-3xl">inbox</span>
-                  </div>
-                  <p className="text-stone-300 italic text-sm">Waiting for the harvest season to begin...</p>
-                </div>
-              </div>
-
-              <div className="bg-white p-8 rounded-2xl border border-stone-100 shadow-sm">
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-xs font-bold text-primary uppercase tracking-[0.2em]">Site Updates</h2>
-                  <button className="text-[9px] font-bold text-accent bg-primary px-3 py-1.5 rounded-lg">+ NEW</button>
-                </div>
-                <div className="space-y-4">
-                  {announcements.map((msg: any) => (
-                    <div key={msg.id} className="p-4 bg-stone-50 rounded-xl border border-stone-100">
-                      <p className="text-[10px] font-medium text-stone-500 leading-tight mb-2">{msg.message}</p>
-                      <div className="flex justify-between items-center">
-                        <span className={`text-[7px] font-bold text-white ${msg.is_active ? 'bg-emerald-500' : 'bg-stone-300'} px-2 py-0.5 rounded-full uppercase tracking-widest`}>
-                          {msg.is_active ? 'Active' : 'Inactive'}
-                        </span>
-                        <button className="text-[7px] font-bold text-red-300 uppercase tracking-widest">Remove</button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'orders' && (
-          <div className="bg-white rounded-2xl border border-stone-100 shadow-sm overflow-hidden animate-fade-in">
-            <div className="p-8 border-b border-stone-50 flex justify-between items-center">
-              <h2 className="text-xs font-bold text-primary uppercase tracking-[0.2em]">All Customer Orders</h2>
-              <div className="flex gap-2">
-                <input type="text" placeholder="Search orders..." className="px-4 py-2 bg-stone-50 border border-stone-100 rounded-lg text-[10px] outline-none focus:border-primary font-bold" />
-                <button onClick={fetchOrders} className="material-symbols-outlined text-stone-400 hover:text-primary transition-colors">refresh</button>
-              </div>
-            </div>
-            
-            <div className="overflow-x-auto">
-              <table className="w-full text-left">
-                <thead className="bg-stone-50 border-b border-stone-100">
-                  <tr>
-                    <th className="px-8 py-4 text-[9px] font-bold text-stone-400 uppercase tracking-widest">ID</th>
-                    <th className="px-8 py-4 text-[9px] font-bold text-stone-400 uppercase tracking-widest">Customer</th>
-                    <th className="px-8 py-4 text-[9px] font-bold text-stone-400 uppercase tracking-widest">Items</th>
-                    <th className="px-8 py-4 text-[9px] font-bold text-stone-400 uppercase tracking-widest">Total</th>
-                    <th className="px-8 py-4 text-[9px] font-bold text-stone-400 uppercase tracking-widest">Payment</th>
-                    <th className="px-8 py-4 text-[9px] font-bold text-stone-400 uppercase tracking-widest">Status</th>
-                    <th className="px-8 py-4 text-[9px] font-bold text-stone-400 uppercase tracking-widest text-right">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-stone-50">
-                  {ordersLoading ? (
-                    <tr><td colSpan={7} className="text-center py-20 text-stone-300 italic">Fetching secure order data...</td></tr>
-                  ) : orders.length === 0 ? (
-                    <tr><td colSpan={7} className="text-center py-20 text-stone-300 italic">No orders found in the system.</td></tr>
-                  ) : orders.map((order: any) => (
-                    <tr key={order.id} className="hover:bg-stone-50/50 transition-colors">
-                      <td className="px-8 py-6 text-[10px] font-bold text-primary">#{order.id}</td>
-                      <td className="px-8 py-6">
-                        <p className="text-[10px] font-bold text-primary">{order.users?.mobile_number}</p>
-                        <p className="text-[8px] text-stone-400 uppercase font-bold tracking-widest">{order.addresses?.districts?.name}</p>
-                        
-                        {/* Fraud Check Result */}
-                        <div className="mt-2 flex flex-col gap-1">
-                          {fraudResults[order.users?.mobile_number] ? (
-                            <div className="flex flex-wrap gap-2 items-center">
-                              <span className={`px-2 py-0.5 rounded text-[7px] font-bold uppercase tracking-widest ${
-                                (fraudResults[order.users?.mobile_number].success / (fraudResults[order.users?.mobile_number].total || 1)) > 0.8 ? 'bg-emerald-100 text-emerald-600' : 
-                                (fraudResults[order.users?.mobile_number].success / (fraudResults[order.users?.mobile_number].total || 1)) > 0.6 ? 'bg-amber-100 text-amber-600' : 'bg-red-100 text-red-600'
-                              }`}>
-                                {Math.round((fraudResults[order.users?.mobile_number].success / (fraudResults[order.users?.mobile_number].total || 1)) * 100)}% Success
-                              </span>
-                              <span className="text-[7px] text-stone-400 font-bold">
-                                {fraudResults[order.users?.mobile_number].success}/{fraudResults[order.users?.mobile_number].total} Deliv.
-                              </span>
-                              {fraudResults[order.users?.mobile_number].frauds?.length > 0 && (
-                                <span className="bg-red-500 text-white px-1.5 py-0.5 rounded text-[6px] font-black uppercase animate-pulse">
-                                  {fraudResults[order.users?.mobile_number].frauds.length} Reported Frauds
-                                </span>
-                              )}
-                            </div>
-                          ) : (
-                            <button 
-                              onClick={() => checkFraud(order.users?.mobile_number)}
-                              disabled={fraudLoading[order.users?.mobile_number]}
-                              className="text-[7px] font-bold text-stone-400 hover:text-primary uppercase tracking-widest flex items-center gap-1 transition-all"
-                            >
-                              {fraudLoading[order.users?.mobile_number] ? 'Checking...' : (
-                                <>
-                                  <span className="material-symbols-outlined text-[10px]">verified_user</span>
-                                  Check Fraud History
-                                </>
-                              )}
-                            </button>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-8 py-6 text-[10px] font-medium text-stone-500">
-                        {order.order_items.length} Product(s)
-                      </td>
-                      <td className="px-8 py-6 text-[10px] font-bold text-primary">৳{Number(order.grand_total).toLocaleString()}</td>
-                      <td className="px-8 py-6">
-                        <span className={`px-2 py-1 rounded-full text-[8px] font-bold uppercase tracking-widest ${order.payment_status === 'paid' ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'}`}>
-                          {order.payment_status}
-                        </span>
-                      </td>
-                      <td className="px-8 py-6">
-                        <span className={`px-2 py-1 rounded-full text-[8px] font-bold uppercase tracking-widest ${order.order_status === 'delivered' ? 'bg-blue-100 text-blue-600' : 'bg-amber-100 text-amber-600'}`}>
-                          {order.order_status}
-                        </span>
-                      </td>
-                      <td className="px-8 py-6 text-right flex justify-end gap-3">
-                        <button 
-                          onClick={async () => {
-                            if (!confirm('Are you sure you want to book this order with Steadfast?')) return;
-                            const res = await fetch("/api/courier/steadfast", {
-                              method: "POST",
-                              body: JSON.stringify({ order_id: order.id })
-                            });
-                            if (res.ok) {
-                              alert('Successfully booked with Steadfast!');
-                              fetchOrders();
-                            } else {
-                              alert('Booking failed. Please check credentials in settings.');
-                            }
-                          }}
-                          className="text-[9px] font-bold text-emerald-600 hover:text-emerald-700 uppercase tracking-widest border border-emerald-100 px-3 py-1 rounded-lg"
-                        >
-                          Book Steadfast
-                        </button>
-                        <button className="text-[9px] font-bold text-primary hover:text-accent uppercase tracking-widest underline underline-offset-4">View Detail</button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'products' && (
-          <div className="space-y-8 animate-fade-in pb-20">
-            {/* Quick Actions Bar - Premium Button Row */}
-            <div className="bg-white p-8 rounded-3xl border border-stone-100 shadow-sm flex flex-col md:flex-row justify-between items-center gap-6">
-               <div className="flex flex-col gap-1">
-                 <h2 className="text-sm font-black text-primary uppercase tracking-[0.2em]">Product Inventory</h2>
-                 <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest">{products.length} Items cataloged</p>
-               </div>
-               <div className="flex flex-wrap justify-center gap-3">
-                 <button 
-                   onClick={() => setIsCategoryModalOpen(true)}
-                   className="px-6 py-3 bg-stone-50 text-stone-500 text-[9px] font-black uppercase tracking-widest rounded-xl border border-stone-100 hover:border-primary hover:text-primary transition-all flex items-center gap-2"
-                 >
-                   <span className="material-symbols-outlined text-sm">category</span>
-                   Category Management (ক্যাটাগরি ম্যানেজমেন্ট)
-                 </button>
-                 <button 
-                   onClick={() => setIsUnitModalOpen(true)}
-                   className="px-6 py-3 bg-stone-50 text-stone-500 text-[9px] font-black uppercase tracking-widest rounded-xl border border-stone-100 hover:border-primary hover:text-primary transition-all flex items-center gap-2"
-                 >
-                   <span className="material-symbols-outlined text-sm">straighten</span>
-                   Unit Management (ইউনিট ম্যানেজমেন্ট)
-                 </button>
-                 <button 
-                   onClick={() => setIsLotModalOpen(true)}
-                   className="px-6 py-3 bg-stone-50 text-stone-500 text-[9px] font-black uppercase tracking-widest rounded-xl border border-stone-100 hover:border-primary hover:text-primary transition-all flex items-center gap-2"
-                 >
-                   <span className="material-symbols-outlined text-sm">package_2</span>
-                   Lot Management (লট ম্যনাজেমেন্ট)
-                 </button>
-                 <button 
-                   onClick={() => setIsAddModalOpen(true)} 
-                   className="px-8 py-3 bg-primary text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-xl shadow-primary/20 hover:translate-y-[-2px] hover:bg-primary-light transition-all flex items-center gap-2"
-                 >
-                   <span className="material-symbols-outlined text-sm">add_circle</span>
-                   Add New Product (এ্যাড নিউ প্রডাক্ট)
-                 </button>
-               </div>
-            </div>
-
-            <div className="bg-white rounded-[2rem] border border-stone-100 shadow-sm overflow-hidden">
-               {/* Search & Filter Header */}
-               <div className="p-8 bg-stone-50/50 border-b border-stone-100 flex flex-col md:flex-row gap-6 justify-between items-center">
-                  <div className="relative w-full md:w-96">
-                    <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 text-xl font-light">search</span>
-                    <input 
-                      type="text" 
-                      placeholder="Search catalog by name, SKU..." 
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full pl-12 pr-4 py-4 bg-white border border-stone-100 rounded-2xl text-[11px] outline-none focus:border-primary transition-all font-bold placeholder:text-stone-300" 
-                    />
-                  </div>
-                  <div className="flex gap-4 w-full md:w-auto">
-                    <select 
-                      value={categoryFilter}
-                      onChange={(e) => setCategoryFilter(e.target.value)}
-                      className="flex-1 md:w-56 px-6 py-4 bg-white border border-stone-100 rounded-2xl text-[9px] font-black uppercase tracking-widest outline-none focus:border-primary cursor-pointer transition-all appearance-none"
-                    >
-                      <option>All Categories</option>
-                      {categories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
-                    </select>
-                    <button onClick={fetchProducts} className="p-4 bg-white border border-stone-100 rounded-2xl text-stone-400 hover:text-primary transition-all">
-                      <span className="material-symbols-outlined">refresh</span>
-                    </button>
-                  </div>
-               </div>
-
-               <div className="overflow-x-auto">
-                <table className="w-full border-collapse">
-                  <thead>
-                    <tr className="bg-stone-50/80">
-                      <th className="px-10 py-6 text-[9px] font-black text-stone-400 uppercase tracking-widest text-left">Harvest Item</th>
-                      <th className="px-10 py-6 text-[9px] font-black text-stone-400 uppercase tracking-widest text-left">Classification</th>
-                      <th className="px-10 py-6 text-[9px] font-black text-stone-400 uppercase tracking-widest text-center">Unit Valuation</th>
-                      <th className="px-10 py-6 text-[9px] font-black text-stone-400 uppercase tracking-widest text-center">Lot Config</th>
-                      <th className="px-10 py-6 text-[9px] font-black text-stone-400 uppercase tracking-widest text-center">Logistics</th>
-                      <th className="px-10 py-6 text-[9px] font-black text-stone-400 uppercase tracking-widest text-center">Stock Level</th>
-                      <th className="px-10 py-6 text-[9px] font-black text-stone-400 uppercase tracking-widest text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-stone-50">
-                    {productsLoading ? (
-                      <tr><td colSpan={7} className="text-center py-32 text-stone-300 italic animate-pulse">Synchronizing inventory logs...</td></tr>
-                    ) : productsError ? (
-                      <tr>
-                        <td colSpan={7} className="text-center py-32">
-                           <div className="flex flex-col items-center gap-4 text-red-300">
-                             <span className="material-symbols-outlined text-5xl font-light">error</span>
-                             <p className="italic text-sm">{productsError}</p>
-                             <button onClick={fetchProducts} className="text-xs font-black uppercase tracking-widest underline">Retry</button>
-                           </div>
-                        </td>
-                      </tr>
-                    ) : filteredProducts.length === 0 ? (
-                      <tr>
-                        <td colSpan={7} className="text-center py-32">
-                           <div className="flex flex-col items-center gap-4 text-stone-300">
-                             <span className="material-symbols-outlined text-5xl font-light">inventory_2</span>
-                             <p className="italic text-sm">No produce matches your current filters.</p>
-                             <div className="text-[10px] text-stone-200 mt-2">
-                               Raw Products: {products.length} | Category Filter: {categoryFilter}
-                             </div>
-                           </div>
-                        </td>
-                      </tr>
-                    ) : filteredProducts.map((product: any) => (
-                      <tr key={product.id} className="hover:bg-stone-50/50 transition-colors group">
-                        <td className="px-10 py-6">
-                           <div className="flex items-center gap-5">
-                             <div className="w-14 h-14 rounded-2xl bg-stone-100 overflow-hidden border border-stone-100 flex-shrink-0 group-hover:scale-105 transition-transform">
-                               <img src={product.image_url || "/placeholder.jpg"} className="w-full h-full object-cover" alt="" />
-                             </div>
-                             <div>
-                               <p className="text-[12px] font-black text-primary leading-tight uppercase tracking-tight">{product.name}</p>
-                               <p className="text-[7px] text-stone-400 font-bold uppercase tracking-[0.2em] mt-1.5 flex items-center gap-1">
-                                 <span className="w-1 h-1 bg-stone-200 rounded-full"></span>
-                                 UID: #PRD-{product.id}
-                               </p>
-                             </div>
-                           </div>
-                        </td>
-                        <td className="px-10 py-6">
-                           <span className="px-3 py-1.5 bg-stone-50 text-stone-500 text-[8px] font-black uppercase tracking-[0.15em] rounded-lg border border-stone-100 group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-all">
-                             {product.categories?.name || product.category || 'Unassigned'}
-                           </span>
-                        </td>
-                        <td className="px-10 py-6 text-center">
-                           <p className="text-[11px] font-black text-primary">৳{Number(product.price_per_unit).toLocaleString()}</p>
-                           <p className="text-[7px] text-stone-400 uppercase font-black tracking-widest mt-1">per {product.units?.name || 'Unit'}</p>
-                        </td>
-                        <td className="px-10 py-6 text-center">
-                           <div className="inline-flex flex-col gap-1 items-center">
-                             <p className="text-[11px] font-black text-stone-600">{product.lot_size} {product.units?.name || 'Unit'}</p>
-                             <span className="text-[7px] font-bold text-accent uppercase tracking-widest bg-accent/5 px-2 py-0.5 rounded-full border border-accent/10">৳{((Number(product.price_per_unit) * Number(product.lot_size)) + Number(product.packaging_charge || 0)).toLocaleString()} Total</span>
-                           </div>
-                        </td>
-                        <td className="px-10 py-6 text-center">
-                           <div className="flex flex-col gap-1">
-                             <p className="text-[10px] font-bold text-secondary">৳{Number(product.packaging_charge || 0).toLocaleString()}</p>
-                             <p className="text-[6px] text-stone-400 uppercase font-black tracking-widest">Pkg Charge</p>
-                           </div>
-                        </td>
-                        <td className="px-10 py-6 text-center">
-                           <div className="flex flex-col items-center gap-2">
-                             <p className="text-[11px] font-black text-primary">{Number(product.available_stock).toLocaleString()} Units</p>
-                             <span className={`px-2 py-1 rounded-full text-[7px] font-black uppercase tracking-widest border ${product.available_stock > 10 ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-amber-50 text-amber-600 border-amber-100'}`}>
-                                {product.available_stock > 0 ? 'Live in Stock' : 'Out of Stock'}
-                             </span>
-                           </div>
-                        </td>
-                        <td className="px-10 py-6 text-right">
-                           <div className="flex justify-end gap-3">
-                             <button onClick={() => alert(`Editing not implemented yet`)} title="Modify Item" className="w-9 h-9 rounded-xl flex items-center justify-center text-stone-400 hover:text-primary hover:bg-stone-50 border border-transparent hover:border-stone-100 transition-all">
-                               <span className="material-symbols-outlined text-xl">edit_note</span>
-                             </button>
-                             <button 
-                                onClick={async () => {
-                                  if(confirm(`Remove ${product.name} from catalog?`)) {
-                                    await fetch(`/api/admin/products?id=${product.id}`, { method: "DELETE" });
-                                    fetchProducts();
-                                  }
-                                }}
-                                title="Remove Item" className="w-9 h-9 rounded-xl flex items-center justify-center text-stone-400 hover:text-red-500 hover:bg-red-50 border border-transparent hover:border-red-100 transition-all">
-                               <span className="material-symbols-outlined text-xl">delete</span>
-                             </button>
-                           </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            {/* Category Management Modal */}
-            {isCategoryModalOpen && (
-              <div className="fixed inset-0 bg-primary/40 backdrop-blur-md z-[70] flex items-center justify-center p-6 animate-fade-in">
-                <div className="bg-white w-full max-w-xl rounded-[2.5rem] shadow-2xl overflow-hidden animate-scale-in">
-                  <div className="p-10 bg-stone-50 border-b border-stone-100 flex justify-between items-center">
-                    <div>
-                      <h3 className="text-xl font-black text-primary uppercase tracking-widest">Category Governance</h3>
-                      <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest mt-1">Classify your harvest produce</p>
-                    </div>
-                    <button onClick={() => setIsCategoryModalOpen(false)} className="w-10 h-10 rounded-full flex items-center justify-center bg-white text-stone-400 hover:text-red-500 transition-colors shadow-sm">
-                      <span className="material-symbols-outlined">close</span>
-                    </button>
-                  </div>
-                  <div className="p-10 space-y-8">
-                    <form onSubmit={async (e) => {
-                      e.preventDefault();
-                      const formData = new FormData(e.currentTarget);
-                      const data = Object.fromEntries(formData.entries());
-                      const res = await fetch("/api/admin/categories", { method: "POST", body: JSON.stringify(data) });
-                      if (res.ok) { fetchCategories(); (e.target as HTMLFormElement).reset(); }
-                    }} className="flex gap-4 p-6 bg-stone-50 rounded-3xl border border-stone-100">
-                      <div className="flex-1 space-y-4">
-                        <input name="name" required placeholder="Category Title (e.g. Organic Honey)" className="w-full px-5 py-4 bg-white border border-stone-100 rounded-2xl text-[11px] font-bold outline-none focus:border-primary transition-all" />
-                        <input name="slug" required placeholder="Identifier (slug)" className="w-full px-5 py-4 bg-white border border-stone-100 rounded-2xl text-[11px] font-bold outline-none focus:border-primary transition-all" />
-                      </div>
-                      <button type="submit" className="px-8 bg-primary text-white text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-primary-light transition-all">Add</button>
-                    </form>
-                    <div className="max-h-60 overflow-y-auto custom-scrollbar pr-4">
-                       <div className="grid grid-cols-2 gap-3">
-                         {categories.map(cat => (
-                           <div key={cat.id} className="group flex items-center justify-between px-5 py-3 bg-white border border-stone-100 rounded-2xl hover:border-primary transition-all shadow-sm">
-                             <span className="text-[10px] font-black text-stone-500 uppercase tracking-widest">{cat.name}</span>
-                             <button onClick={async () => { if (confirm(`Delete ${cat.name}?`)) { await fetch(`/api/admin/categories?id=${cat.id}`, { method: 'DELETE' }); fetchCategories(); } }} className="opacity-0 group-hover:opacity-100 material-symbols-outlined text-stone-300 hover:text-red-500 transition-all text-lg">delete_forever</button>
-                           </div>
-                         ))}
-                       </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Unit Management Modal */}
-            {isUnitModalOpen && (
-              <div className="fixed inset-0 bg-primary/40 backdrop-blur-md z-[70] flex items-center justify-center p-6 animate-fade-in">
-                <div className="bg-white w-full max-w-xl rounded-[2.5rem] shadow-2xl overflow-hidden animate-scale-in">
-                  <div className="p-10 bg-stone-50 border-b border-stone-100 flex justify-between items-center">
-                    <div>
-                      <h3 className="text-xl font-black text-primary uppercase tracking-widest">Metric Standards</h3>
-                      <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest mt-1">Define measurement units for your catalog</p>
-                    </div>
-                    <button onClick={() => setIsUnitModalOpen(false)} className="w-10 h-10 rounded-full flex items-center justify-center bg-white text-stone-400 hover:text-red-500 transition-colors shadow-sm">
-                      <span className="material-symbols-outlined">close</span>
-                    </button>
-                  </div>
-                  <div className="p-10 space-y-8">
-                    <form onSubmit={async (e) => {
-                      e.preventDefault();
-                      const formData = new FormData(e.currentTarget);
-                      const data = Object.fromEntries(formData.entries());
-                      const res = await fetch("/api/admin/units", { method: "POST", body: JSON.stringify(data) });
-                      if (res.ok) { fetchUnits(); (e.target as HTMLFormElement).reset(); }
-                    }} className="flex gap-4 p-6 bg-stone-50 rounded-3xl border border-stone-100">
-                      <input name="name" required placeholder="Metric Title (e.g. Kilograms)" className="flex-1 px-5 py-4 bg-white border border-stone-100 rounded-2xl text-[11px] font-bold outline-none focus:border-primary transition-all" />
-                      <button type="submit" className="px-8 bg-primary text-white text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-primary-light transition-all">Create</button>
-                    </form>
-                    <div className="max-h-60 overflow-y-auto custom-scrollbar pr-4">
-                       <div className="grid grid-cols-2 gap-3">
-                         {units.map(unit => (
-                           <div key={unit.id} className="group flex items-center justify-between px-5 py-3 bg-white border border-stone-100 rounded-2xl hover:border-primary transition-all shadow-sm">
-                             <span className="text-[10px] font-black text-stone-500 uppercase tracking-widest">{unit.name}</span>
-                             <button onClick={async () => { if (confirm(`Delete ${unit.name}?`)) { await fetch(`/api/admin/units?id=${unit.id}`, { method: 'DELETE' }); fetchUnits(); } }} className="opacity-0 group-hover:opacity-100 material-symbols-outlined text-stone-300 hover:text-red-500 transition-all text-lg">delete_forever</button>
-                           </div>
-                         ))}
-                       </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Lot Management Modal */}
-            {isLotModalOpen && (
-              <div className="fixed inset-0 bg-primary/40 backdrop-blur-md z-[70] flex items-center justify-center p-6 animate-fade-in">
-                <div className="bg-white w-full max-w-2xl rounded-[2.5rem] shadow-2xl overflow-hidden animate-scale-in">
-                  <div className="p-10 bg-stone-50 border-b border-stone-100 flex justify-between items-center">
-                    <div>
-                      <h3 className="text-xl font-black text-primary uppercase tracking-widest">Lot & Packaging Config</h3>
-                      <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest mt-1">Define standard lot sizes for specific categories</p>
-                    </div>
-                    <button onClick={() => setIsLotModalOpen(false)} className="w-10 h-10 rounded-full flex items-center justify-center bg-white text-stone-400 hover:text-red-500 transition-colors shadow-sm">
-                      <span className="material-symbols-outlined">close</span>
-                    </button>
-                  </div>
-                  <div className="p-10 space-y-8">
-                    <form onSubmit={async (e) => {
-                      e.preventDefault();
-                      const formData = new FormData(e.currentTarget);
-                      const data = Object.fromEntries(formData.entries());
-                      const res = await fetch("/api/admin/lots", { method: "POST", body: JSON.stringify(data) });
-                      if (res.ok) { fetchLots(); (e.target as HTMLFormElement).reset(); }
-                    }} className="grid grid-cols-2 gap-4 p-8 bg-stone-50 rounded-3xl border border-stone-100">
-                      <div className="col-span-2">
-                        <label className="block text-[9px] font-black text-stone-400 uppercase tracking-widest mb-2">Category Assignment</label>
-                        <select name="category_id" required className="w-full px-5 py-4 bg-white border border-stone-100 rounded-2xl text-[11px] font-bold outline-none focus:border-primary transition-all">
-                          {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                        </select>
-                      </div>
-                      <div className="col-span-2">
-                        <label className="block text-[9px] font-black text-stone-400 uppercase tracking-widest mb-2">Lot Name (e.g. 12KG Premium)</label>
-                        <input name="name" required placeholder="Lot Template Name" className="w-full px-5 py-4 bg-white border border-stone-100 rounded-2xl text-[11px] font-bold outline-none focus:border-primary transition-all" />
-                      </div>
-                      <div>
-                        <label className="block text-[9px] font-black text-stone-400 uppercase tracking-widest mb-2">Size (Units)</label>
-                        <input name="size" type="number" required placeholder="12" className="w-full px-5 py-4 bg-white border border-stone-100 rounded-2xl text-[11px] font-bold outline-none focus:border-primary transition-all" />
-                      </div>
-                      <div>
-                        <label className="block text-[9px] font-black text-stone-400 uppercase tracking-widest mb-2">Packaging Charge (৳)</label>
-                        <input name="packaging_charge" type="number" required placeholder="150" className="w-full px-5 py-4 bg-white border border-stone-100 rounded-2xl text-[11px] font-bold outline-none focus:border-primary transition-all" />
-                      </div>
-                      <button type="submit" className="col-span-2 py-4 bg-primary text-white text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-primary-light transition-all mt-2">Create Lot Template</button>
-                    </form>
-                    <div className="max-h-60 overflow-y-auto custom-scrollbar pr-2">
-                       <div className="grid grid-cols-1 gap-3">
-                         {lots.map(lot => (
-                           <div key={lot.id} className="group flex items-center justify-between px-6 py-4 bg-white border border-stone-100 rounded-2xl hover:border-primary transition-all shadow-sm">
-                             <div className="flex flex-col">
-                               <span className="text-[10px] font-black text-primary uppercase tracking-widest">{lot.name}</span>
-                               <span className="text-[8px] text-stone-400 font-bold uppercase tracking-widest">{lot.categories?.name} • {lot.size} Unit • ৳{lot.packaging_charge} Pkg</span>
-                             </div>
-                             <button onClick={async () => { if (confirm(`Delete ${lot.name}?`)) { await fetch(`/api/admin/lots?id=${lot.id}`, { method: 'DELETE' }); fetchLots(); } }} className="opacity-0 group-hover:opacity-100 material-symbols-outlined text-stone-300 hover:text-red-500 transition-all text-xl">delete_sweep</button>
-                           </div>
-                         ))}
-                       </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-            {isAddModalOpen && (
-              <div className="fixed inset-0 bg-primary/40 backdrop-blur-md z-[60] flex items-center justify-center p-6 animate-fade-in overflow-y-auto">
-                <div className="bg-white w-full max-w-3xl rounded-[3rem] shadow-2xl overflow-hidden animate-scale-in my-8">
-                  <div className="p-10 bg-stone-50 border-b border-stone-100 flex justify-between items-center">
-                    <div>
-                      <h3 className="text-2xl font-black text-primary uppercase tracking-widest">Add New Product (এ্যাড নিউ প্রডাক্ট)</h3>
-                      <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest mt-1.5">Configure premium produce with logistics & payment policies</p>
-                    </div>
-                    <button onClick={() => setIsAddModalOpen(false)} className="w-12 h-12 rounded-full flex items-center justify-center bg-white text-stone-400 hover:text-red-500 transition-colors shadow-sm">
-                      <span className="material-symbols-outlined">close</span>
-                    </button>
-                  </div>
-                  <form onSubmit={handleAddProduct} className="p-10 space-y-10 max-h-[75vh] overflow-y-auto custom-scrollbar">
-                    {/* Basic Information */}
-                    <div className="space-y-6">
-                      <div className="flex items-center gap-3">
-                        <span className="w-1 h-4 bg-primary rounded-full"></span>
-                        <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Basic Information</h4>
-                      </div>
-                      <div className="grid grid-cols-2 gap-6">
-                        <div className="col-span-2">
-                          <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Product Title</label>
-                          <input name="name" required type="text" placeholder="e.g. Premium Rajshahi Himsagar" className="w-full px-4 py-3 bg-stone-50 border border-stone-100 rounded-xl text-xs outline-none focus:border-primary font-bold" />
-                        </div>
-                        <div className="col-span-2">
-                          <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Short Description</label>
-                          <input name="short_description" type="text" placeholder="Brief catchphrase for the product..." className="w-full px-4 py-3 bg-stone-50 border border-stone-100 rounded-xl text-xs outline-none focus:border-primary font-bold" />
-                        </div>
-                        <div className="col-span-2">
-                          <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Long Description</label>
-                          <textarea name="detailed_description" rows={4} placeholder="Tell the story of this harvest..." className="w-full px-4 py-3 bg-stone-50 border border-stone-100 rounded-xl text-xs outline-none focus:border-primary font-bold resize-none"></textarea>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Pricing & Inventory */}
-                    <div className="space-y-6">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <span className="w-1 h-4 bg-amber-500 rounded-full"></span>
-                          <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Pricing & Inventory</h4>
-                        </div>
-                        {/* Lot Template Selector */}
-                        <div className="flex items-center gap-2">
-                           <span className="text-[8px] font-black text-stone-400 uppercase tracking-widest">Use Template:</span>
-                           <select 
-                              className="px-3 py-1.5 bg-stone-50 border border-stone-100 rounded-lg text-[9px] font-bold outline-none focus:border-primary"
-                              onChange={(e) => {
-                                const selectedLot = lots.find(l => l.id === Number(e.target.value));
-                                if (selectedLot) {
-                                  const form = e.target.closest('form');
-                                  if (form) {
-                                    (form.elements.namedItem('lot_size') as HTMLInputElement).value = selectedLot.size;
-                                    (form.elements.namedItem('packaging_charge') as HTMLInputElement).value = selectedLot.packaging_charge;
-                                    (form.elements.namedItem('category_id') as HTMLSelectElement).value = selectedLot.category_id;
-                                  }
-                                }
-                              }}
-                           >
-                              <option value="">Manual Entry</option>
-                              {lots.map(l => <option key={l.id} value={l.id}>{l.name} ({l.categories?.name})</option>)}
-                           </select>
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-3 gap-6">
-                        <div>
-                          <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Unit Type</label>
-                          <select name="unit_id" className="w-full px-4 py-3 bg-stone-50 border border-stone-100 rounded-xl text-xs outline-none focus:border-primary font-bold">
-                            {units.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
-                          </select>
-                        </div>
-                        <div>
-                          <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Price per Unit (৳)</label>
-                          <input name="price_per_unit" required type="number" placeholder="1200" className="w-full px-4 py-3 bg-stone-50 border border-stone-100 rounded-xl text-xs outline-none focus:border-primary font-bold" />
-                        </div>
-                        <div>
-                          <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Lot Size (Min Order)</label>
-                          <input name="lot_size" required type="number" defaultValue={1} className="w-full px-4 py-3 bg-stone-50 border border-stone-100 rounded-xl text-xs outline-none focus:border-primary font-bold" />
-                        </div>
-                        <div>
-                          <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Initial Stock</label>
-                          <input name="available_stock" required type="number" placeholder="500" className="w-full px-4 py-3 bg-stone-50 border border-stone-100 rounded-xl text-xs outline-none focus:border-primary font-bold" />
-                        </div>
-                        <div>
-                          <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Packaging Charge (৳)</label>
-                          <input name="packaging_charge" type="number" defaultValue={0} placeholder="e.g. 150" className="w-full px-4 py-3 bg-stone-50 border border-stone-100 rounded-xl text-xs outline-none focus:border-primary font-bold" />
-                        </div>
-                        <div>
-                          <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Category</label>
-                          <select name="category_id" className="w-full px-4 py-3 bg-stone-50 border border-stone-100 rounded-xl text-xs outline-none focus:border-primary font-bold">
-                            {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Logistics & Delivery */}
-                    <div className="space-y-6">
-                      <div className="flex items-center gap-3">
-                        <span className="w-1 h-4 bg-emerald-500 rounded-full"></span>
-                        <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Logistics & Delivery</h4>
-                      </div>
-                      <div className="grid grid-cols-2 gap-6">
-                        <div className="flex items-center justify-between p-4 bg-stone-50 rounded-xl border border-stone-100">
-                          <span className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">Home Delivery</span>
-                          <input name="allow_home_delivery" type="checkbox" defaultChecked className="w-4 h-4 accent-primary" />
-                        </div>
-                        <div className="flex items-center justify-between p-4 bg-stone-50 rounded-xl border border-stone-100">
-                          <span className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">Point Pickup</span>
-                          <input name="allow_point_delivery" type="checkbox" defaultChecked className="w-4 h-4 accent-primary" />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Available Couriers */}
-                    <div className="space-y-6">
-                      <div className="flex items-center gap-3">
-                        <span className="w-1 h-4 bg-blue-500 rounded-full"></span>
-                        <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Available Couriers</h4>
-                      </div>
-                      <div className="grid grid-cols-3 gap-4">
-                        {['Steadfast', 'Sundarban', 'Pathao', 'RedX', 'Paperfly', 'SA Paribahan', 'Korotoa', 'Janani', 'Metropolitan', 'eCourier', 'Delivery Tiger'].map(courier => (
-                          <div key={courier} className="flex items-center justify-between p-3 bg-stone-50 rounded-xl border border-stone-100">
-                            <span className="text-[9px] font-bold text-stone-400 uppercase tracking-widest">{courier}</span>
-                            <input name={`courier_${courier.toLowerCase().replace(' ', '_')}`} type="checkbox" className="w-3 h-3 accent-primary" />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Payment Policies */}
-                    <div className="space-y-6">
-                      <div className="flex items-center gap-3">
-                        <span className="w-1 h-4 bg-red-500 rounded-full"></span>
-                        <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Payment Policies</h4>
-                      </div>
-                      <div className="grid grid-cols-2 gap-6">
-                        <div>
-                          <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Primary Policy</label>
-                          <select name="payment_policy" className="w-full px-4 py-3 bg-stone-50 border border-stone-100 rounded-xl text-xs outline-none focus:border-primary font-bold">
-                            <option value="cod">Cash On Delivery</option>
-                            <option value="partial_advance">Partial Advance Payment</option>
-                            <option value="full_advance">Full Advance Payment</option>
-                          </select>
-                        </div>
-                        <div>
-                          <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Partial Amount (৳ / %)</label>
-                          <input name="partial_advance_val" type="number" placeholder="e.g. 500" className="w-full px-4 py-3 bg-stone-50 border border-stone-100 rounded-xl text-xs outline-none focus:border-primary font-bold" />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Media Assets */}
-                    <div className="space-y-6">
-                      <div className="flex items-center gap-3">
-                        <span className="w-1 h-4 bg-purple-500 rounded-full"></span>
-                        <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Media Assets</h4>
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-4">
-                          <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-widest">Main Display Image</label>
-                          <div className="flex gap-2">
-                             <input name="image_url" required type="text" placeholder="https://..." className="flex-1 px-4 py-3 bg-stone-50 border border-stone-100 rounded-xl text-xs outline-none focus:border-primary font-bold" />
-                             <label className="cursor-pointer bg-primary text-white p-3 rounded-xl flex items-center justify-center">
-                               <span className="material-symbols-outlined text-sm">upload</span>
-                               <input type="file" className="hidden" onChange={async (e) => {
-                                 const file = e.target.files?.[0];
-                                 if (file) {
-                                   const formData = new FormData();
-                                   formData.append('file', file);
-                                   const res = await fetch('/api/admin/upload', { method: 'POST', body: formData });
-                                   const data = await res.json();
-                                   if (data.success) {
-                                     (document.getElementsByName('image_url')[0] as HTMLInputElement).value = data.url;
-                                   }
-                                 }
-                               }} />
-                             </label>
-                          </div>
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                            {[1, 2, 3, 4].map(i => (
-                              <div key={i} className="space-y-2">
-                                <div className="flex justify-between items-center">
-                                   <label className="text-[8px] font-bold text-stone-400 uppercase tracking-widest">Gallery {i}</label>
-                                   <label className="cursor-pointer text-primary hover:scale-110 transition-transform">
-                                      <span className="material-symbols-outlined text-[10px]">add_a_photo</span>
-                                      <input 
-                                        type="file" 
-                                        className="hidden" 
-                                        onChange={async (e) => {
-                                          const file = e.target.files?.[0];
-                                          if (file) {
-                                            const formData = new FormData();
-                                            formData.append('file', file);
-                                            const res = await fetch('/api/admin/upload', { method: 'POST', body: formData });
-                                            const data = await res.json();
-                                            if (data.success) {
-                                              const input = document.getElementsByName(`gallery_${i}`)[0] as HTMLInputElement;
-                                              if (input) input.value = data.url;
-                                            }
-                                          }
-                                        }}
-                                      />
-                                   </label>
-                                </div>
-                                <input name={`gallery_${i}`} type="text" placeholder="URL..." className="w-full px-3 py-2 bg-stone-50 border border-stone-100 rounded-lg text-[10px] outline-none focus:border-primary font-bold" />
-                              </div>
-                            ))}
-                         </div>
-                      </div>
-                    </div>
-
-                    <div className="flex justify-end gap-4 pt-8 border-t border-stone-100">
-                      <button type="button" onClick={() => setIsAddModalOpen(false)} className="px-8 py-3 text-[10px] font-bold text-stone-400 uppercase tracking-widest hover:text-primary transition-colors">Cancel</button>
-                      <button type="submit" className="px-12 py-4 bg-primary text-white text-[11px] font-black uppercase tracking-[0.2em] rounded-2xl shadow-xl shadow-primary/30 hover:translate-y-[-2px] transition-all">Add Product (এ্যাড প্রডাক্ট)</button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {activeTab === 'settings' && (
-          <div className="space-y-8 animate-fade-in pb-20">
-            {/* Quick Actions Bar */}
-            <div className="bg-white p-6 rounded-2xl border border-stone-100 shadow-sm flex justify-between items-center">
-               <h2 className="text-xs font-bold text-primary uppercase tracking-[0.2em]">Global Configurations</h2>
-               <p className="text-[10px] text-stone-400 italic">Settings are applied instantly across the entire platform.</p>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Payment Gateways */}
-              <div className="bg-white p-8 rounded-2xl border border-stone-100 shadow-sm space-y-6">
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="material-symbols-outlined text-primary">payments</span>
-                  <h3 className="text-sm font-bold text-primary uppercase tracking-widest">Payment Gateways</h3>
-                </div>
-                
-                <div className="space-y-6">
-                  {/* bKash Section */}
-                  <div className="pt-4 border-t border-stone-50">
-                    <h4 className="text-[10px] font-black text-primary mb-4 uppercase tracking-[0.2em]">bKash Configuration</h4>
-                    <div className="grid grid-cols-1 gap-4">
-                      {[
-                        { label: 'bKash App Key', key: 'bkash_app_key' },
-                        { label: 'bKash App Secret', key: 'bkash_app_secret', type: 'password' },
-                        { label: 'bKash Username', key: 'bkash_username' },
-                        { label: 'bKash Password', key: 'bkash_password', type: 'password' },
-                      ].map((field) => (
-                        <div key={field.key} className="flex gap-2">
-                          <div className="flex-1">
-                            <label className="block text-[8px] font-bold text-stone-400 uppercase tracking-widest mb-1">{field.label}</label>
-                            <input 
-                              type={field.type || 'text'} 
-                              defaultValue={settings.find(s => s.key === field.key)?.value || ''}
-                              id={field.key}
-                              className="w-full px-4 py-2 bg-stone-50 border border-stone-100 rounded-lg text-[10px] outline-none focus:border-primary font-bold" 
-                            />
-                          </div>
-                          <button 
-                            onClick={async () => {
-                              const val = (document.getElementById(field.key) as HTMLInputElement).value;
-                              await fetch("/api/admin/settings", { method: "POST", body: JSON.stringify({ key: field.key, value: val }) });
-                              alert('Saved!');
-                            }}
-                            className="self-end px-3 py-2 bg-primary text-white text-[9px] font-bold uppercase tracking-widest rounded-lg"
-                          >
-                            Save
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Nagad Section */}
-                  <div className="pt-4 border-t border-stone-50">
-                    <h4 className="text-[10px] font-black text-primary mb-4 uppercase tracking-[0.2em]">Nagad Configuration</h4>
-                    <div className="grid grid-cols-1 gap-4">
-                      {[
-                        { label: 'Nagad Merchant ID', key: 'nagad_merchant_id' },
-                        { label: 'Nagad Public Key', key: 'nagad_public_key', type: 'password' },
-                        { label: 'Nagad Private Key', key: 'nagad_private_key', type: 'password' },
-                      ].map((field) => (
-                        <div key={field.key} className="flex gap-2">
-                          <div className="flex-1">
-                            <label className="block text-[8px] font-bold text-stone-400 uppercase tracking-widest mb-1">{field.label}</label>
-                            <input 
-                              type={field.type || 'text'} 
-                              defaultValue={settings.find(s => s.key === field.key)?.value || ''}
-                              id={field.key}
-                              className="w-full px-4 py-2 bg-stone-50 border border-stone-100 rounded-lg text-[10px] outline-none focus:border-primary font-bold" 
-                            />
-                          </div>
-                          <button 
-                            onClick={async () => {
-                              const val = (document.getElementById(field.key) as HTMLInputElement).value;
-                              await fetch("/api/admin/settings", { method: "POST", body: JSON.stringify({ key: field.key, value: val }) });
-                              alert('Saved!');
-                            }}
-                            className="self-end px-3 py-2 bg-primary text-white text-[9px] font-bold uppercase tracking-widest rounded-lg"
-                          >
-                            Save
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Logistics & Couriers */}
-              <div className="bg-white p-8 rounded-2xl border border-stone-100 shadow-sm space-y-6">
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="material-symbols-outlined text-primary">local_shipping</span>
-                  <h3 className="text-sm font-bold text-primary uppercase tracking-widest">Courier API Integration</h3>
-                </div>
-
-                <div className="space-y-6">
-                   {/* Steadfast Section */}
-                   <div className="pt-4 border-t border-stone-50">
-                    <h4 className="text-[10px] font-black text-primary mb-4 uppercase tracking-[0.2em]">Steadfast API</h4>
-                    <div className="grid grid-cols-1 gap-4">
-                      {[
-                        { label: 'API Key', key: 'steadfast_api_key' },
-                        { label: 'Secret Key', key: 'steadfast_secret_key', type: 'password' },
-                      ].map((field) => (
-                        <div key={field.key} className="flex gap-2">
-                          <div className="flex-1">
-                            <label className="block text-[8px] font-bold text-stone-400 uppercase tracking-widest mb-1">{field.label}</label>
-                            <input 
-                              type={field.type || 'text'} 
-                              defaultValue={settings.find(s => s.key === field.key)?.value || ''}
-                              id={field.key}
-                              className="w-full px-4 py-2 bg-stone-50 border border-stone-100 rounded-lg text-[10px] outline-none focus:border-primary font-bold" 
-                            />
-                          </div>
-                          <button 
-                            onClick={async () => {
-                              const val = (document.getElementById(field.key) as HTMLInputElement).value;
-                              await fetch("/api/admin/settings", { method: "POST", body: JSON.stringify({ key: field.key, value: val }) });
-                              alert('Saved!');
-                            }}
-                            className="self-end px-3 py-2 bg-primary text-white text-[9px] font-bold uppercase tracking-widest rounded-lg"
-                          >
-                            Save
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Pathao/RedX/Others */}
-                  <div className="pt-4 border-t border-stone-50">
-                    <h4 className="text-[10px] font-black text-primary mb-4 uppercase tracking-[0.2em]">Other Couriers (Coming Soon)</h4>
-                    <p className="text-[9px] text-stone-400 italic">Configure keys for Pathao, RedX, and Paperfly for automatic booking.</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Shipping Rate Management */}
-              <div className="bg-white p-8 rounded-2xl border border-stone-100 shadow-sm space-y-6 col-span-1 lg:col-span-2">
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="material-symbols-outlined text-primary">currency_exchange</span>
-                  <h3 className="text-sm font-bold text-primary uppercase tracking-widest">Shipping & Logistics Rates</h3>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {/* Steadfast Rates */}
-                  <div className="space-y-4">
-                    <h4 className="text-[10px] font-black text-stone-500 uppercase tracking-widest border-b border-stone-50 pb-2">Steadfast Logistics</h4>
-                    {[
-                      { label: 'Dhaka Office Delivery (per KG)', key: 'shipping_steadfast_dhaka_office' },
-                      { label: 'Countrywide Office Delivery (per KG)', key: 'shipping_steadfast_country_office' },
-                      { label: 'Dhaka Home Delivery (per KG)', key: 'shipping_steadfast_dhaka_home' },
-                      { label: 'Countrywide Home Delivery (per KG)', key: 'shipping_steadfast_country_home' },
-                    ].map(field => (
-                      <div key={field.key} className="space-y-1">
-                        <label className="text-[8px] font-bold text-stone-400 uppercase tracking-widest">{field.label}</label>
-                        <div className="flex gap-2">
-                          <input 
-                            type="number" 
-                            id={field.key}
-                            defaultValue={settings.find(s => s.key === field.key)?.value || '0'}
-                            className="flex-1 px-3 py-2 bg-stone-50 border border-stone-100 rounded-lg text-[10px] font-bold outline-none focus:border-primary"
-                          />
-                          <button 
-                            onClick={async () => {
-                              const val = (document.getElementById(field.key) as HTMLInputElement).value;
-                              await fetch("/api/admin/settings", { method: "POST", body: JSON.stringify({ key: field.key, value: val }) });
-                              alert('Saved!');
-                            }}
-                            className="px-3 py-2 bg-stone-50 text-primary text-[8px] font-black uppercase rounded-lg hover:bg-primary hover:text-white transition-all"
-                          >
-                            Set
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* General Shipping */}
-                  <div className="space-y-4">
-                    <h4 className="text-[10px] font-black text-stone-500 uppercase tracking-widest border-b border-stone-50 pb-2">General / Weight-Based</h4>
-                    {[
-                      { label: 'Base Rate per KG (General)', key: 'shipping_general_kg' },
-                      { label: 'Base Rate per Liter (General)', key: 'shipping_general_liter' },
-                      { label: 'Packaging Material Charge (Base)', key: 'shipping_base_packaging' },
-                    ].map(field => (
-                      <div key={field.key} className="space-y-1">
-                        <label className="text-[8px] font-bold text-stone-400 uppercase tracking-widest">{field.label}</label>
-                        <div className="flex gap-2">
-                          <input 
-                            type="number" 
-                            id={field.key}
-                            defaultValue={settings.find(s => s.key === field.key)?.value || '0'}
-                            className="flex-1 px-3 py-2 bg-stone-50 border border-stone-100 rounded-lg text-[10px] font-bold outline-none focus:border-primary"
-                          />
-                          <button 
-                            onClick={async () => {
-                              const val = (document.getElementById(field.key) as HTMLInputElement).value;
-                              await fetch("/api/admin/settings", { method: "POST", body: JSON.stringify({ key: field.key, value: val }) });
-                              alert('Saved!');
-                            }}
-                            className="px-3 py-2 bg-stone-50 text-primary text-[8px] font-black uppercase rounded-lg hover:bg-primary hover:text-white transition-all"
-                          >
-                            Set
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'reviews' && (
-          <div className="space-y-8 animate-fade-in pb-20">
-            <div className="bg-white p-8 rounded-2xl border border-stone-100 shadow-sm flex justify-between items-center">
-               <div>
-                 <h2 className="text-xs font-bold text-primary uppercase tracking-[0.2em]">Testimonial Management</h2>
-                 <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest mt-1">Manage what customers say about your harvest</p>
-               </div>
-               <button 
-                 onClick={() => setIsReviewModalOpen(true)}
-                 className="px-8 py-3 bg-primary text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-xl shadow-primary/20 hover:translate-y-[-2px] transition-all flex items-center gap-2"
-               >
-                 <span className="material-symbols-outlined text-sm">add_comment</span>
-                 Add New Review (নতুন রিভিউ)
-               </button>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {reviewsLoading ? (
-                <div className="col-span-full py-32 text-center text-stone-300 italic animate-pulse">Accessing the diaries of satisfaction...</div>
-              ) : reviews.length === 0 ? (
-                <div className="col-span-full py-32 text-center text-stone-300 italic">No testimonials found. Add your first one above!</div>
-              ) : reviews.map((review: any) => (
-                <div key={review.id} className="bg-white p-8 rounded-[2.5rem] border border-stone-100 shadow-sm hover:shadow-xl hover:border-primary/20 transition-all group relative overflow-hidden">
-                   {/* Top Center Round Image */}
-                   <div className="flex justify-center mb-6">
-                     <div className="w-20 h-20 rounded-full border-4 border-stone-50 overflow-hidden bg-stone-100 shadow-inner group-hover:scale-105 transition-transform duration-500">
-                       <img src={review.image_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${review.user_name}`} className="w-full h-full object-cover" alt="" />
-                     </div>
-                   </div>
-
-                   <div className="text-center space-y-4">
-                     <div className="flex justify-center gap-0.5">
-                       {[...Array(5)].map((_, i) => (
-                         <span key={i} className={`material-symbols-outlined text-xs ${i < review.rating ? 'text-accent' : 'text-stone-200'}`} style={{fontVariationSettings: "'FILL' 1"}}>star</span>
-                       ))}
-                     </div>
-                     <p className="text-[11px] text-stone-500 font-medium leading-relaxed italic line-clamp-4">"{review.comment}"</p>
-                     <div>
-                       <p className="text-[10px] font-black text-primary uppercase tracking-widest">{review.user_name || review.users?.full_name || 'Verified Buyer'}</p>
-                       <p className="text-[7px] text-stone-300 font-bold uppercase tracking-widest mt-1">Verified Experience • {new Date(review.created_at).toLocaleDateString('bn-BD')}</p>
-                     </div>
-                   </div>
-
-                   {/* Action Buttons */}
-                   <div className="absolute top-6 right-6 flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                     <button 
-                       onClick={() => {
-                         setEditingReview(review);
-                         setIsReviewModalOpen(true);
-                       }}
-                       className="w-8 h-8 rounded-full bg-white border border-stone-50 flex items-center justify-center text-stone-300 hover:text-primary hover:border-primary/20 transition-all"
-                     >
-                       <span className="material-symbols-outlined text-sm">edit</span>
-                     </button>
-                     <button 
-                       onClick={async () => {
-                         if (confirm('Delete this testimonial permanently?')) {
-                           await fetch(`/api/admin/reviews?id=${review.id}`, { method: 'DELETE' });
-                           fetchReviews();
-                         }
-                       }}
-                       className="w-8 h-8 rounded-full bg-white border border-stone-50 flex items-center justify-center text-stone-300 hover:text-red-500 hover:border-red-100 transition-all"
-                     >
-                       <span className="material-symbols-outlined text-sm">delete_forever</span>
-                     </button>
-                   </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Add Review Modal */}
-            {isReviewModalOpen && (
-              <div className="fixed inset-0 bg-primary/40 backdrop-blur-md z-[80] flex items-center justify-center p-6 animate-fade-in">
-                <div className="bg-white w-full max-w-xl rounded-[2.5rem] shadow-2xl overflow-hidden animate-scale-in">
-                  <div className="p-10 bg-stone-50 border-b border-stone-100 flex justify-between items-center">
-                    <div>
-                      <h3 className="text-xl font-black text-primary uppercase tracking-widest">{editingReview ? 'Modify Testimonial' : 'New Testimonial'}</h3>
-                      <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest mt-1">{editingReview ? 'Update existing feedback' : 'Add a review manually to the site'}</p>
-                    </div>
-                    <button onClick={() => { setIsReviewModalOpen(false); setEditingReview(null); }} className="w-10 h-10 rounded-full flex items-center justify-center bg-white text-stone-400 hover:text-red-500 transition-colors shadow-sm">
-                      <span className="material-symbols-outlined">close</span>
-                    </button>
-                  </div>
-                  <div className="p-10">
-                    <form onSubmit={async (e) => {
-                      e.preventDefault();
-                      const formData = new FormData(e.currentTarget);
-                      const data = Object.fromEntries(formData.entries());
-                      if (editingReview) (data as any).id = editingReview.id;
-                      
-                      const res = await fetch("/api/admin/reviews", { 
-                        method: editingReview ? "PUT" : "POST", 
-                        body: JSON.stringify(data) 
-                      });
-                      if (res.ok) { setIsReviewModalOpen(false); setEditingReview(null); fetchReviews(); }
-                    }} className="space-y-6">
-                      <div className="flex justify-center mb-4">
-                        <label className="relative group cursor-pointer">
-                          <div className="w-24 h-24 rounded-full bg-stone-50 border-2 border-dashed border-stone-200 flex flex-col items-center justify-center overflow-hidden group-hover:border-primary transition-colors">
-                            <input 
-                              type="file" 
-                              className="hidden" 
-                              onChange={async (e) => {
-                                const file = e.target.files?.[0];
-                                if (file) {
-                                  const formData = new FormData();
-                                  formData.append('file', file);
-                                  const res = await fetch('/api/admin/upload', { method: 'POST', body: formData });
-                                  const data = await res.json();
-                                  if (data.success) {
-                                    (document.getElementById('review_image_url') as HTMLInputElement).value = data.url;
-                                    (document.getElementById('review_preview') as HTMLImageElement).src = data.url;
-                                    (document.getElementById('review_preview') as HTMLImageElement).classList.remove('opacity-0');
-                                  }
-                                }
-                              }}
-                            />
-                            <img id="review_preview" src={editingReview?.image_url || ''} className={`absolute inset-0 w-full h-full object-cover ${editingReview?.image_url ? 'opacity-100' : 'opacity-0'}`} alt="" />
-                            <span className="material-symbols-outlined text-stone-300 group-hover:text-primary">add_a_photo</span>
-                            <span className="text-[7px] font-black text-stone-300 uppercase tracking-widest mt-1">Upload Photo</span>
-                          </div>
-                        </label>
-                        <input name="image_url" id="review_image_url" type="hidden" defaultValue={editingReview?.image_url || ''} />
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-6">
-                        <div className="col-span-2">
-                          <label className="block text-[9px] font-black text-stone-400 uppercase tracking-widest mb-2">Customer Name</label>
-                          <input name="user_name" required defaultValue={editingReview?.user_name || ''} placeholder="Full Name" className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold outline-none focus:border-primary transition-all" />
-                        </div>
-                        <div className="col-span-2">
-                          <label className="block text-[9px] font-black text-stone-400 uppercase tracking-widest mb-2">Review Comment</label>
-                          <textarea name="comment" required defaultValue={editingReview?.comment || ''} rows={3} placeholder="What they said..." className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold outline-none focus:border-primary transition-all resize-none"></textarea>
-                        </div>
-                        <div>
-                          <label className="block text-[9px] font-black text-stone-400 uppercase tracking-widest mb-2">Star Rating</label>
-                          <select name="rating" defaultValue={editingReview?.rating || '5'} className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold outline-none focus:border-primary transition-all">
-                            <option value="5">5 Stars</option>
-                            <option value="4">4 Stars</option>
-                            <option value="3">3 Stars</option>
-                            <option value="2">2 Stars</option>
-                            <option value="1">1 Star</option>
-                          </select>
-                        </div>
-                        <button type="submit" className="self-end py-4 bg-primary text-white text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-primary-light transition-all shadow-lg shadow-primary/20">{editingReview ? 'Update Testimonial' : 'Publish Testimonial'}</button>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {activeTab === 'couriers' && (
-          <div className="space-y-8 animate-fade-in pb-20">
-            {/* Rate Configurations Section */}
-            <div className="bg-white rounded-[2.5rem] border border-stone-100 shadow-sm overflow-hidden">
-              <div className="p-8 md:p-12 border-b border-stone-50 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-stone-50/50">
-                <div>
-                  <h2 className="text-sm font-black text-primary uppercase tracking-[0.2em]">Logistics Rate Matrix</h2>
-                  <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest mt-1">Configure courier charges by category and zone</p>
-                </div>
-                <button 
-                  onClick={() => {
-                    setEditingShippingConfig(null);
-                    setIsShippingModalOpen(true);
-                  }}
-                  className="px-8 py-3.5 bg-primary text-white text-[10px] font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-primary/20 hover:translate-y-[-2px] transition-all flex items-center gap-2"
-                >
-                  <span className="material-symbols-outlined text-sm">local_shipping</span>
-                  Configure New Rate
-                </button>
+        {/* MODALS: Product Add/Edit (FULL FEATURED) */}
+        {(isAddModalOpen || isEditModalOpen) && (
+          <div className="fixed inset-0 bg-primary/40 backdrop-blur-sm z-50 flex items-center justify-center p-6 overflow-y-auto">
+            <div className="bg-white rounded-[3rem] w-full max-w-4xl my-auto shadow-2xl animate-scale-up overflow-hidden flex flex-col max-h-[90vh]">
+              <div className="p-10 border-b border-stone-50 flex justify-between items-center bg-stone-50/50">
+                 <h2 className="text-xl font-black text-primary uppercase tracking-tight">{isAddModalOpen ? 'Initialize New Product' : 'Modify Product Parameters'}</h2>
+                 <button type="button" onClick={() => {setIsAddModalOpen(false); setIsEditModalOpen(false);}} className="material-symbols-outlined text-stone-300 hover:text-red-500 transition-colors">close</button>
               </div>
               
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="bg-white">
-                      <th className="px-10 py-6 text-[9px] font-black text-stone-400 uppercase tracking-[0.2em]">Courier Service</th>
-                      <th className="px-10 py-6 text-[9px] font-black text-stone-400 uppercase tracking-[0.2em]">Category</th>
-                      <th className="px-10 py-6 text-[9px] font-black text-stone-400 uppercase tracking-[0.2em]">Dhaka (Off/Home)</th>
-                      <th className="px-10 py-6 text-[9px] font-black text-stone-400 uppercase tracking-[0.2em]">Outside (Off/Home)</th>
-                      <th className="px-10 py-6 text-[9px] font-black text-stone-400 uppercase tracking-[0.2em]">Pricing Model</th>
-                      <th className="px-10 py-6 text-[9px] font-black text-stone-400 uppercase tracking-[0.2em] text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-stone-50">
-                    {shippingConfigs.length === 0 ? (
-                      <tr><td colSpan={6} className="text-center py-20 text-stone-300 italic text-[11px]">No custom shipping rates configured yet.</td></tr>
-                    ) : shippingConfigs.map((config: any) => (
-                      <tr key={config.id} className="group hover:bg-stone-50/50 transition-colors">
-                        <td className="px-10 py-6">
-                           <div className="flex items-center gap-3">
-                             <div className="w-8 h-8 rounded-lg bg-primary/5 flex items-center justify-center text-primary">
-                               <span className="material-symbols-outlined text-sm">conveyor_belt</span>
-                             </div>
-                             <span className="text-[11px] font-black text-primary uppercase tracking-tight">{config.courier_name}</span>
-                           </div>
-                        </td>
-                        <td className="px-10 py-6">
-                           <span className="px-3 py-1 bg-stone-100 text-stone-500 rounded-full text-[9px] font-bold uppercase tracking-widest border border-stone-200">
-                             {config.categories?.name || 'All Categories'}
-                           </span>
-                        </td>
-                        <td className="px-10 py-6">
-                           <div className="flex flex-col gap-1">
-                             <p className="text-[10px] font-black text-primary">৳{config.dhaka_office_rate} / ৳{config.dhaka_home_rate}</p>
-                             <p className="text-[7px] text-stone-400 uppercase font-black tracking-widest">Office / Home</p>
-                           </div>
-                        </td>
-                        <td className="px-10 py-6">
-                           <div className="flex flex-col gap-1">
-                             <p className="text-[10px] font-black text-primary">৳{config.outside_office_rate} / ৳{config.outside_home_rate}</p>
-                             <p className="text-[7px] text-stone-400 uppercase font-black tracking-widest">Office / Home</p>
-                           </div>
-                        </td>
-                        <td className="px-10 py-6">
-                           <span className={`text-[8px] font-black uppercase tracking-[0.1em] ${config.is_weight_based ? 'text-blue-500' : 'text-emerald-500'}`}>
-                             {config.is_weight_based ? 'Weight Based (Per KG)' : 'Fixed Amount'}
-                           </span>
-                        </td>
-                        <td className="px-10 py-6 text-right">
-                           <div className="flex justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                             <button 
-                               onClick={() => {
-                                 setEditingShippingConfig(config);
-                                 setIsShippingModalOpen(true);
-                               }}
-                               className="w-9 h-9 rounded-xl flex items-center justify-center text-stone-400 hover:text-primary hover:bg-stone-50 border border-transparent hover:border-stone-100 transition-all"
-                             >
-                               <span className="material-symbols-outlined text-lg">edit</span>
-                             </button>
-                             <button 
-                               onClick={async () => {
-                                 if (confirm('Delete this shipping rate configuration?')) {
-                                   await fetch(`/api/admin/shipping-configs?id=${config.id}`, { method: 'DELETE' });
-                                   fetchShippingConfigs();
-                                 }
-                               }}
-                               className="w-9 h-9 rounded-xl flex items-center justify-center text-stone-400 hover:text-red-500 hover:bg-red-50 border border-transparent hover:border-red-100 transition-all"
-                             >
-                               <span className="material-symbols-outlined text-lg">delete</span>
-                             </button>
-                           </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            {/* Tracking Logs Section */}
-            <div className="bg-white rounded-[2.5rem] border border-stone-100 shadow-sm overflow-hidden">
-              <div className="p-8 border-b border-stone-50 flex justify-between items-center bg-stone-50/30">
-                <div>
-                  <h2 className="text-xs font-bold text-primary uppercase tracking-[0.2em]">Real-time Shipping Logs</h2>
-                  <p className="text-[9px] text-stone-400 font-bold uppercase tracking-widest mt-0.5">Track live package movement</p>
-                </div>
-                <button onClick={fetchPackages} className="material-symbols-outlined text-stone-400 hover:text-primary transition-colors">refresh</button>
-              </div>
-              <div className="overflow-x-auto">
-                <table className="w-full text-left">
-                  <thead className="bg-stone-50/50">
-                    <tr>
-                      <th className="px-10 py-4 text-[9px] font-bold text-stone-400 uppercase tracking-widest">Order ID</th>
-                      <th className="px-10 py-4 text-[9px] font-bold text-stone-400 uppercase tracking-widest">Courier</th>
-                      <th className="px-10 py-4 text-[9px] font-bold text-stone-400 uppercase tracking-widest">Tracking #</th>
-                      <th className="px-10 py-4 text-[9px] font-bold text-stone-400 uppercase tracking-widest">Weight</th>
-                      <th className="px-10 py-4 text-[9px] font-bold text-stone-400 uppercase tracking-widest">Status</th>
-                      <th className="px-10 py-4 text-[9px] font-bold text-stone-400 uppercase tracking-widest text-right">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-stone-50">
-                    {packagesLoading ? (
-                      <tr><td colSpan={6} className="text-center py-20 text-stone-300 italic">Accessing shipping logs...</td></tr>
-                    ) : packages.length === 0 ? (
-                      <tr><td colSpan={6} className="text-center py-20 text-stone-300 italic">No packages currently queued for shipment.</td></tr>
-                    ) : packages.map((pkg: any) => (
-                      <tr key={pkg.id} className="hover:bg-stone-50/30 transition-colors">
-                        <td className="px-10 py-6 text-[10px] font-bold text-primary">#{pkg.order_id}</td>
-                        <td className="px-10 py-6 text-[10px] font-bold text-primary uppercase">{pkg.courier_name}</td>
-                        <td className="px-10 py-6 text-[10px] font-bold text-stone-400 tracking-wider">{pkg.tracking_number}</td>
-                        <td className="px-10 py-6 text-[10px] font-bold text-stone-400">{pkg.weight} KG</td>
-                        <td className="px-10 py-6">
-                           <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-[8px] font-black uppercase tracking-widest border border-blue-100">
-                             {pkg.package_status}
-                           </span>
-                        </td>
-                        <td className="px-10 py-6 text-right">
-                          <button 
-                            onClick={async () => {
-                              const res = await fetch(`/api/courier/track?tracking_number=${pkg.tracking_number}&courier=${pkg.courier_name}`);
-                              const data = await res.json();
-                              if (data.success) {
-                                alert(`Status: ${data.status}\nLocation: ${data.location || 'N/A'}`);
-                                if (data.link) window.open(data.link, '_blank');
-                              } else {
-                                alert('Tracking failed. Please verify credentials.');
-                              }
-                            }}
-                            className="px-4 py-2 bg-white border border-stone-100 rounded-lg text-[9px] font-black text-primary hover:bg-primary hover:text-white transition-all uppercase tracking-widest"
-                          >
-                            Live Track
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            {/* Logistics Modal */}
-            {isShippingModalOpen && (
-              <div className="fixed inset-0 bg-primary/40 backdrop-blur-md z-[80] flex items-center justify-center p-6 animate-fade-in">
-                <div className="bg-white w-full max-w-2xl rounded-[3rem] shadow-2xl overflow-hidden animate-scale-in">
-                  <div className="p-12 bg-stone-50 border-b border-stone-100 flex justify-between items-center">
-                    <div>
-                      <h3 className="text-2xl font-black text-primary uppercase tracking-widest">{editingShippingConfig ? 'Modify Courier Rate' : 'Courier Rate Configuration'}</h3>
-                      <p className="text-[11px] text-stone-400 font-bold uppercase tracking-widest mt-1">Define zone-based delivery charges</p>
+              <form onSubmit={isAddModalOpen ? handleAddProduct : handleEditProduct} className="flex-1 overflow-y-auto p-10 space-y-10 custom-scrollbar">
+                 {/* Basic Info Section */}
+                 <div className="space-y-6">
+                    <h3 className="text-[10px] font-black text-primary uppercase tracking-[0.2em] flex items-center gap-3">
+                       <span className="w-8 h-px bg-primary/20"></span> Primary Attributes
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                       <div className="space-y-2 lg:col-span-1">
+                          <label className="text-[8px] font-black uppercase text-stone-400 ml-1">Product Title</label>
+                          <input name="name" defaultValue={editingProduct?.name} required className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold outline-none focus:border-primary" />
+                       </div>
+                       <div className="space-y-2">
+                          <label className="text-[8px] font-black uppercase text-stone-400 ml-1">Regular Price (৳)</label>
+                          <input name="regular_price" defaultValue={editingProduct?.regular_price} type="number" step="0.01" className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold outline-none focus:border-primary" />
+                       </div>
+                       <div className="space-y-2">
+                          <label className="text-[8px] font-black uppercase text-stone-400 ml-1">{isMangoCategory ? 'Price per KG (৳)' : 'Sales Price (৳)'}</label>
+                          <input name="price_per_unit" defaultValue={editingProduct?.price_per_unit} type="number" step="0.01" required className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold outline-none focus:border-primary" />
+                       </div>
+                       <div className="space-y-2">
+                          <label className="text-[8px] font-black uppercase text-stone-400 ml-1">Stock Reservoir</label>
+                          <input name="available_stock" defaultValue={editingProduct?.available_stock} type="number" required className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold outline-none focus:border-primary" />
+                       </div>
                     </div>
-                    <button onClick={() => setIsShippingModalOpen(false)} className="w-12 h-12 rounded-full flex items-center justify-center bg-white text-stone-400 hover:text-red-500 transition-colors shadow-sm">
-                      <span className="material-symbols-outlined">close</span>
+                 </div>
+
+                 {/* Categorization Section */}
+                 <div className="space-y-6">
+                    <h3 className="text-[10px] font-black text-primary uppercase tracking-[0.2em] flex items-center gap-3">
+                       <span className="w-8 h-px bg-primary/20"></span> Categorization & Units
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                       <div className="space-y-2">
+                          <label className="text-[8px] font-black uppercase text-stone-400 ml-1">Category</label>
+                          <select 
+                            name="category_id" 
+                            value={selectedCategoryId} 
+                            onChange={(e) => setSelectedCategoryId(e.target.value)}
+                            className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold outline-none focus:border-primary appearance-none"
+                          >
+                             <option value="">Select Category</option>
+                             {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                          </select>
+                       </div>
+                       <div className="space-y-2">
+                          <label className="text-[8px] font-black uppercase text-stone-400 ml-1">Unit of Measure</label>
+                          <select name="unit_id" defaultValue={editingProduct?.unit_id} className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold outline-none focus:border-primary appearance-none">
+                             {units.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
+                          </select>
+                       </div>
+                       <div className="space-y-2">
+                          <label className="text-[8px] font-black uppercase text-stone-400 ml-1">{isMangoCategory ? 'Select Auto Lot' : 'Lot Size (Bundle)'}</label>
+                          {isMangoCategory ? (
+                             <select 
+                                name="lot_id_selector" 
+                                value={selectedLotId}
+                                onChange={(e) => {
+                                   const lotId = e.target.value;
+                                   setSelectedLotId(lotId);
+                                   const lot = filteredLots.find(l => l.id == lotId);
+                                   if (lot) {
+                                      const lotSizeInput = document.querySelector('input[name="lot_size"]') as HTMLInputElement;
+                                      const pkgInput = document.querySelector('input[name="packaging_charge"]') as HTMLInputElement;
+                                      if (lotSizeInput) lotSizeInput.value = lot.size;
+                                      if (pkgInput) pkgInput.value = lot.packaging_charge;
+                                   }
+                                }}
+                                className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-black text-emerald-600 outline-none focus:border-emerald-500 appearance-none"
+                             >
+                                <option value="">Select Lot Preset</option>
+                                {filteredLots.map(l => <option key={l.id} value={l.id}>{l.name} ({Number(l.size)}kg - ৳{l.packaging_charge})</option>)}
+                             </select>
+                          ) : (
+                             <input name="lot_size" defaultValue={editingProduct?.lot_size || 1} type="number" className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold outline-none focus:border-primary" />
+                          )}
+                       </div>
+                       <div className="space-y-2">
+                          <label className="text-[8px] font-black uppercase text-stone-400 ml-1">Packaging Fee (৳)</label>
+                          <input name="packaging_charge" defaultValue={editingProduct?.packaging_charge || 0} type="number" step="0.01" className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold outline-none focus:border-primary" />
+                       </div>
+                    </div>
+                    {isMangoCategory && <input type="hidden" name="lot_size" defaultValue={editingProduct?.lot_size || 5} />}
+                 </div>
+
+                 {/* Payment & Logistics */}
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                    <div className="space-y-6">
+                       <h3 className="text-[10px] font-black text-primary uppercase tracking-[0.2em] flex items-center gap-3">
+                          <span className="w-8 h-px bg-primary/20"></span> Transaction Policy
+                       </h3>
+                       <div className="space-y-4">
+                          <label className="text-[8px] font-black uppercase text-stone-400 ml-1">Payment Protocol</label>
+                          <select name="payment_policy" defaultValue={editingProduct?.payment_policy || 'cod'} className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold outline-none focus:border-primary appearance-none">
+                             <option value="cod">Cash on Delivery (COD)</option>
+                             <option value="partial_advance">Partial Advance Required</option>
+                             <option value="full_advance">Full Advance Payment</option>
+                          </select>
+                          <div className="flex items-center gap-2 px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl">
+                             <span className="text-[9px] font-bold text-stone-400 uppercase">Advance Value (৳):</span>
+                             <input name="partial_advance_val" defaultValue={editingProduct?.partial_advance_val} type="number" className="bg-transparent text-[11px] font-black outline-none w-full" placeholder="0.00" />
+                          </div>
+                       </div>
+                    </div>
+                    <div className="space-y-6">
+                       <h3 className="text-[10px] font-black text-primary uppercase tracking-[0.2em] flex items-center gap-3">
+                          <span className="w-8 h-px bg-primary/20"></span> Fulfillment Channels
+                       </h3>
+                       <div className="flex flex-wrap gap-3">
+                          <label className="flex items-center gap-3 px-5 py-4 bg-stone-50 rounded-2xl border border-stone-100 cursor-pointer hover:border-primary transition-all">
+                             <input type="checkbox" name="allow_home_delivery" defaultChecked={editingProduct?.allow_home_delivery !== false} className="w-4 h-4 rounded-lg accent-primary" />
+                             <span className="text-[9px] font-black uppercase text-stone-600">Home Delivery</span>
+                          </label>
+                          <label className="flex items-center gap-3 px-5 py-4 bg-stone-50 rounded-2xl border border-stone-100 cursor-pointer hover:border-primary transition-all">
+                             <input type="checkbox" name="allow_point_delivery" defaultChecked={editingProduct?.allow_point_delivery !== false} className="w-4 h-4 rounded-lg accent-primary" />
+                             <span className="text-[9px] font-black uppercase text-stone-600">Office Pickup</span>
+                          </label>
+                          <label className="flex items-center gap-3 px-5 py-4 bg-stone-50 rounded-2xl border border-stone-100 cursor-pointer hover:border-primary transition-all">
+                             <input type="checkbox" name="is_preorder" defaultChecked={editingProduct?.is_preorder} className="w-4 h-4 rounded-lg accent-orange-500" />
+                             <span className="text-[9px] font-black uppercase text-orange-600">Pre-Order Logic</span>
+                          </label>
+                       </div>
+                       <div className="flex items-center gap-3 p-4 bg-stone-50 border border-stone-100 rounded-2xl">
+                          <span className="material-symbols-outlined text-stone-300">calendar_month</span>
+                          <input type="date" name="harvest_date" defaultValue={editingProduct?.harvest_date ? new Date(editingProduct.harvest_date).toISOString().split('T')[0] : ''} className="bg-transparent text-[10px] font-bold outline-none w-full" />
+                       </div>
+                    </div>
+                 </div>
+
+                 {/* Description Section */}
+                 <div className="space-y-6">
+                    <h3 className="text-[10px] font-black text-primary uppercase tracking-[0.2em] flex items-center gap-3">
+                       <span className="w-8 h-px bg-primary/20"></span> Narrative & Assets
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                       <textarea name="short_description" defaultValue={editingProduct?.short_description} placeholder="Short teaser description (shown in cards)" className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-3xl text-[11px] font-bold min-h-[100px] outline-none focus:border-primary" />
+                       <textarea name="detailed_description" defaultValue={editingProduct?.detailed_description} placeholder="Full product specifications and story..." className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-3xl text-[11px] font-bold min-h-[100px] outline-none focus:border-primary" />
+                    </div>
+                    <div className="flex items-center gap-6 p-8 bg-stone-50 rounded-[2.5rem] border border-dashed border-stone-200">
+                       <div className="w-24 h-24 rounded-3xl bg-white border border-stone-100 flex items-center justify-center overflow-hidden shrink-0">
+                          {editingProduct?.image_url ? <img src={editingProduct.image_url} className="w-full h-full object-cover" /> : <span className="material-symbols-outlined text-3xl text-stone-200">image</span>}
+                       </div>
+                       <div className="flex-1 space-y-2">
+                          <label className="text-[9px] font-black uppercase text-primary tracking-widest">Main Product Visual</label>
+                          <input type="file" name="file" className="text-[10px] text-stone-400 block w-full file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[9px] file:font-black file:bg-primary file:text-white hover:file:bg-primary/80" />
+                       </div>
+                    </div>
+                 </div>
+
+                 {/* Logistics Partners */}
+                 <div className="space-y-6">
+                    <h3 className="text-[10px] font-black text-primary uppercase tracking-[0.2em] flex items-center gap-3">
+                       <span className="w-8 h-px bg-primary/20"></span> Logistics Permissions
+                    </h3>
+                    <div className="flex flex-wrap gap-3">
+                       {couriers.filter((c:any)=>c.is_active).map((c:any) => (
+                          <label key={c.id} className="flex items-center gap-3 px-6 py-4 bg-stone-50 rounded-2xl border border-stone-100 cursor-pointer hover:bg-white hover:shadow-sm transition-all">
+                             <input type="checkbox" name={`courier_id_${c.id}`} defaultChecked={editingProduct?.available_couriers?.includes(c.name)} className="w-4 h-4 rounded accent-primary" />
+                             <span className="text-[10px] font-black uppercase text-stone-600">{c.name}</span>
+                          </label>
+                       ))}
+                    </div>
+                 </div>
+
+                 <div className="pt-6">
+                    <button type="submit" className="w-full py-6 bg-primary text-white text-[11px] font-black uppercase tracking-[0.3em] rounded-3xl shadow-2xl shadow-primary/30 hover:scale-[1.02] active:scale-[0.98] transition-all">
+                       Deploy Product to Catalog
                     </button>
-                  </div>
-                  <div className="p-12">
-                    <form onSubmit={async (e) => {
-                      e.preventDefault();
-                      const formData = new FormData(e.currentTarget);
-                      const data = Object.fromEntries(formData.entries());
-                      if (editingShippingConfig) (data as any).id = editingShippingConfig.id;
-                      
-                      const res = await fetch("/api/admin/shipping-configs", { 
-                        method: editingShippingConfig ? "PUT" : "POST", 
-                        body: JSON.stringify(data) 
-                      });
-                      if (res.ok) { setIsShippingModalOpen(false); fetchShippingConfigs(); }
-                    }} className="space-y-8">
-                      <div className="grid grid-cols-2 gap-8">
-                        <div>
-                          <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-3">Courier Partner</label>
-                          <select name="courier_name" defaultValue={editingShippingConfig?.courier_name || 'Steadfast'} className="w-full px-6 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[12px] font-bold outline-none focus:border-primary transition-all">
-                            {['Steadfast', 'Sundarban', 'Pathao', 'RedX', 'SA Poribahan', 'Paperfly'].map(c => (
-                              <option key={c} value={c}>{c}</option>
-                            ))}
-                          </select>
-                        </div>
-                        <div>
-                          <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-3">Target Category</label>
-                          <select name="category_id" defaultValue={editingShippingConfig?.category_id || ''} className="w-full px-6 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[12px] font-bold outline-none focus:border-primary transition-all">
-                            <option value="">All Categories</option>
-                            {categories.map(cat => (
-                              <option key={cat.id} value={cat.id}>{cat.name}</option>
-                            ))}
-                          </select>
-                        </div>
-
-                        <div className="col-span-2 p-6 bg-stone-50 rounded-[2rem] border border-stone-100 flex items-center justify-between">
-                          <div className="flex items-center gap-4">
-                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white ${editingShippingConfig?.is_weight_based ? 'bg-blue-500' : 'bg-emerald-500'}`}>
-                              <span className="material-symbols-outlined">scale</span>
-                            </div>
-                            <div>
-                              <p className="text-[11px] font-black text-primary uppercase tracking-widest">Pricing Model</p>
-                              <p className="text-[10px] text-stone-400 font-medium">Switch between per-KG or Fixed amount</p>
-                            </div>
-                          </div>
-                          <div className="flex bg-white p-1.5 rounded-xl border border-stone-100">
-                             <label className="cursor-pointer">
-                               <input type="radio" name="is_weight_based" value="false" defaultChecked={!editingShippingConfig?.is_weight_based} className="hidden peer" />
-                               <span className="px-6 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest text-stone-300 peer-checked:bg-emerald-500 peer-checked:text-white transition-all block text-center">Fixed</span>
-                             </label>
-                             <label className="cursor-pointer">
-                               <input type="radio" name="is_weight_based" value="true" defaultChecked={editingShippingConfig?.is_weight_based} className="hidden peer" />
-                               <span className="px-6 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest text-stone-300 peer-checked:bg-blue-500 peer-checked:text-white transition-all block text-center">Per KG</span>
-                             </label>
-                          </div>
-                        </div>
-
-                        <div className="space-y-6">
-                           <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.2em] border-b border-stone-100 pb-2">Dhaka City Rates</h4>
-                           <div className="grid grid-cols-2 gap-4">
-                              <div>
-                                <label className="block text-[8px] font-bold text-stone-400 uppercase tracking-widest mb-1.5">Office Delivery</label>
-                                <input name="dhaka_office_rate" required defaultValue={editingShippingConfig ? Number(editingShippingConfig.dhaka_office_rate) : ''} placeholder="৳" className="w-full px-5 py-3.5 bg-stone-50 border border-stone-100 rounded-xl text-[11px] font-bold outline-none focus:border-primary" />
-                              </div>
-                              <div>
-                                <label className="block text-[8px] font-bold text-stone-400 uppercase tracking-widest mb-1.5">Home Delivery</label>
-                                <input name="dhaka_home_rate" required defaultValue={editingShippingConfig ? Number(editingShippingConfig.dhaka_home_rate) : ''} placeholder="৳" className="w-full px-5 py-3.5 bg-stone-50 border border-stone-100 rounded-xl text-[11px] font-bold outline-none focus:border-primary" />
-                              </div>
-                           </div>
-                        </div>
-
-                        <div className="space-y-6">
-                           <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.2em] border-b border-stone-100 pb-2">Outside Dhaka Rates</h4>
-                           <div className="grid grid-cols-2 gap-4">
-                              <div>
-                                <label className="block text-[8px] font-bold text-stone-400 uppercase tracking-widest mb-1.5">Office Delivery</label>
-                                <input name="outside_office_rate" required defaultValue={editingShippingConfig ? Number(editingShippingConfig.outside_office_rate) : ''} placeholder="৳" className="w-full px-5 py-3.5 bg-stone-50 border border-stone-100 rounded-xl text-[11px] font-bold outline-none focus:border-primary" />
-                              </div>
-                              <div>
-                                <label className="block text-[8px] font-bold text-stone-400 uppercase tracking-widest mb-1.5">Home Delivery</label>
-                                <input name="outside_home_rate" required defaultValue={editingShippingConfig ? Number(editingShippingConfig.outside_home_rate) : ''} placeholder="৳" className="w-full px-5 py-3.5 bg-stone-50 border border-stone-100 rounded-xl text-[11px] font-bold outline-none focus:border-primary" />
-                              </div>
-                           </div>
-                        </div>
-                      </div>
-
-                      <div className="flex justify-end gap-6 pt-10 border-t border-stone-100">
-                        <button type="button" onClick={() => setIsShippingModalOpen(false)} className="text-[11px] font-black text-stone-400 uppercase tracking-widest hover:text-primary transition-colors">Cancel</button>
-                        <button type="submit" className="px-12 py-5 bg-primary text-white text-[11px] font-black uppercase tracking-[0.2em] rounded-2xl shadow-2xl shadow-primary/30 hover:translate-y-[-4px] active:translate-y-0 transition-all">Save Logistics Policy</button>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              </div>
-            )}
+                 </div>
+              </form>
+            </div>
           </div>
         )}
 
-        {activeTab === 'reports' && (
-          <div className="space-y-8 animate-fade-in">
-            <div className="bg-white p-8 rounded-2xl border border-stone-100 shadow-sm">
-               <h2 className="text-xs font-bold text-primary uppercase tracking-[0.2em] mb-6">Business Intelligence Reports</h2>
-               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                 {[
-                   { label: 'Total Revenue', val: `৳ ${dashboardStats?.totalSales || 0}`, growth: 'All Time' },
-                   { label: 'Order Volume', val: dashboardStats?.totalOrders || 0, growth: 'All Time' },
-                   { label: 'Return Rate', val: '0%', growth: 'Stable' },
-                 ].map((report, i) => (
-                   <div key={i} className="p-6 bg-stone-50 rounded-2xl border border-stone-100">
-                     <p className="text-[9px] font-bold text-stone-400 uppercase tracking-widest mb-1">{report.label}</p>
-                     <p className="text-xl font-display font-bold text-primary">{report.val}</p>
-                     <p className="text-[8px] font-bold text-emerald-500 uppercase tracking-widest mt-2">{report.growth} from last month</p>
-                   </div>
-                 ))}
+        {isReviewModalOpen && (
+          <div className="fixed inset-0 bg-primary/40 backdrop-blur-sm z-50 flex items-center justify-center p-6">
+            <div className="bg-white rounded-[3rem] w-full max-w-lg shadow-2xl overflow-hidden">
+               <form onSubmit={handleEditReview} className="p-10 space-y-8">
+                  <div className="flex justify-between items-center">
+                    <h2 className="text-xl font-black text-primary uppercase tracking-tight">Edit Review</h2>
+                    <button type="button" onClick={() => setIsReviewModalOpen(false)} className="material-symbols-outlined text-stone-300">close</button>
+                  </div>
+                  <div className="space-y-6">
+                     <input name="user_name" defaultValue={editingReview?.user_name} placeholder="Name" className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold" />
+                     <textarea name="comment" defaultValue={editingReview?.comment} placeholder="Review Text" className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold min-h-[100px]" />
+                     <input type="file" name="file" className="text-[10px] text-stone-400" />
+                  </div>
+                  <button type="submit" className="w-full py-5 bg-primary text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-3xl shadow-xl shadow-primary/20">Update Review</button>
+               </form>
+            </div>
+          </div>
+        )}
+
+        {isShippingModalOpen && (
+          <div className="fixed inset-0 bg-primary/40 backdrop-blur-sm z-50 flex items-center justify-center p-6">
+            <div className="bg-white rounded-[3rem] w-full max-w-xl shadow-2xl overflow-hidden">
+               <form onSubmit={saveShippingConfig} className="p-10 space-y-8">
+                  <h2 className="text-xl font-black text-primary uppercase tracking-tight">{editingShippingConfig ? 'Edit Rate Rule' : 'Add Rate Rule'}</h2>
+                  <div className="grid grid-cols-2 gap-6">
+                     <select name="category_id" defaultValue={editingShippingConfig?.category_id} className="px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold">
+                        <option value="">All Categories</option>
+                        {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                     </select>
+                     <select name="courier_id" defaultValue={editingShippingConfig?.courier_id} className="px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold">
+                        <option value="">Any Courier</option>
+                        {couriers.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                     </select>
+                  </div>
+                  <div className="grid grid-cols-2 gap-6">
+                     <div>
+                        <label className="block text-[8px] font-black uppercase text-stone-400 mb-2">Dhaka Office / Home</label>
+                        <div className="flex gap-2">
+                           <input name="dhaka_office_rate" defaultValue={editingShippingConfig?.dhaka_office_rate} placeholder="Off" className="w-full px-4 py-3 bg-stone-50 border border-stone-100 rounded-xl text-[11px] font-bold" />
+                           <input name="dhaka_home_rate" defaultValue={editingShippingConfig?.dhaka_home_rate} placeholder="Home" className="w-full px-4 py-3 bg-stone-50 border border-stone-100 rounded-xl text-[11px] font-bold" />
+                        </div>
+                     </div>
+                     <div>
+                        <label className="block text-[8px] font-black uppercase text-stone-400 mb-2">Outside Office / Home</label>
+                        <div className="flex gap-2">
+                           <input name="outside_office_rate" defaultValue={editingShippingConfig?.outside_office_rate} placeholder="Off" className="w-full px-4 py-3 bg-stone-50 border border-stone-100 rounded-xl text-[11px] font-bold" />
+                           <input name="outside_home_rate" defaultValue={editingShippingConfig?.outside_home_rate} placeholder="Home" className="w-full px-4 py-3 bg-stone-50 border border-stone-100 rounded-xl text-[11px] font-bold" />
+                        </div>
+                     </div>
+                  </div>
+                  <button type="submit" className="w-full py-4 bg-primary text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl">Confirm Rate Settings</button>
+               </form>
+            </div>
+          </div>
+        )}
+
+        {isCourierApiModalOpen && (
+          <div className="fixed inset-0 bg-primary/40 backdrop-blur-sm z-50 flex items-center justify-center p-6">
+            <div className="bg-white rounded-[3rem] w-full max-w-lg shadow-2xl overflow-hidden">
+               <div className="p-10 space-y-8">
+                  <h2 className="text-xl font-black text-primary uppercase tracking-tight">{editingCourier?.name} API Config</h2>
+                  <form onSubmit={async (e) => {
+                    e.preventDefault();
+                    const fd = new FormData(e.currentTarget);
+                    const config = Object.fromEntries(fd.entries());
+                    await fetch("/api/admin/couriers", { method: "PUT", body: JSON.stringify({ id: editingCourier.id, api_config: config }) });
+                    setIsCourierApiModalOpen(false);
+                    fetchCouriers();
+                  }} className="space-y-6">
+                     {editingCourier?.name === 'Steadfast' && (
+                        <>
+                           <div className="space-y-2">
+                              <label className="text-[8px] font-black uppercase text-stone-400 ml-1">API Key</label>
+                              <input name="api_key" defaultValue={editingCourier.api_config?.api_key} required className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold" />
+                           </div>
+                           <div className="space-y-2">
+                              <label className="text-[8px] font-black uppercase text-stone-400 ml-1">Secret Key</label>
+                              <input name="secret_key" defaultValue={editingCourier.api_config?.secret_key} required className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold" />
+                           </div>
+                        </>
+                     )}
+                     {editingCourier?.name === 'Pathao' && (
+                        <>
+                           <div className="grid grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                 <label className="text-[8px] font-black uppercase text-stone-400 ml-1">Client ID</label>
+                                 <input name="client_id" defaultValue={editingCourier.api_config?.client_id} required className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold" />
+                              </div>
+                              <div className="space-y-2">
+                                 <label className="text-[8px] font-black uppercase text-stone-400 ml-1">Client Secret</label>
+                                 <input name="client_secret" defaultValue={editingCourier.api_config?.client_secret} required className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold" />
+                              </div>
+                           </div>
+                           <div className="space-y-2">
+                              <label className="text-[8px] font-black uppercase text-stone-400 ml-1">Store ID</label>
+                              <input name="store_id" defaultValue={editingCourier.api_config?.store_id} required className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold" />
+                           </div>
+                           <div className="grid grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                 <label className="text-[8px] font-black uppercase text-stone-400 ml-1">Username</label>
+                                 <input name="username" defaultValue={editingCourier.api_config?.username} required className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold" />
+                              </div>
+                              <div className="space-y-2">
+                                 <label className="text-[8px] font-black uppercase text-stone-400 ml-1">Password</label>
+                                 <input name="password" type="password" defaultValue={editingCourier.api_config?.password} required className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold" />
+                              </div>
+                           </div>
+                        </>
+                     )}
+                     {editingCourier?.name === 'RedX' && (
+                        <div className="space-y-2">
+                           <label className="text-[8px] font-black uppercase text-stone-400 ml-1">API Token</label>
+                           <input name="token" defaultValue={editingCourier.api_config?.token} required className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold" />
+                        </div>
+                     )}
+                     {editingCourier?.name === 'Paperfly' && (
+                        <>
+                           <div className="space-y-2">
+                              <label className="text-[8px] font-black uppercase text-stone-400 ml-1">API Key</label>
+                              <input name="api_key" defaultValue={editingCourier.api_config?.api_key} required className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold" />
+                           </div>
+                           <div className="grid grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                 <label className="text-[8px] font-black uppercase text-stone-400 ml-1">Username</label>
+                                 <input name="username" defaultValue={editingCourier.api_config?.username} required className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold" />
+                              </div>
+                              <div className="space-y-2">
+                                 <label className="text-[8px] font-black uppercase text-stone-400 ml-1">Password</label>
+                                 <input name="password" type="password" defaultValue={editingCourier.api_config?.password} required className="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold" />
+                              </div>
+                           </div>
+                        </>
+                     )}
+                     <button type="submit" className="w-full py-4 bg-primary text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl shadow-lg mt-4">Save Credentials</button>
+                  </form>
                </div>
             </div>
+          </div>
+        )}
 
-            <div className="bg-white rounded-2xl border border-stone-100 shadow-sm overflow-hidden">
-               <div className="p-8 border-b border-stone-50 flex justify-between items-center">
-                 <h3 className="text-[10px] font-bold text-primary uppercase tracking-widest">Sales Summary by Category</h3>
-                 <button className="text-[10px] font-bold text-primary hover:text-accent uppercase tracking-widest flex items-center gap-2">
-                   <span className="material-symbols-outlined text-sm">download</span>
-                   Export CSV
-                 </button>
-               </div>
-               <div className="p-8 text-center text-stone-300 italic py-20">
-                 Generating live data insights... Please wait for the harvest transaction logs.
+        {/* MODAL: Book Courier */}
+        {isBookingModalOpen && (
+          <div className="fixed inset-0 bg-primary/40 backdrop-blur-sm z-50 flex items-center justify-center p-6">
+            <div className="bg-white rounded-[3rem] w-full max-w-lg shadow-2xl overflow-hidden">
+               <div className="p-10 space-y-8">
+                  <div className="flex justify-between items-center">
+                    <h2 className="text-xl font-black text-primary uppercase tracking-tight">Select Logistics Partner</h2>
+                    <button onClick={() => setIsBookingModalOpen(false)} className="material-symbols-outlined text-stone-300">close</button>
+                  </div>
+                  <p className="text-[10px] text-stone-400 uppercase font-bold tracking-widest">Order ID: <span className="text-primary font-black">#{bookingOrder?.id}</span></p>
+                  <div className="grid grid-cols-1 gap-4">
+                    {couriers.filter((c:any) => c.is_active && c.type === 'online').map((c:any) => (
+                      <button 
+                        key={c.id} 
+                        onClick={() => handleBookCourier(c.id)}
+                        disabled={bookingLoading}
+                        className="flex items-center justify-between p-6 bg-stone-50 rounded-3xl border border-stone-100 hover:border-primary group transition-all"
+                      >
+                         <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-primary border border-stone-100 group-hover:scale-110 transition-transform">
+                               <span className="material-symbols-outlined">local_shipping</span>
+                            </div>
+                            <div className="text-left">
+                               <p className="text-[11px] font-black text-primary uppercase tracking-widest">{c.name}</p>
+                               <p className="text-[8px] font-bold text-stone-400 uppercase">Express Booking</p>
+                            </div>
+                         </div>
+                         <span className="material-symbols-outlined text-stone-300 group-hover:text-primary transition-colors">arrow_forward_ios</span>
+                      </button>
+                    ))}
+                    {couriers.filter((c:any) => c.is_active && c.type === 'online').length === 0 && (
+                      <p className="text-[10px] text-stone-400 text-center py-10 italic">No online courier partners activated.</p>
+                    )}
+                  </div>
                </div>
             </div>
           </div>
         )}
       </main>
     </div>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-stone-50">Loading Root...</div>}>
+      <DashboardContent />
+    </Suspense>
   );
 }

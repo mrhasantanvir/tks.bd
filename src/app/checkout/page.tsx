@@ -12,6 +12,10 @@ export default function CheckoutPage() {
    const [packageCouriers, setPackageCouriers] = useState<Record<string, string>>({});
    const [shippingSettings, setShippingSettings] = useState<Record<string, string>>({});
    const [shippingConfigs, setShippingConfigs] = useState<any[]>([]);
+   const [allCouriers, setAllCouriers] = useState<any[]>([]);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [addressId, setAddressId] = useState<number | null>(null);
+    const [fullAddress, setFullAddress] = useState("");
 
    useEffect(() => {
      const fetchSettings = async () => {
@@ -22,7 +26,15 @@ export default function CheckoutPage() {
          setShippingConfigs(data.shipping_configs || []);
        }
      };
+     const fetchCouriers = async () => {
+       const res = await fetch("/api/couriers");
+       if (res.ok) {
+         const data = await res.json();
+         setAllCouriers(data.couriers || []);
+       }
+     };
      fetchSettings();
+     fetchCouriers();
    }, []);
 
   // Group items by harvest date
@@ -77,6 +89,40 @@ export default function CheckoutPage() {
     });
 
     return totalWeightCharge + maxFixedCharge;
+  };
+
+  const handleSubmit = async () => {
+    if (!selectedDistrict || !fullAddress) {
+      alert("Please select district and provide full address");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        body: JSON.stringify({
+          items: cart,
+          district_id: selectedDistrict.id,
+          delivery_type: deliveryType,
+          address_details: fullAddress,
+          package_couriers: packageCouriers,
+          payment_method: "bkash" // Defaulting for now
+        })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        window.location.href = `/order-success?id=${data.order_id}`;
+      } else {
+        const error = await res.json();
+        alert(error.error || "Order placement failed");
+      }
+    } catch (err) {
+      alert("Something went wrong");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const totalShipping = Object.entries(packages).reduce((acc: number, [date, items]: [string, any]) => {
@@ -142,7 +188,13 @@ export default function CheckoutPage() {
 
               <div className="space-y-2">
                 <label className="text-[10px] font-bold text-primary uppercase tracking-widest">Full Address</label>
-                <textarea rows={3} placeholder="House no, Street, Area..." className="w-full px-4 py-4 bg-stone-50 border border-stone-100 rounded-lg outline-none focus:border-primary transition-all text-sm font-medium"></textarea>
+                <textarea 
+                  rows={3} 
+                  value={fullAddress}
+                  onChange={(e) => setFullAddress(e.target.value)}
+                  placeholder="House no, Street, Area..." 
+                  className="w-full px-4 py-4 bg-stone-50 border border-stone-100 rounded-lg outline-none focus:border-primary transition-all text-sm font-medium"
+                ></textarea>
               </div>
             </div>
           </div>
@@ -172,8 +224,8 @@ export default function CheckoutPage() {
                         className="w-full px-3 py-2 bg-stone-50 border border-stone-100 rounded-lg text-[10px] font-bold outline-none focus:border-primary"
                       >
                         <option value="">Preferred Courier</option>
-                        {availableCouriers.map((c: string) => (
-                          <option key={c} value={c}>{c}</option>
+                        {allCouriers.filter(c => c.is_active && pkgItems[0].product.available_couriers?.includes(c.name)).map((c: any) => (
+                          <option key={c.id} value={c.name}>{c.name}</option>
                         ))}
                       </select>
                     </div>
@@ -231,8 +283,12 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            <button className="w-full py-6 bg-accent text-primary font-black text-[11px] uppercase tracking-[0.3em] rounded-xl hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-accent/20">
-              Confirm & Pay Advance
+            <button 
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+              className={`w-full py-6 bg-accent text-primary font-black text-[11px] uppercase tracking-[0.3em] rounded-xl hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-accent/20 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+            >
+              {isSubmitting ? 'Processing...' : 'Confirm & Pay Advance'}
             </button>
             
             <div className="pt-4 flex items-center gap-2 text-[8px] font-bold text-white/20 uppercase tracking-[0.4em] justify-center">

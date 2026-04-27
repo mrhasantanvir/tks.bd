@@ -13,11 +13,27 @@ const outfit = Outfit({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "TKS.bd | Premium Agro Direct from Orchard",
-  description: "Experience the true taste of Rajshahi's finest mangoes and organic harvests, delivered with transparency and care.",
-  keywords: ["Mango", "Rajshahi", "Organic Food", "TKS.bd", "Himsagar", "Langra"],
-};
+import { prisma } from "@/lib/prisma";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await prisma.settings.findMany({
+    where: {
+      key: { in: ['seo_title', 'seo_description', 'seo_keywords'] }
+    }
+  });
+
+  const seoTitle = settings.find(s => s.key === 'seo_title')?.value || "TKS.bd | Premium Agro Direct from Orchard";
+  const seoDesc = settings.find(s => s.key === 'seo_description')?.value || "Experience the true taste of Rajshahi's finest mangoes and organic harvests.";
+  const seoKeywords = settings.find(s => s.key === 'seo_keywords')?.value || "Mango, Rajshahi, Organic Food, TKS.bd";
+
+  return {
+    title: seoTitle,
+    description: seoDesc,
+    keywords: seoKeywords.split(',').map(k => k.trim()),
+    viewport: "width=device-width, initial-scale=1",
+    robots: "index, follow",
+  };
+}
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";

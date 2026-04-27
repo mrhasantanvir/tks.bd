@@ -16,17 +16,18 @@ export async function POST(req: Request) {
 
     if (!order) return NextResponse.json({ error: "Order not found" }, { status: 404 });
 
-    // 2. Fetch Steadfast Credentials from Settings
-    const settings = await prisma.settings.findMany({
-      where: { key: { in: ['steadfast_api_key', 'steadfast_secret_key'] } }
+    // 2. Fetch Steadfast Credentials from Couriers table
+    const courier = await prisma.couriers.findFirst({
+      where: { name: 'Steadfast', is_active: true }
     });
 
-    const config: any = {};
-    settings.forEach(s => config[s.key] = s.value);
+    const api_config = courier?.api_config as any;
 
-    if (!config.steadfast_api_key || !config.steadfast_secret_key) {
-      return NextResponse.json({ error: "Steadfast credentials not configured" }, { status: 400 });
+    if (!api_config?.api_key || !api_config?.secret_key) {
+      return NextResponse.json({ error: "Steadfast credentials not configured in Couriers section" }, { status: 400 });
     }
+
+    const config = api_config;
 
     // 3. Prepare Payload for Steadfast API
     const payload = {

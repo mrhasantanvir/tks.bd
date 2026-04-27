@@ -3,9 +3,26 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { useState, useEffect } from "react";
+
 export default function Footer() {
   const pathname = usePathname();
+  const [settings, setSettings] = useState<any[]>([]);
   const isDashboard = pathname?.startsWith('/dashboard');
+
+  useEffect(() => {
+    async function fetchSettings() {
+      const res = await fetch("/api/settings");
+      if (res.ok) {
+        const data = await res.json();
+        // The API returns { settings: {...}, shipping_configs: [...] }
+        // We need to transform settings object to array if needed, or use as is.
+        // Actually /api/settings returns settings as a Record<string, string>
+        setSettings(data.settings || {});
+      }
+    }
+    if (!isDashboard) fetchSettings();
+  }, [isDashboard]);
 
   if (isDashboard) return null;
 
@@ -43,9 +60,23 @@ export default function Footer() {
         <div className="space-y-4">
           <h4 className="text-primary text-[10px] font-bold uppercase tracking-[0.3em]">Social</h4>
           <div className="flex gap-4">
-            <span className="material-symbols-outlined text-stone-300 hover:text-primary cursor-pointer">facebook</span>
-            <span className="material-symbols-outlined text-stone-300 hover:text-primary cursor-pointer">instagram</span>
+            {settings['site_fb_link'] && (
+              <a href={settings['site_fb_link']} target="_blank" rel="noreferrer" className="material-symbols-outlined text-stone-300 hover:text-primary transition-colors">facebook</a>
+            )}
+            {settings['site_insta_link'] && (
+              <a href={settings['site_insta_link']} target="_blank" rel="noreferrer" className="material-symbols-outlined text-stone-300 hover:text-primary transition-colors">instagram</a>
+            )}
+            {settings['site_youtube_link'] && (
+              <a href={settings['site_youtube_link']} target="_blank" rel="noreferrer" className="material-symbols-outlined text-stone-300 hover:text-primary transition-colors">video_library</a>
+            )}
           </div>
+          {(settings['site_phone'] || settings['site_address']) && (
+            <div className="pt-4 space-y-2 border-t border-stone-100">
+               {settings['site_phone'] && <p className="text-[9px] text-stone-400 font-bold uppercase tracking-widest flex items-center gap-2"><span className="material-symbols-outlined text-sm">call</span> {settings['site_phone']}</p>}
+               {settings['site_whatsapp'] && <p className="text-[9px] text-emerald-500 font-bold uppercase tracking-widest flex items-center gap-2"><span className="material-symbols-outlined text-sm">chat</span> WhatsApp</p>}
+               {settings['site_address'] && <p className="text-[9px] text-stone-400 font-medium leading-relaxed italic">{settings['site_address']}</p>}
+            </div>
+          )}
         </div>
       </div>
       <div className="pt-8 border-t border-stone-100 text-center">

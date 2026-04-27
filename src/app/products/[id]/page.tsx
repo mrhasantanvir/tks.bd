@@ -6,7 +6,7 @@ import ProductPurchaseCard from "@/components/ProductPurchaseCard";
 export default async function ProductDetail({ params }: { params: { id: string } }) {
   const product = await prisma.products.findUnique({
     where: { id: parseInt(params.id) },
-    include: { product_gallery: true }
+    include: { product_gallery: true, categories: true, units: true }
   });
 
   if (!product) {
@@ -17,14 +17,27 @@ export default async function ProductDetail({ params }: { params: { id: string }
   const serializedProduct = {
     ...product,
     price_per_unit: Number(product.price_per_unit),
+    regular_price: Number(product.regular_price || 0),
     available_stock: Number(product.available_stock),
     preorder_booked: Number(product.preorder_booked),
   };
 
+  // Fetch category-specific lots (e.g. for Mango varieties)
+  const lotPresets = await prisma.lots.findMany({
+    where: { category_id: serializedProduct.category_id || 0 },
+    orderBy: { size: 'asc' }
+  });
+
+  const serializedLots = lotPresets.map(l => ({
+    ...l,
+    size: Number(l.size),
+    packaging_charge: Number(l.packaging_charge)
+  }));
+
   // Fetch related products from same category
   const relatedProducts = (await prisma.products.findMany({
     where: { 
-      category: serializedProduct.category,
+      category_id: serializedProduct.category_id,
       NOT: { id: serializedProduct.id }
     },
     take: 4
@@ -94,7 +107,7 @@ export default async function ProductDetail({ params }: { params: { id: string }
               )}
             </div>
 
-            <ProductPurchaseCard product={serializedProduct} />
+            <ProductPurchaseCard product={serializedProduct} lots={serializedLots} />
           </div>
         </div>
 

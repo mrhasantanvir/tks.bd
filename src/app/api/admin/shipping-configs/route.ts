@@ -20,8 +20,8 @@ export async function GET() {
 
   try {
     const configs = await prisma.shipping_configs.findMany({
-      include: { categories: true },
-      orderBy: { courier_name: 'asc' }
+      include: { categories: true, couriers: true },
+      orderBy: { id: 'desc' }
     });
     return NextResponse.json({ configs });
   } catch (err) {
@@ -37,7 +37,7 @@ export async function POST(req: Request) {
     const body = await req.json();
     const config = await prisma.shipping_configs.create({
       data: {
-        courier_name: body.courier_name,
+        courier_id: body.courier_id ? Number(body.courier_id) : null,
         category_id: body.category_id ? Number(body.category_id) : null,
         is_weight_based: body.is_weight_based === true || body.is_weight_based === 'true',
         dhaka_office_rate: Number(body.dhaka_office_rate),
@@ -65,7 +65,7 @@ export async function PUT(req: Request) {
     const config = await prisma.shipping_configs.update({
       where: { id: Number(id) },
       data: {
-        courier_name: updateData.courier_name,
+        courier_id: updateData.courier_id ? Number(updateData.courier_id) : null,
         category_id: updateData.category_id ? Number(updateData.category_id) : null,
         is_weight_based: updateData.is_weight_based === true || updateData.is_weight_based === 'true',
         dhaka_office_rate: Number(updateData.dhaka_office_rate),

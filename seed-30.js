@@ -2,99 +2,111 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('Seeding 30 products and setting up Admin user...');
+  console.log('Seeding products, categories, and units...');
 
-  // 1. Create/Update Admin User
-  const adminMobile = '01700000000';
-  await prisma.users.upsert({
-    where: { mobile_number: adminMobile },
-    update: {
-      role: 'admin',
-      is_verified: true,
-      full_name: 'System Admin'
-    },
-    create: {
-      mobile_number: adminMobile,
-      full_name: 'System Admin',
-      role: 'admin',
-      is_verified: true,
-    }
+  // 1. Setup Categories (Matching slugs with homepage queries)
+  const mangoCat = await prisma.categories.upsert({
+    where: { slug: 'mango' },
+    update: {},
+    create: { name: 'Mango', slug: 'mango' }
   });
-  console.log('Admin user verified/created (01700000000).');
 
-  // Clear existing dummy products
-  await prisma.products.deleteMany();
-  console.log('Cleared existing products.');
+  const teaCat = await prisma.categories.upsert({
+    where: { slug: 'tea' },
+    update: {},
+    create: { name: 'Tea', slug: 'tea' }
+  });
 
-  const mangoImages = [
-    'https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?auto=format&fit=crop&w=500&q=60',
-    'https://images.unsplash.com/photo-1601493700631-2b16ec4b4716?auto=format&fit=crop&w=500&q=60',
-    'https://images.unsplash.com/photo-1591073113125-e46713c829ed?auto=format&fit=crop&w=500&q=60'
-  ];
-  const teaImages = [
-    'https://images.unsplash.com/photo-1576092762791-dd9e2220afa1?auto=format&fit=crop&w=500&q=60',
-    'https://images.unsplash.com/photo-1594631252845-29fc4cc8cbf9?auto=format&fit=crop&w=500&q=60',
-    'https://images.unsplash.com/photo-1564890369478-c89ca6d9cde9?auto=format&fit=crop&w=500&q=60'
-  ];
-  const gurImages = [
-    'https://images.unsplash.com/photo-1604859664539-715bd7f05b4b?auto=format&fit=crop&w=500&q=60',
-    'https://images.unsplash.com/photo-1582236906232-23c4a250dcbd?auto=format&fit=crop&w=500&q=60'
-  ];
+  const gurCat = await prisma.categories.upsert({
+    where: { slug: 'gur' },
+    update: {},
+    create: { name: 'Honey & Gur', slug: 'gur' }
+  });
 
-  // 2. Insert 10 Mangoes
+  // 2. Setup Units
+  const kgUnit = await prisma.units.upsert({
+    where: { name: 'kg' },
+    update: {},
+    create: { name: 'kg' }
+  });
+
+  const gmUnit = await prisma.units.upsert({
+    where: { name: 'gm' },
+    update: {},
+    create: { name: 'gm' }
+  });
+
+  // 3. Setup Admin User
+  await prisma.users.upsert({
+    where: { mobile_number: '01700000000' },
+    update: { role: 'admin' },
+    create: { mobile_number: '01700000000', full_name: 'Admin User', role: 'admin', is_verified: true }
+  });
+
+  // 4. Setup Site Announcements
+  await prisma.site_announcements.deleteMany({});
+  await prisma.site_announcements.create({
+    data: { message: "স্বাগতম TKS.bd-এ! নতুন মৌসুমের সেরা আম ও খাঁটি পণ্য পেতে অর্ডার করুন।", type: "info" }
+  });
+
+  // 5. Insert 30 Products
+  console.log('Clearing old products...');
+  await prisma.products.deleteMany({});
+
   const mangoNames = ['Himsagar', 'Langra', 'Fazli', 'Amrapali', 'Gopalbhog', 'Haribhanga', 'Khirsapat', 'Lakhna', 'Mohanbhog', 'Surma Fazli'];
   for (let i = 0; i < 10; i++) {
     await prisma.products.create({
       data: {
         name: `Premium ${mangoNames[i]} Mango`,
-        short_description: `Fresh ${mangoNames[i]} directly from Rajshahi orchards.`,
-        detailed_description: `Enjoy the sweet and juicy ${mangoNames[i]} mango. 100% organic and chemical-free, handpicked from our best orchards.`,
-        price_per_unit: 100 + (Math.random() * 50).toFixed(0),
-        unit_type: 'kg',
+        short_description: `${mangoNames[i]} Mango directly from Rajshahi orchards.`,
+        detailed_description: "Enjoy the sweet and juicy Rajshahi mangoes. 100% organic and chemical-free.",
+        price_per_unit: 120 + (i * 10),
         available_stock: 500,
-        category: 'mango',
-        image_url: mangoImages[i % mangoImages.length],
-        is_preorder: i % 3 === 0,
-        harvest_date: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000)
+        category_id: mangoCat.id,
+        unit_id: kgUnit.id,
+        image_url: `https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?auto=format&fit=crop&w=500&q=60`,
+        is_preorder: true,
+        harvest_date: new Date("2026-05-15")
       }
     });
   }
 
-  // 3. Insert 10 Teas
-  const teaNames = ['Sylhet Black', 'Green Organic', 'Oolong Reserve', 'White Pearl', 'Mint Blend', 'Jasmine Bloom', 'Earl Grey Classic', 'Assam Strong', 'Darjeeling First Flush', 'Spiced Masala'];
+  const teaNames = ['Panchagarh Black Tea', 'Sylhet Green Tea', 'Organic Oolong', 'Lemon Infusion', 'Masala Chai Blend', 'Silver Needle White', 'Strong CTC Tea', 'Dust Tea Premium', 'Golden Flowery Orange Pekoe', 'Flowery Broken Orange Pekoe'];
   for (let i = 0; i < 10; i++) {
     await prisma.products.create({
       data: {
-        name: `${teaNames[i]} Tea`,
-        short_description: `Aromatic ${teaNames[i]} leaves.`,
-        detailed_description: `Sourced from the premium gardens of Sylhet. The ${teaNames[i]} tea offers a rich, soothing experience.`,
-        price_per_unit: 400 + (Math.random() * 300).toFixed(0),
-        unit_type: 'kg',
+        name: teaNames[i],
+        short_description: `Finest ${teaNames[i]} from the hills of Bangladesh.`,
+        detailed_description: "Expertly picked and processed tea leaves for the perfect cup.",
+        price_per_unit: 450 + (i * 50),
         available_stock: 100,
-        category: 'tea',
-        image_url: teaImages[i % teaImages.length],
+        category_id: teaCat.id,
+        unit_id: gmUnit.id,
+        lot_size: 500,
+        image_url: "https://images.unsplash.com/photo-1594631252845-29fc4cc8cde9?auto=format&fit=crop&w=500&q=60",
+        is_preorder: false
       }
     });
   }
 
-  // 4. Insert 10 Gurs
-  const gurNames = ['Nolen Gur', 'Khejur Gur Solid', 'Khejur Gur Liquid', 'Tal Gur', 'Akher Gur (Sugarcane)', 'Patali Gur', 'Jhola Gur', 'Organic Honey Gur', 'Special Winter Gur', 'Premium Rajshahi Gur'];
+  const honeyNames = ['Sundarban Khalisha Honey', 'Litchi Flower Honey', 'Black Seed (Kalo Jira) Honey', 'Mustard Flower Honey', 'Wild Multi-flower Honey', 'Premium Date Molasses (Gur)', 'Nolen Gur Solid', 'Liquid Khejur Gur', 'Sugarcane Molasses', 'Organic Honeycomb'];
   for (let i = 0; i < 10; i++) {
     await prisma.products.create({
       data: {
-        name: `${gurNames[i]}`,
-        short_description: `Traditional ${gurNames[i]} for authentic taste.`,
-        detailed_description: `Experience the rich, earthy sweetness of ${gurNames[i]}. Perfect for making traditional winter pithas and sweets.`,
-        price_per_unit: 200 + (Math.random() * 100).toFixed(0),
-        unit_type: 'kg',
-        available_stock: 200,
-        category: 'gur',
-        image_url: gurImages[i % gurImages.length],
+        name: honeyNames[i],
+        short_description: `Pure and authentic ${honeyNames[i]}.`,
+        detailed_description: "Ethically sourced and tested for purity. Traditional taste of Bengal.",
+        price_per_unit: 600 + (i * 100),
+        available_stock: 50,
+        category_id: gurCat.id,
+        unit_id: kgUnit.id,
+        image_url: "https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=500&q=60",
+        is_preorder: false
       }
     });
   }
 
-  console.log('Seeded 30 products successfully!');
+  console.log('✅ Seeding completed successfully with correct slugs (mango, tea, gur)!');
 }
 
 main()
