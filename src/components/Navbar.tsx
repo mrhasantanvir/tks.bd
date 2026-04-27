@@ -1,16 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
-import { useEffect, useState } from "react";
 
 export default function Navbar() {
   const { cart } = useCart();
   const pathname = usePathname();
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     fetch("/api/user/profile").then(res => res.json()).then(data => setUser(data.user)).catch(() => setUser(null));
