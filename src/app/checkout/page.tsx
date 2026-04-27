@@ -277,7 +277,7 @@ export default function CheckoutPage() {
             <h3 className="text-[10px] font-black text-stone-400 uppercase tracking-[0.3em] px-6">Your Consignments</h3>
             {Object.entries(packages).map(([date, items]: [string, any], index) => {
               const packageKey = `pkg-${date}`;
-              const availableInProduct = items[0].available_couriers ? JSON.parse(items[0].available_couriers) : [];
+              const availableInProduct = items[0].available_couriers || [];
               
               return (
                 <div key={date} className="bg-white p-8 md:p-10 rounded-[2.5rem] border-l-[12px] border-primary shadow-sm space-y-8 overflow-hidden">
