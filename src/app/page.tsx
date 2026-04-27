@@ -39,10 +39,10 @@ export default async function Home() {
   });
 
   return (
-    <div className="min-h-screen bg-[#fcfdfc] font-sans text-on-background selection:bg-primary/10 pt-0 md:pt-1">
+    <div className="min-h-screen bg-[#fcfdfc] font-sans text-on-background selection:bg-primary/10 pt-16 md:pt-20">
       <main>
         {/* Bright Analytical Hero Section (Screenshot Style) */}
-        <section className="relative flex flex-col items-center justify-center px-6 text-center overflow-hidden py-1 md:py-2">
+        <section className="relative flex flex-col items-center justify-center px-6 text-center overflow-hidden py-6 md:py-10">
           {/* Background Gradient & Grid */}
           <div className="absolute inset-0 bg-gradient-to-b from-[#f0f9f1] via-[#fffdf0] to-white -z-10"></div>
           <div className="absolute inset-0 opacity-[0.03] -z-10" style={{backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '24px 24px'}}></div>
