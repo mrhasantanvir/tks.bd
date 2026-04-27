@@ -39,42 +39,41 @@ export default async function Home() {
   });
 
   return (
-    <div className="min-h-screen bg-[#fcfdfc] font-sans text-on-background selection:bg-primary/10 pt-4 md:pt-6">
+    <div className="min-h-screen bg-[#fcfdfc] font-sans text-on-background selection:bg-primary/10 pt-0 md:pt-1">
       <main>
         {/* Bright Analytical Hero Section (Screenshot Style) */}
-        <section className="relative min-h-[20vh] flex flex-col items-center justify-center px-6 text-center overflow-hidden pt-2 md:pt-0 pb-2">
+        <section className="relative flex flex-col items-center justify-center px-6 text-center overflow-hidden py-1 md:py-2">
           {/* Background Gradient & Grid */}
           <div className="absolute inset-0 bg-gradient-to-b from-[#f0f9f1] via-[#fffdf0] to-white -z-10"></div>
           <div className="absolute inset-0 opacity-[0.03] -z-10" style={{backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '24px 24px'}}></div>
           
-          <div className="max-w-4xl mx-auto space-y-4 animate-fade-in">
+          <div className="max-w-4xl mx-auto space-y-1.5 md:space-y-2 animate-fade-in">
             {/* Top Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-1 bg-white border border-stone-100 rounded-full shadow-sm">
-              <span className="text-[9px] font-bold text-emerald-600 flex items-center gap-1">
-                <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
-                Bangladesh's Most Trusted Orchard-to-Home Platform
+            <div className="inline-flex items-center gap-2 px-3 py-0.5 bg-white border border-stone-100 rounded-full shadow-sm mt-1">
+              <span className="text-[8px] font-bold text-emerald-600 flex items-center gap-1 uppercase tracking-wider">
+                <span className="w-1 h-1 bg-emerald-500 rounded-full animate-pulse"></span>
+                Trust Orchard-to-Home
               </span>
             </div>
             
             {/* Main Heading */}
-            <h1 className="text-3xl md:text-6xl font-display font-black text-[#1a2b3c] leading-[1.1] tracking-tight">
-              Authentic & Premium <br /> 
-              <span className="bg-gradient-to-r from-emerald-600 via-emerald-500 to-amber-500 bg-clip-text text-transparent">Organic Harvest</span>
+            <h1 className="text-2xl md:text-5xl font-display font-black text-[#1a2b3c] leading-tight tracking-tight">
+              Premium <span className="bg-gradient-to-r from-emerald-600 to-amber-500 bg-clip-text text-transparent">Organic Harvest</span>
             </h1>
             
             {/* Description */}
-            <p className="text-[11px] md:text-sm text-stone-500 max-w-xl mx-auto leading-relaxed font-medium">
-              Sourced directly from the lush orchards of Rajshahi and the finest tea gardens. 
-              Experience 100% chemical-free organic produce, delivered directly to your table.
+            <p className="hidden md:block text-[11px] text-stone-500 max-w-lg mx-auto leading-relaxed font-medium">
+              Sourced directly from the lush orchards of Rajshahi. 
+              100% chemical-free organic produce, delivered to your table.
             </p>
             
             {/* CTA Buttons */}
-            <div className="flex flex-wrap justify-center gap-3 pt-2">
-              <Link href="#mangoes" className="px-6 py-3 bg-[#1a2b3c] text-white font-bold text-[9px] uppercase tracking-[0.2em] rounded-xl hover:scale-105 transition-all shadow-lg">
-                Shop Collection
+            <div className="flex flex-wrap justify-center gap-2 pt-1 pb-1">
+              <Link href="#mangoes" className="px-4 py-2 bg-[#1a2b3c] text-white font-bold text-[8px] uppercase tracking-[0.2em] rounded-lg hover:scale-105 transition-all shadow-lg">
+                Shop Now
               </Link>
-              <Link href="#contact" className="px-6 py-3 bg-white border border-stone-200 text-stone-600 font-bold text-[9px] uppercase tracking-[0.2em] rounded-xl hover:bg-stone-50 transition-all">
-                Contact Orchard
+              <Link href="#contact" className="px-4 py-2 bg-white border border-stone-200 text-stone-600 font-bold text-[8px] uppercase tracking-[0.2em] rounded-lg hover:bg-stone-50 transition-all">
+                Contact
               </Link>
             </div>
           </div>
