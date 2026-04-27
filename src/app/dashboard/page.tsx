@@ -6,8 +6,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 // --- Sub-Components ---
 
-function Sidebar({ activeTab, setActiveTab, handleLogout, isOpen, setIsOpen }: any) {
-  const menuItems = [
+function Sidebar({ activeTab, setActiveTab, handleLogout, isOpen, setIsOpen, role }: any) {
+  const adminItems = [
     { id: 'overview', icon: 'dashboard', label: 'Overview' },
     { id: 'orders', icon: 'shopping_cart', label: 'Orders' },
     { id: 'products', icon: 'inventory_2', label: 'Products' },
@@ -16,6 +16,14 @@ function Sidebar({ activeTab, setActiveTab, handleLogout, isOpen, setIsOpen }: a
     { id: 'settings', icon: 'settings', label: 'Site Settings' },
     { id: 'reports', icon: 'analytics', label: 'Reports' },
   ];
+
+  const customerItems = [
+    { id: 'overview', icon: 'home', label: 'My Home' },
+    { id: 'my_orders', icon: 'receipt_long', label: 'Order History' },
+    { id: 'contact', icon: 'support_agent', label: 'Support & Help' },
+  ];
+
+  const menuItems = role === 'admin' ? adminItems : customerItems;
 
   return (
     <>
@@ -63,7 +71,7 @@ function Sidebar({ activeTab, setActiveTab, handleLogout, isOpen, setIsOpen }: a
 }
 
 function AdminHeader({ activeTab, user, setIsSidebarOpen }: any) {
-  const titles: Record<string, string> = {
+  const adminTitles: Record<string, string> = {
     overview: "Administrator Overview",
     orders: "Fulfillment Center",
     products: "Inventory & Catalog",
@@ -72,6 +80,14 @@ function AdminHeader({ activeTab, user, setIsSidebarOpen }: any) {
     settings: "Global Configuration",
     reports: "Operational Insights"
   };
+
+  const customerTitles: Record<string, string> = {
+    overview: "Welcome Back",
+    my_orders: "Order Ledger",
+    contact: "Contact Center"
+  };
+
+  const titles = user?.role === 'admin' ? adminTitles : customerTitles;
 
   return (
     <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 md:mb-12 gap-6">
@@ -85,7 +101,7 @@ function AdminHeader({ activeTab, user, setIsSidebarOpen }: any) {
         <div>
           <h1 className="text-xl md:text-3xl font-display font-bold text-primary tracking-tighter">{titles[activeTab] || "Dashboard"}</h1>
           <p className="hidden md:block text-[10px] font-bold text-stone-400 uppercase tracking-widest mt-1">
-            Welcome, {user?.name || 'Admin'}. System: <span className="text-emerald-500">Operational</span>
+            {user?.role === 'admin' ? `System: ` : `Account: `} <span className={user?.role === 'admin' ? 'text-emerald-500' : 'text-primary'}>{user?.role === 'admin' ? 'Operational' : 'Verified'}</span>
           </p>
         </div>
       </div>
@@ -102,7 +118,176 @@ function AdminHeader({ activeTab, user, setIsSidebarOpen }: any) {
   );
 }
 
-// --- Tab Components ---
+// --- Customer Components ---
+
+function CustomerOverviewTab({ user, orders }: any) {
+  const latestOrder = orders?.[0];
+  const stats = [
+    { label: 'Total Spent', value: `৳${orders?.reduce((acc:any, o:any)=>acc+Number(o.grand_total), 0).toLocaleString()}`, icon: 'savings' },
+    { label: 'Total Orders', value: orders?.length || '0', icon: 'shopping_bag' },
+    { label: 'Saved Address', value: user?.addresses?.length || '1', icon: 'location_on' },
+  ];
+
+  return (
+    <div className="space-y-10 animate-fade-in">
+       <div className="bg-primary rounded-[3rem] p-10 md:p-16 text-white relative overflow-hidden shadow-2xl">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-accent/10 blur-[100px] -mr-32 -mt-32 rounded-full"></div>
+          <div className="relative z-10 space-y-6">
+             <h2 className="text-3xl md:text-5xl font-display font-black tracking-tight">Hello, {user?.full_name || 'Valued Customer'}</h2>
+             <p className="text-white/60 text-xs md:text-sm max-w-xl leading-relaxed">Welcome back to your TKS.bd sanctuary. Here you can track your harvests, manage your address, and connect with our support team.</p>
+             <div className="flex flex-wrap gap-4 pt-4">
+                {stats.map((s, i) => (
+                  <div key={i} className="bg-white/10 backdrop-blur-md px-6 py-4 rounded-2xl border border-white/5">
+                     <span className="text-[9px] font-black uppercase tracking-widest text-white/40 block mb-1">{s.label}</span>
+                     <span className="text-xl font-black text-accent">{s.value}</span>
+                  </div>
+                ))}
+             </div>
+          </div>
+       </div>
+
+       {latestOrder && (
+         <div className="bg-white rounded-[3rem] border border-stone-100 p-10 shadow-sm">
+            <h3 className="text-sm font-black text-primary uppercase tracking-[0.2em] mb-8">Latest Consignment</h3>
+            <div className="flex flex-col md:flex-row justify-between items-center gap-8">
+               <div className="flex gap-6 items-center">
+                  <div className="w-20 h-20 bg-stone-50 rounded-3xl flex items-center justify-center text-primary border border-stone-100">
+                     <span className="material-symbols-outlined text-4xl">inventory_2</span>
+                  </div>
+                  <div>
+                     <p className="text-xl font-black text-primary">Order #{latestOrder.id}</p>
+                     <p className="text-[10px] text-stone-400 font-bold uppercase mt-1">Placed on {new Date(latestOrder.created_at).toLocaleDateString()}</p>
+                  </div>
+               </div>
+               <div className="flex flex-col items-end">
+                  <span className={`px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest ${latestOrder.order_status === 'pending' ? 'bg-orange-50 text-orange-600' : 'bg-emerald-50 text-emerald-600'}`}>
+                    {latestOrder.order_status}
+                  </span>
+                  <p className="text-[9px] text-stone-300 font-bold uppercase mt-3">Estimated arrival: Processing</p>
+               </div>
+            </div>
+         </div>
+       )}
+    </div>
+  );
+}
+
+function CustomerOrdersTab({ orders }: any) {
+  return (
+    <div className="bg-white rounded-[3rem] border border-stone-100 shadow-sm overflow-hidden animate-fade-in">
+       <div className="overflow-x-auto">
+          <table className="w-full text-left min-w-[800px]">
+             <thead className="bg-stone-50 border-b border-stone-100">
+                <tr>
+                   <th className="px-10 py-8 text-[10px] font-black text-stone-400 uppercase tracking-widest">Consignment ID</th>
+                   <th className="px-10 py-8 text-[10px] font-black text-stone-400 uppercase tracking-widest">Items</th>
+                   <th className="px-10 py-8 text-[10px] font-black text-stone-400 uppercase tracking-widest text-center">Amount</th>
+                   <th className="px-10 py-8 text-[10px] font-black text-stone-400 uppercase tracking-widest text-center">Status</th>
+                   <th className="px-10 py-8 text-[10px] font-black text-stone-400 uppercase tracking-widest text-right">Receipt</th>
+                </tr>
+             </thead>
+             <tbody className="divide-y divide-stone-50">
+                {orders?.map((order: any) => (
+                  <tr key={order.id} className="hover:bg-stone-50/50 transition-all">
+                     <td className="px-10 py-8">
+                        <span className="text-[12px] font-black text-primary">#{order.id}</span>
+                        <p className="text-[9px] text-stone-400 mt-1 uppercase font-bold">{new Date(order.created_at).toLocaleDateString()}</p>
+                     </td>
+                     <td className="px-10 py-8">
+                        <div className="flex -space-x-4">
+                           {order.order_items?.slice(0, 3).map((item: any, i: number) => (
+                             <div key={i} className="w-10 h-10 rounded-full border-2 border-white bg-stone-100 overflow-hidden shadow-sm">
+                                <img src={item.products?.image_url || "/placeholder.jpg"} className="w-full h-full object-cover" alt="" />
+                             </div>
+                           ))}
+                           {order.order_items?.length > 3 && (
+                             <div className="w-10 h-10 rounded-full border-2 border-white bg-primary text-white flex items-center justify-center text-[10px] font-bold">
+                               +{order.order_items.length - 3}
+                             </div>
+                           )}
+                        </div>
+                     </td>
+                     <td className="px-10 py-8 text-center">
+                        <span className="text-[13px] font-black text-primary">৳{order.grand_total}</span>
+                     </td>
+                     <td className="px-10 py-8 text-center">
+                        <span className={`px-5 py-2 rounded-full text-[9px] font-black uppercase tracking-widest ${
+                          order.order_status === 'pending' ? 'bg-orange-50 text-orange-600' : 'bg-emerald-50 text-emerald-600'
+                        }`}>
+                          {order.order_status}
+                        </span>
+                     </td>
+                     <td className="px-10 py-8 text-right">
+                        <button className="p-3 hover:bg-stone-100 rounded-xl text-stone-400 hover:text-primary transition-all">
+                           <span className="material-symbols-outlined text-xl">download_for_offline</span>
+                        </button>
+                     </td>
+                  </tr>
+                ))}
+             </tbody>
+          </table>
+       </div>
+    </div>
+  );
+}
+
+function CustomerContactTab({ user }: any) {
+  const [isSent, setIsSent] = useState(false);
+  
+  const handleSupport = async (e: any) => {
+    e.preventDefault();
+    // Simplified logic
+    setIsSent(true);
+    setTimeout(() => setIsSent(false), 3000);
+  };
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 animate-fade-in">
+       <div className="bg-white p-10 md:p-16 rounded-[3.5rem] border border-stone-100 shadow-sm space-y-10">
+          <div>
+             <h2 className="text-2xl font-display font-black text-primary uppercase tracking-tight">Technical Liaison</h2>
+             <p className="text-xs font-bold text-stone-400 uppercase tracking-widest mt-2">Connect with our support infrastructure</p>
+          </div>
+          
+          <form onSubmit={handleSupport} className="space-y-6">
+             <div className="space-y-2">
+                <label className="text-[10px] font-black text-stone-400 uppercase tracking-widest ml-1">Subject</label>
+                <select className="w-full px-6 py-5 bg-stone-50 border border-stone-100 rounded-2xl text-[11px] font-bold appearance-none">
+                   <option>Inquiry regarding harvest quality</option>
+                   <option>Logistics & Delivery delay</option>
+                   <option>Payment verification issue</option>
+                   <option>General appreciation</option>
+                </select>
+             </div>
+             <div className="space-y-2">
+                <label className="text-[10px] font-black text-stone-400 uppercase tracking-widest ml-1">Message Body</label>
+                <textarea rows={5} placeholder="Describe your inquiry in detail..." className="w-full px-6 py-5 bg-stone-50 border border-stone-100 rounded-2xl text-sm font-medium outline-none focus:border-primary"></textarea>
+             </div>
+             <button type="submit" className="w-full py-6 bg-primary text-white text-[11px] font-black uppercase tracking-[0.3em] rounded-2xl shadow-xl shadow-primary/20 flex items-center justify-center gap-3">
+               {isSent ? <><span className="material-symbols-outlined text-lg">check_circle</span> Transmission Successful</> : <><span className="material-symbols-outlined text-lg">send</span> Initialize Transmission</>}
+             </button>
+          </form>
+       </div>
+       
+       <div className="space-y-8">
+          <div className="bg-primary text-white p-12 rounded-[3rem] shadow-2xl space-y-6 relative overflow-hidden">
+             <div className="absolute bottom-0 left-0 w-32 h-32 bg-accent/20 blur-[60px] -ml-16 -mb-16 rounded-full"></div>
+             <span className="material-symbols-outlined text-4xl text-accent">verified_user</span>
+             <h3 className="text-xl font-display font-black uppercase tracking-widest">Guaranteed Response</h3>
+             <p className="text-white/60 text-xs leading-relaxed">Our liaison team is committed to responding to all technical and general inquiries within 24 operational hours. Your feedback is the soil in which we grow.</p>
+          </div>
+          <div className="bg-white p-12 rounded-[3rem] border border-stone-100 shadow-sm space-y-6">
+             <span className="material-symbols-outlined text-4xl text-primary">local_post_office</span>
+             <h3 className="text-xl font-display font-black uppercase tracking-widest text-primary">Direct Hotline</h3>
+             <div className="space-y-2">
+                <p className="text-xs font-bold text-stone-400 uppercase tracking-widest">Phone Support</p>
+                <p className="text-xl font-black text-primary">+880 1XXXXXXXXX</p>
+             </div>
+          </div>
+       </div>
+    </div>
+  );
+}
 
 function OverviewTab({ stats, announcements }: any) {
   const statCards = [
@@ -739,6 +924,12 @@ function DashboardContent() {
   const activeTab = searchParams.get("tab") || "overview";
 
   useEffect(() => {
+    if (user && user.role === 'customer' && !searchParams.get("tab")) {
+       // Optional: Redirect to specific customer tab if needed
+    }
+  }, [user, searchParams]);
+
+  useEffect(() => {
     async function init() {
       try {
         const res = await fetch("/api/user/profile");
@@ -759,13 +950,20 @@ function DashboardContent() {
   }, [router]);
 
   useEffect(() => {
-    if (activeTab === 'overview') fetchDashboardStats();
-    if (activeTab === 'orders') fetchOrders();
-    if (activeTab === 'products') { fetchProducts(); fetchCategories(); fetchUnits(); fetchCouriers(); fetchLots(); }
-    if (activeTab === 'reviews') fetchReviews();
-    if (activeTab === 'couriers') { fetchCouriers(); fetchShippingConfigs(); fetchCategories(); }
-    if (activeTab === 'settings') fetchSettings();
-  }, [activeTab]);
+    if (!user) return;
+
+    if (user.role === 'admin') {
+      if (activeTab === 'overview') fetchDashboardStats();
+      if (activeTab === 'orders') fetchOrders();
+      if (activeTab === 'products') { fetchProducts(); fetchCategories(); fetchUnits(); fetchCouriers(); fetchLots(); }
+      if (activeTab === 'reviews') fetchReviews();
+      if (activeTab === 'couriers') { fetchCouriers(); fetchShippingConfigs(); fetchCategories(); }
+      if (activeTab === 'settings') fetchSettings();
+    } else {
+      // Customer Tabs
+      if (activeTab === 'overview' || activeTab === 'my_orders') fetchOrders();
+    }
+  }, [activeTab, user]);
 
   useEffect(() => {
      const cat = categories.find(c => c.id == selectedCategoryId);
@@ -790,7 +988,11 @@ function DashboardContent() {
 
   async function fetchOrders() {
     setOrdersLoading(true);
-    try { const res = await fetch("/api/admin/orders"); if (res.ok) setOrders((await res.json()).orders || []); } catch (e) {} finally { setOrdersLoading(false); }
+    try { 
+      const endpoint = user?.role === 'admin' ? "/api/admin/orders" : "/api/orders";
+      const res = await fetch(endpoint); 
+      if (res.ok) setOrders((await res.json()).orders || []); 
+    } catch (e) {} finally { setOrdersLoading(false); }
   }
 
   async function fetchProducts() {
@@ -961,18 +1163,25 @@ function DashboardContent() {
         handleLogout={async () => { await fetch("/api/auth/logout", {method:"POST"}); router.push("/"); }}
         isOpen={isSidebarOpen}
         setIsOpen={setIsSidebarOpen}
+        role={user?.role}
       />
       
       <main className="flex-1 transition-all w-full max-w-full overflow-hidden">
         <AdminHeader activeTab={activeTab} user={user} setIsSidebarOpen={setIsSidebarOpen} />
         
         <div className="flex-1 p-6 lg:p-12 min-h-screen">
-             {activeTab === 'overview' && <OverviewTab stats={dashboardStats} announcements={announcements} />}
-             {activeTab === 'orders' && <OrdersTab orders={orders} loading={ordersLoading} checkFraud={checkFraud} fraudResults={fraudResults} fraudLoading={fraudLoading} setBookingOrder={setBookingOrder} setIsBookingModalOpen={setIsBookingModalOpen} />}
-             {activeTab === 'products' && <ProductsTab products={products} loading={productsLoading} setIsAddModalOpen={setIsAddModalOpen} setEditingProduct={setEditingProduct} setIsEditModalOpen={setIsEditModalOpen} deleteProduct={deleteProduct} units={units} fetchUnits={fetchUnits} lots={lots} fetchLots={fetchLots} categories={categories} />}
-             {activeTab === 'reviews' && <ReviewsTab reviews={reviews} toggleReview={toggleReview} deleteReview={deleteReview} setEditingReview={setEditingReview} setIsReviewModalOpen={setIsReviewModalOpen} setIsAddReviewModalOpen={setIsAddReviewModalOpen} />}
-             {activeTab === 'couriers' && <CouriersTab couriers={couriers} toggleCourier={toggleCourier} configureCourier={(c:any)=>{setEditingCourier(c); setIsCourierApiModalOpen(true);}} shippingConfigs={shippingConfigs} setEditingShippingConfig={setEditingShippingConfig} setIsShippingModalOpen={setIsShippingModalOpen} />}
-             {activeTab === 'settings' && <SettingsTab settings={settings} saveSetting={saveSetting} uploadImage={handleUpload} />}
+             {/* Admin Tabs */}
+             {user?.role === 'admin' && activeTab === 'overview' && <OverviewTab stats={dashboardStats} announcements={announcements} />}
+             {user?.role === 'admin' && activeTab === 'orders' && <OrdersTab orders={orders} loading={ordersLoading} checkFraud={checkFraud} fraudResults={fraudResults} fraudLoading={fraudLoading} setBookingOrder={setBookingOrder} setIsBookingModalOpen={setIsBookingModalOpen} />}
+             {user?.role === 'admin' && activeTab === 'products' && <ProductsTab products={products} loading={productsLoading} setIsAddModalOpen={setIsAddModalOpen} setEditingProduct={setEditingProduct} setIsEditModalOpen={setIsEditModalOpen} deleteProduct={deleteProduct} units={units} fetchUnits={fetchUnits} lots={lots} fetchLots={fetchLots} categories={categories} />}
+             {user?.role === 'admin' && activeTab === 'reviews' && <ReviewsTab reviews={reviews} toggleReview={toggleReview} deleteReview={deleteReview} setEditingReview={setEditingReview} setIsReviewModalOpen={setIsReviewModalOpen} setIsAddReviewModalOpen={setIsAddReviewModalOpen} />}
+             {user?.role === 'admin' && activeTab === 'couriers' && <CouriersTab couriers={couriers} toggleCourier={toggleCourier} configureCourier={(c:any)=>{setEditingCourier(c); setIsCourierApiModalOpen(true);}} shippingConfigs={shippingConfigs} setEditingShippingConfig={setEditingShippingConfig} setIsShippingModalOpen={setIsShippingModalOpen} />}
+             {user?.role === 'admin' && activeTab === 'settings' && <SettingsTab settings={settings} saveSetting={saveSetting} uploadImage={handleUpload} />}
+             
+             {/* Customer Tabs */}
+             {user?.role === 'customer' && activeTab === 'overview' && <CustomerOverviewTab user={user} orders={orders} />}
+             {user?.role === 'customer' && activeTab === 'my_orders' && <CustomerOrdersTab orders={orders} />}
+             {user?.role === 'customer' && activeTab === 'contact' && <CustomerContactTab user={user} />}
         </div>
 
         {/* MODALS: Product Add/Edit (FULL FEATURED) */}
