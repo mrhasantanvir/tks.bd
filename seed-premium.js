@@ -3,92 +3,87 @@ const prisma = new PrismaClient();
 
 async function main() {
   console.log('🧹 Cleaning old data...');
-  await prisma.product.deleteMany({});
-  await prisma.category.deleteMany({});
-  await prisma.unit.deleteMany({});
-  await prisma.lot.deleteMany({});
+  // Note: Model names in Prisma client match the schema model names (plural here)
+  await prisma.order_items.deleteMany({});
+  await prisma.product_gallery.deleteMany({});
+  await prisma.reviews.deleteMany({});
+  await prisma.products.deleteMany({});
+  await prisma.lots.deleteMany({});
+  await prisma.categories.deleteMany({});
+  await prisma.units.deleteMany({});
 
   console.log('🌱 Seeding premium product data...');
 
-  // 1. Create or Update Categories
-  const mangoCat = await prisma.category.upsert({
-    where: { name: 'Mangoes' },
-    update: {},
-    create: { name: 'Mangoes', description: 'Fresh Rajshahi Mangoes' }
+  // 1. Create Categories with correct Slugs
+  const mangoCat = await prisma.categories.create({
+    data: { name: 'Mangoes', slug: 'mango' }
   });
 
-  const teaCat = await prisma.category.upsert({
-    where: { name: 'Tea' },
-    update: {},
-    create: { name: 'Tea', description: 'Premium Sreemangal Tea' }
+  const teaCat = await prisma.categories.create({
+    data: { name: 'Tea', slug: 'tea' }
   });
 
-  const gurCat = await prisma.category.upsert({
-    where: { name: 'Date-Palm Gur' },
-    update: {},
-    create: { name: 'Date-Palm Gur', description: 'Traditional Heritage Gur' }
+  const gurCat = await prisma.categories.create({
+    data: { name: 'Date-Palm Gur', slug: 'gur' }
   });
 
   // 2. Create Units
-  const kgUnit = await prisma.unit.upsert({
-    where: { name: 'KG' },
-    update: {},
-    create: { name: 'KG' }
+  const kgUnit = await prisma.units.create({
+    data: { name: 'KG' }
   });
 
-  const packetUnit = await prisma.unit.upsert({
-    where: { name: 'Packet' },
-    update: {},
-    create: { name: 'Packet' }
+  const packetUnit = await prisma.units.create({
+    data: { name: 'Packet' }
   });
 
   // 3. Create Lots for Mangoes
-  const lot5kg = await prisma.lot.upsert({
-    where: { id: 1 },
-    update: { name: '5 KG Lot', weight: 5, packaging_charge: 50, courier_charge: 100 },
-    create: { id: 1, name: '5 KG Lot', weight: 5, packaging_charge: 50, courier_charge: 100, category_id: mangoCat.id }
+  await prisma.lots.create({
+    data: { name: '5 KG Lot', size: 5, packaging_charge: 50, category_id: mangoCat.id }
   });
 
-  const lot10kg = await prisma.lot.upsert({
-    where: { id: 2 },
-    update: { name: '10 KG Lot', weight: 10, packaging_charge: 80, courier_charge: 180 },
-    create: { id: 2, name: '10 KG Lot', weight: 10, packaging_charge: 80, courier_charge: 180, category_id: mangoCat.id }
+  await prisma.lots.create({
+    data: { name: '10 KG Lot', size: 10, packaging_charge: 80, category_id: mangoCat.id }
   });
 
   // 4. Create Premium Products
-  await prisma.product.create({
+  await prisma.products.create({
     data: {
       name: 'Premium Rajshahi Himsagar',
-      description: 'The king of mangoes, sourced directly from the finest orchards of Rajshahi. Naturally ripened, chemical-free, and incredibly sweet with a buttery texture.',
-      price: 120,
+      short_description: 'The king of mangoes, sourced directly from the finest orchards of Rajshahi.',
+      detailed_description: 'Naturally ripened, chemical-free, and incredibly sweet with a buttery texture. Each mango is hand-picked at peak ripeness.',
+      price_per_unit: 120,
       regular_price: 150,
-      stock: 500,
+      available_stock: 500,
       image_url: '/uploads/premium_mango.png',
       category_id: mangoCat.id,
-      unit_id: kgUnit.id
+      unit_id: kgUnit.id,
+      harvest_date: new Date('2026-05-15'),
+      is_preorder: true
     }
   });
 
-  await prisma.product.create({
+  await prisma.products.create({
     data: {
       name: 'Sreemangal Organic Black Tea',
-      description: 'Hand-picked premium black tea from the lush gardens of Sreemangal. Rich aroma, deep amber color, and a refreshing taste in every sip.',
-      price: 450,
+      short_description: 'Hand-picked premium black tea from the lush gardens of Sreemangal.',
+      detailed_description: 'Rich aroma, deep amber color, and a refreshing taste in every sip. Processed naturally to preserve the authentic garden flavor.',
+      price_per_unit: 450,
       regular_price: 550,
-      stock: 200,
+      available_stock: 200,
       image_url: '/uploads/premium_tea.png',
       category_id: teaCat.id,
       unit_id: packetUnit.id
     }
   });
 
-  await prisma.product.create({
+  await prisma.products.create({
     data: {
       name: 'Heritage Nolen Gur (Liquid)',
-      description: 'Traditional date-palm jaggery collected at dawn. Pure, unadulterated, and rich in natural minerals. Perfect for traditional Bengali desserts.',
-      price: 350,
+      short_description: 'Traditional date-palm jaggery collected at dawn in the winter morning.',
+      detailed_description: 'Pure, unadulterated, and rich in natural minerals. Collected from selected trees using traditional methods.',
+      price_per_unit: 350,
       regular_price: 400,
-      stock: 100,
+      available_stock: 100,
       image_url: '/uploads/premium_gur.png',
       category_id: gurCat.id,
       unit_id: kgUnit.id
