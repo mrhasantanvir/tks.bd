@@ -12,7 +12,7 @@ export default function Navbar() {
   if (pathname?.startsWith('/dashboard')) return null;
 
   return (
-    <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-md z-50 border-b border-stone-100 px-6 md:px-20 py-4">
+    <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-md z-50 border-b border-stone-100 px-6 md:px-20 py-2 md:py-2.5">
       <div className="flex justify-between items-center">
         <Link href="/" className="flex items-center gap-3 group">
           <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform">
