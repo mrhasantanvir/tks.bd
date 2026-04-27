@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-low": "#f3f4ed",
+                    "on-surface-variant": "#42493e",
+                    "on-error-container": "#93000a",
+                    "primary": "#154212",
+                    "on-surface": "#191c18",
+                    "surface-variant": "#e2e3dc",
+                    "surface-container-high": "#e7e9e1",
+                    "on-tertiary-fixed-variant": "#414942",
+                    "secondary-container": "#feb300",
+                    "secondary": "#7e5700",
+                    "on-secondary-fixed-variant": "#604100",
+                    "inverse-surface": "#2e312c",
+                    "error-container": "#ffdad6",
+                    "surface-container-highest": "#e2e3dc",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary-fixed": "#161d18",
+                    "on-tertiary-container": "#bdc5bc",
+                    "on-secondary-fixed": "#281900",
+                    "error": "#ba1a1a",
+                    "tertiary": "#333b35",
+                    "surface-bright": "#f9faf2",
+                    "primary-fixed-dim": "#a1d494",
+                    "on-tertiary": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "tertiary-fixed-dim": "#c1c9c0",
+                    "primary-fixed": "#bcf0ae",
+                    "inverse-primary": "#a1d494",
+                    "tertiary-fixed": "#dde5dc",
+                    "outline-variant": "#c2c9bb",
+                    "on-secondary-container": "#6a4800",
+                    "on-background": "#191c18",
+                    "inverse-on-surface": "#f0f1ea",
+                    "primary-container": "#2d5a27",
+                    "surface-container": "#edefe7",
+                    "outline": "#72796e",
+                    "on-primary-fixed": "#002201",
+                    "surface-tint": "#3b6934",
+                    "surface-dim": "#d9dbd3",
+                    "on-error": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "on-primary-container": "#9dd090",
+                    "secondary-fixed-dim": "#ffba38",
+                    "tertiary-container": "#4a524b",
+                    "secondary-fixed": "#ffdeac",
+                    "on-primary-fixed-variant": "#23501e",
+                    "surface": "#f9faf2",
+                    "background": "#f9faf2"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xs": "4px",
+                    "xl": "80px",
+                    "sm": "12px",
+                    "md": "24px",
+                    "lg": "48px",
+                    "gutter": "24px",
+                    "margin": "32px",
+                    "base": "8px"
+            },
+            "fontFamily": {
+                    "headline-sm": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "label-md": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "body-md": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-sm": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                    "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "headline-md": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                    "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .ticket-row:hover { background-color: #f3f4ed; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #c2c9bb; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-background text-on-surface">
+<!-- Side Navigation Shell -->
+<aside class="fixed left-0 top-0 h-full flex flex-col p-4 h-screen w-64 border-r border-stone-200 bg-[#F9FAF7] dark:bg-stone-950 shadow-none z-20">
+<div class="mb-lg px-4 flex items-center gap-3">
+<div class="h-10 w-10 bg-primary-container rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white" data-icon="eco" style="font-variation-settings: 'FILL' 1;">eco</span>
+</div>
+<div>
+<h1 class="text-lg font-bold text-[#2D5A27] dark:text-emerald-400 font-headline-sm">Support Hub</h1>
+<p class="text-xs text-on-surface-variant font-label-sm">Premium Agro Services</p>
+</div>
+</div>
+<nav class="flex-1 space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 bg-[#E8F0E7] dark:bg-emerald-900/20 text-[#2D5A27] dark:text-emerald-300 font-semibold rounded-lg font-label-md transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                Overview
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-stone-600 dark:text-stone-400 hover:text-[#2D5A27] dark:hover:text-emerald-300 transition-colors font-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="confirmation_number">confirmation_number</span>
+                Tickets
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-stone-600 dark:text-stone-400 hover:text-[#2D5A27] dark:hover:text-emerald-300 transition-colors font-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="chat_bubble">chat_bubble</span>
+                SMS Logs
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-stone-600 dark:text-stone-400 hover:text-[#2D5A27] dark:hover:text-emerald-300 transition-colors font-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+                Customers
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-stone-600 dark:text-stone-400 hover:text-[#2D5A27] dark:hover:text-emerald-300 transition-colors font-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+                Settings
+            </a>
+</nav>
+<div class="mt-auto px-4 pb-4">
+<button class="w-full py-3 bg-primary-container text-white rounded-xl font-label-md flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+                New Ticket
+            </button>
+</div>
+</aside>
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 right-0 left-64 z-10 flex justify-between items-center px-8 w-full h-16 border-b border-stone-200 bg-white/80 backdrop-blur-md shadow-sm">
+<div class="flex items-center flex-1 max-w-xl">
+<div class="relative w-full focus-within:ring-2 focus-within:ring-[#2D5A27] rounded-lg transition-all">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" data-icon="search">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container border-none rounded-lg focus:ring-0 text-body-md" placeholder="Search tickets, customers, or logs..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-4">
+<button class="relative text-stone-500 hover:text-[#2D5A27] transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-secondary-container rounded-full ring-2 ring-white"></span>
+</button>
+<button class="text-stone-500 hover:text-[#2D5A27] transition-colors">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+</button>
+</div>
+<div class="h-8 w-px bg-stone-200"></div>
+<div class="flex items-center gap-3">
+<div class="text-right">
+<p class="font-label-md text-on-surface">Agent Support</p>
+<p class="text-xs text-on-surface-variant">Admin Access</p>
+</div>
+<div class="h-10 w-10 rounded-full overflow-hidden border-2 border-primary-container">
+<img alt="Admin Profile" class="w-full h-full object-cover" data-alt="close up professional headshot of a smiling middle-aged man in a clean office setting, soft bokeh background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbgSGxlYz31ct1dqJMbctR3_Wz5XjXEjEHJzGZarLBAH4i_FKmesb6Q3IABdSmzzKhGljkKNWifJO5j-31-NEA69ZOeRz5f2MsQLYVcQM_mRAZtjioxDGkd3Io1oFqsLdBFhCNaBkeSNi6E9c5RoHZ2sVrlLv81SWJUjp022u2901Jcc21aB48Hy-Cpt9k0erm_o_Ygp3BDf1roqX1lpM9-xF7KXztoNuSPneQ07jrXOmlI2n1cmKuSfa2So9gEQYOUMjfREEDqiE"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-64 pt-16 min-h-screen p-8 bg-surface-container-low">
+<!-- Dashboard Summary Bento -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+<!-- Ticket Stat -->
+<div class="col-span-1 bg-white p-6 rounded-xl shadow-[0_4px_20px_rgba(45,90,39,0.08)] border border-surface-variant group hover:border-primary-container transition-all">
+<div class="flex items-center justify-between mb-4">
+<span class="material-symbols-outlined p-2 bg-primary/10 text-primary rounded-lg" data-icon="confirmation_number">confirmation_number</span>
+<span class="text-xs font-label-md text-primary bg-primary/5 px-2 py-1 rounded-full">+12% vs last wk</span>
+</div>
+<h3 class="text-on-surface-variant font-label-sm uppercase tracking-wider mb-1">Active Tickets</h3>
+<p class="text-headline-md font-headline-md text-on-surface">128</p>
+</div>
+<!-- Response Time Stat -->
+<div class="col-span-1 bg-white p-6 rounded-xl shadow-[0_4px_20px_rgba(45,90,39,0.08)] border border-surface-variant group hover:border-primary-container transition-all">
+<div class="flex items-center justify-between mb-4">
+<span class="material-symbols-outlined p-2 bg-tertiary/10 text-tertiary rounded-lg" data-icon="avg_time">avg_time</span>
+<span class="text-xs font-label-md text-secondary bg-secondary/5 px-2 py-1 rounded-full">-5m improved</span>
+</div>
+<h3 class="text-on-surface-variant font-label-sm uppercase tracking-wider mb-1">Avg Response</h3>
+<p class="text-headline-md font-headline-md text-on-surface">1h 24m</p>
+</div>
+<!-- SMS Gateway Status -->
+<div class="col-span-2 bg-white p-6 rounded-xl shadow-[0_4px_20px_rgba(45,90,39,0.08)] border border-surface-variant relative overflow-hidden">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="sensors">sensors</span>
+<h3 class="font-label-md text-on-surface">SMS Gateway Monitor</h3>
+</div>
+<span class="flex items-center gap-1 text-xs font-label-md text-primary">
+<span class="w-2 h-2 bg-primary rounded-full animate-pulse"></span> Live System
+                    </span>
+</div>
+<div class="flex gap-8 items-end">
+<div class="flex-1">
+<p class="text-xs text-on-surface-variant mb-2">Delivery Success Rate</p>
+<div class="w-full bg-surface-container rounded-full h-3">
+<div class="bg-primary-container h-3 rounded-full" style="width: 98.4%"></div>
+</div>
+<p class="text-headline-sm font-headline-sm mt-2 text-primary">98.4%</p>
+</div>
+<div class="flex-1 border-l border-surface-variant pl-6">
+<p class="text-xs text-on-surface-variant mb-2">Latest Automated Alert</p>
+<div class="flex items-start gap-2 bg-surface-container-low p-2 rounded-lg border border-primary/5">
+<span class="material-symbols-outlined text-sm mt-0.5 text-primary" data-icon="outgoing_mail">outgoing_mail</span>
+<p class="text-xs font-body-md text-on-surface-variant leading-tight line-clamp-2">Harvest notification sent for Order #88291 to 017xxx-923</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-8">
+<!-- Tickets List Table -->
+<div class="col-span-12 xl:col-span-8 bg-white rounded-xl shadow-[0_4px_20px_rgba(45,90,39,0.08)] border border-surface-variant overflow-hidden">
+<div class="p-6 border-b border-surface-variant flex items-center justify-between bg-surface-bright">
+<div class="flex items-center gap-4">
+<h2 class="font-headline-sm text-on-surface">Support Queue</h2>
+<span class="px-3 py-1 bg-surface-container-highest text-on-surface-variant rounded-full text-xs font-label-md">24 New Today</span>
+</div>
+<div class="flex gap-2">
+<button class="px-3 py-1.5 border border-outline rounded-lg text-xs font-label-md flex items-center gap-2 hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="filter_list">filter_list</span> Filter
+                        </button>
+<button class="px-3 py-1.5 border border-outline rounded-lg text-xs font-label-md flex items-center gap-2 hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="download">download</span> Export
+                        </button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-surface-container-low text-on-surface-variant uppercase text-[11px] font-label-md tracking-widest border-b border-surface-variant">
+<th class="px-6 py-4">Ticket ID</th>
+<th class="px-6 py-4">Customer</th>
+<th class="px-6 py-4">Subject</th>
+<th class="px-6 py-4 text-center">Priority</th>
+<th class="px-6 py-4 text-center">Status</th>
+<th class="px-6 py-4"></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-variant">
+<!-- Row 1 -->
+<tr class="ticket-row transition-colors cursor-pointer bg-primary/5">
+<td class="px-6 py-4 font-label-md text-on-surface">#TK-4429</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-secondary-container/20 flex items-center justify-center text-secondary font-bold text-xs">AS</div>
+<div>
+<p class="text-xs font-label-md text-on-surface">Arjun Sharma</p>
+<p class="text-[10px] text-on-surface-variant">Elite Member</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-xs font-body-md text-on-surface-variant italic">"Package 2 Harvest Delay"</td>
+<td class="px-6 py-4 text-center">
+<span class="px-2 py-0.5 bg-secondary-container/20 text-secondary border border-secondary/30 rounded-md text-[10px] font-label-md uppercase">High</span>
+</td>
+<td class="px-6 py-4 text-center">
+<span class="px-2 py-0.5 bg-primary-container text-white rounded-md text-[10px] font-label-md uppercase">In Progress</span>
+</td>
+<td class="px-6 py-4 text-right">
+<span class="material-symbols-outlined text-on-surface-variant text-sm" data-icon="chevron_right">chevron_right</span>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="ticket-row transition-colors cursor-pointer">
+<td class="px-6 py-4 font-label-md text-on-surface">#TK-4428</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-tertiary-fixed-dim flex items-center justify-center text-on-tertiary-fixed-variant font-bold text-xs">NK</div>
+<div>
+<p class="text-xs font-label-md text-on-surface">Nadia Karim</p>
+<p class="text-[10px] text-on-surface-variant">Guest</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-xs font-body-md text-on-surface-variant">"Invoice clarification for Order #8822"</td>
+<td class="px-6 py-4 text-center">
+<span class="px-2 py-0.5 bg-surface-container-highest text-on-surface-variant border border-outline rounded-md text-[10px] font-label-md uppercase">Low</span>
+</td>
+<td class="px-6 py-4 text-center">
+<span class="px-2 py-0.5 border border-primary-container text-primary-container rounded-md text-[10px] font-label-md uppercase">Open</span>
+</td>
+<td class="px-6 py-4 text-right">
+<span class="material-symbols-outlined text-on-surface-variant text-sm" data-icon="chevron_right">chevron_right</span>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="ticket-row transition-colors cursor-pointer">
+<td class="px-6 py-4 font-label-md text-on-surface">#TK-4425</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs">RT</div>
+<div>
+<p class="text-xs font-label-md text-on-surface">Rafiq T.</p>
+<p class="text-[10px] text-on-surface-variant">Premium</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-xs font-body-md text-on-surface-variant">"Seedling quality feedback"</td>
+<td class="px-6 py-4 text-center">
+<span class="px-2 py-0.5 bg-tertiary/10 text-tertiary border border-tertiary/20 rounded-md text-[10px] font-label-md uppercase">Medium</span>
+</td>
+<td class="px-6 py-4 text-center">
+<span class="px-2 py-0.5 bg-surface-container-highest text-outline rounded-md text-[10px] font-label-md uppercase line-through">Resolved</span>
+</td>
+<td class="px-6 py-4 text-right">
+<span class="material-symbols-outlined text-on-surface-variant text-sm" data-icon="chevron_right">chevron_right</span>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="ticket-row transition-colors cursor-pointer">
+<td class="px-6 py-4 font-label-md text-on-surface">#TK-4421</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-secondary-container/20 flex items-center justify-center text-secondary font-bold text-xs">JH</div>
+<div>
+<p class="text-xs font-label-md text-on-surface">Joy H.</p>
+<p class="text-[10px] text-on-surface-variant">Elite Member</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-xs font-body-md text-on-surface-variant italic">"Urgent: Address correction"</td>
+<td class="px-6 py-4 text-center">
+<span class="px-2 py-0.5 bg-secondary-container/20 text-secondary border border-secondary/30 rounded-md text-[10px] font-label-md uppercase">High</span>
+</td>
+<td class="px-6 py-4 text-center">
+<span class="px-2 py-0.5 border border-primary-container text-primary-container rounded-md text-[10px] font-label-md uppercase">Open</span>
+</td>
+<td class="px-6 py-4 text-right">
+<span class="material-symbols-outlined text-on-surface-variant text-sm" data-icon="chevron_right">chevron_right</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Inquiry Detail Panel (Quick View) -->
+<div class="col-span-12 xl:col-span-4 bg-white rounded-xl shadow-[0_4px_20px_rgba(45,90,39,0.08)] border border-surface-variant flex flex-col h-full max-h-[calc(100vh-14rem)]">
+<div class="p-6 border-b border-surface-variant flex items-center justify-between bg-surface-bright">
+<div>
+<h3 class="font-label-md text-on-surface">Quick View</h3>
+<p class="text-xs text-on-surface-variant">Ticket #TK-4429</p>
+</div>
+<button class="p-1 hover:bg-surface-container rounded transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="close">close</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto p-6 space-y-6">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2 mb-2">
+<span class="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-label-md rounded flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]" data-icon="eco" style="font-variation-settings: 'FILL' 1;">eco</span> Harvesting Soon
+                            </span>
+</div>
+<p class="text-label-md text-on-surface">Arjun Sharma</p>
+<p class="text-xs text-on-surface-variant">"Hello, I was expecting Package 2 of the organic mangoes today, but the tracker hasn't updated since yesterday. Is there a delay in harvesting?"</p>
+<span class="text-[10px] text-outline self-end">10:42 AM</span>
+</div>
+<div class="bg-surface-container-low p-4 rounded-xl border border-primary/5">
+<div class="flex items-center gap-2 mb-2">
+<div class="w-6 h-6 rounded-full bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-[10px]" data-icon="support_agent">support_agent</span>
+</div>
+<p class="text-[10px] font-label-md text-primary">Support Agent (You)</p>
+</div>
+<p class="text-xs text-on-surface">"Hi Arjun, I'm checking with the Rajshahi orchard team now. There was a light rain delay this morning, but we expect to resume in 2 hours. I'll update you via SMS as soon as the box is sealed."</p>
+<span class="text-[10px] text-outline self-end mt-1 block">11:15 AM</span>
+</div>
+<div class="p-4 border-l-4 border-secondary-container bg-secondary-container/5 rounded-r-lg">
+<p class="text-[11px] font-label-md text-secondary uppercase mb-1">System Internal Note</p>
+<p class="text-xs text-on-surface-variant">Customer has pre-order for Seasonal Harvest (Package 2). Priority bumped due to harvest sensitivity.</p>
+</div>
+</div>
+<div class="p-4 border-t border-surface-variant bg-surface-container-low">
+<div class="flex gap-2">
+<input class="flex-1 bg-white border border-outline rounded-lg px-3 py-2 text-xs focus:ring-1 focus:ring-primary-container outline-none" placeholder="Type response..." type="text"/>
+<button class="bg-primary-container text-white px-3 py-2 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-sm" data-icon="send">send</span>
+</button>
+</div>
+<div class="mt-3 flex gap-4">
+<button class="flex items-center gap-1 text-[10px] font-label-md text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="attach_file">attach_file</span> Attach
+                        </button>
+<button class="flex items-center gap-1 text-[10px] font-label-md text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="sms">sms</span> SMS Update
+                        </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Activity Feed -->
+<div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="md:col-span-1 bg-white p-6 rounded-xl border border-surface-variant shadow-sm">
+<h3 class="font-label-md text-on-surface mb-4">Quick Actions</h3>
+<div class="grid grid-cols-2 gap-3">
+<button class="p-4 bg-surface-container-low border border-outline-variant rounded-xl hover:border-primary-container transition-all group flex flex-col items-center gap-2">
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform" data-icon="broadcast_on_home">broadcast_on_home</span>
+<span class="text-[10px] font-label-md text-on-surface-variant">SMS Broadcast</span>
+</button>
+<button class="p-4 bg-surface-container-low border border-outline-variant rounded-xl hover:border-primary-container transition-all group flex flex-col items-center gap-2">
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform" data-icon="history">history</span>
+<span class="text-[10px] font-label-md text-on-surface-variant">Archived Logs</span>
+</button>
+<button class="p-4 bg-surface-container-low border border-outline-variant rounded-xl hover:border-primary-container transition-all group flex flex-col items-center gap-2">
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform" data-icon="contact_page">contact_page</span>
+<span class="text-[10px] font-label-md text-on-surface-variant">Farmer Contacts</span>
+</button>
+<button class="p-4 bg-surface-container-low border border-outline-variant rounded-xl hover:border-primary-container transition-all group flex flex-col items-center gap-2">
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform" data-icon="bug_report">bug_report</span>
+<span class="text-[10px] font-label-md text-on-surface-variant">Report Bug</span>
+</button>
+</div>
+</div>
+<div class="md:col-span-2 bg-white p-6 rounded-xl border border-surface-variant shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<h3 class="font-label-md text-on-surface">Service Status Overview</h3>
+<div class="flex items-center gap-4 text-[10px] font-label-md">
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-primary-container"></span> Support</span>
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-secondary-container"></span> Gateway</span>
+</div>
+</div>
+<div class="h-48 flex items-end gap-2 px-2">
+<!-- Fake Chart Visualization -->
+<div class="flex-1 bg-primary/10 rounded-t h-[60%] hover:bg-primary transition-colors group relative">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 bg-on-surface text-white text-[8px] px-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">Mon</div>
+</div>
+<div class="flex-1 bg-secondary/10 rounded-t h-[40%] hover:bg-secondary transition-colors"></div>
+<div class="flex-1 bg-primary/10 rounded-t h-[75%] hover:bg-primary transition-colors"></div>
+<div class="flex-1 bg-secondary/10 rounded-t h-[30%] hover:bg-secondary transition-colors"></div>
+<div class="flex-1 bg-primary/10 rounded-t h-[90%] hover:bg-primary transition-colors"></div>
+<div class="flex-1 bg-secondary/10 rounded-t h-[20%] hover:bg-secondary transition-colors"></div>
+<div class="flex-1 bg-primary/10 rounded-t h-[55%] hover:bg-primary transition-colors"></div>
+<div class="flex-1 bg-secondary/10 rounded-t h-[50%] hover:bg-secondary transition-colors"></div>
+<div class="flex-1 bg-primary/10 rounded-t h-[65%] hover:bg-primary transition-colors"></div>
+<div class="flex-1 bg-secondary/10 rounded-t h-[45%] hover:bg-secondary transition-colors"></div>
+<div class="flex-1 bg-primary/10 rounded-t h-[80%] hover:bg-primary transition-colors"></div>
+<div class="flex-1 bg-secondary/10 rounded-t h-[60%] hover:bg-secondary transition-colors"></div>
+</div>
+<div class="mt-2 flex justify-between px-2 text-[10px] text-on-surface-variant font-label-sm">
+<span>Monday</span>
+<span>Tuesday</span>
+<span>Wednesday</span>
+<span>Thursday</span>
+<span>Friday</span>
+<span>Saturday</span>
+</div>
+</div>
+</div>
+</main>
+</body></html>

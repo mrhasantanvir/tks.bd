@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed-dim": "#c1c9c0",
+                        "primary": "#154212",
+                        "surface-dim": "#d9dbd3",
+                        "surface-container-highest": "#e2e3dc",
+                        "secondary-container": "#feb300",
+                        "on-secondary-fixed": "#281900",
+                        "on-tertiary-container": "#bdc5bc",
+                        "surface-variant": "#e2e3dc",
+                        "tertiary-fixed": "#dde5dc",
+                        "tertiary-container": "#4a524b",
+                        "on-primary": "#ffffff",
+                        "outline": "#72796e",
+                        "on-tertiary-fixed": "#161d18",
+                        "background": "#f9faf2",
+                        "on-secondary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "primary-fixed-dim": "#a1d494",
+                        "primary-fixed": "#bcf0ae",
+                        "surface-container-lowest": "#ffffff",
+                        "on-surface-variant": "#42493e",
+                        "on-primary-fixed": "#002201",
+                        "surface-bright": "#f9faf2",
+                        "surface-container-high": "#e7e9e1",
+                        "outline-variant": "#c2c9bb",
+                        "on-tertiary-fixed-variant": "#414942",
+                        "on-primary-fixed-variant": "#23501e",
+                        "on-surface": "#191c18",
+                        "primary-container": "#2d5a27",
+                        "on-secondary-fixed-variant": "#604100",
+                        "inverse-on-surface": "#f0f1ea",
+                        "secondary-fixed-dim": "#ffba38",
+                        "on-error-container": "#93000a",
+                        "surface": "#f9faf2",
+                        "tertiary": "#333b35",
+                        "on-background": "#191c18",
+                        "secondary-fixed": "#ffdeac",
+                        "surface-tint": "#3b6934",
+                        "on-error": "#ffffff",
+                        "secondary": "#7e5700",
+                        "inverse-surface": "#2e312c",
+                        "on-primary-container": "#9dd090",
+                        "surface-container-low": "#f3f4ed",
+                        "surface-container": "#edefe7",
+                        "on-secondary-container": "#6a4800",
+                        "inverse-primary": "#a1d494",
+                        "on-tertiary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xl": "80px",
+                        "lg": "48px",
+                        "sm": "12px",
+                        "xs": "4px",
+                        "margin": "32px",
+                        "gutter": "24px",
+                        "base": "8px",
+                        "md": "24px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-sm": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                        "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                        "headline-md": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        body {
+            background-color: #f9faf2;
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface selection:bg-primary-container selection:text-on-primary-container">
+<!-- Top App Bar -->
+<header class="bg-white/80 dark:bg-stone-900/80 backdrop-blur-lg docked full-width top-0 sticky z-50 border-b border-stone-100 dark:border-stone-800 shadow-[0_4px_12px_rgba(45,90,39,0.05)]">
+<div class="flex justify-between items-center h-16 px-6 w-full">
+<button class="text-emerald-900 dark:text-emerald-100 active:scale-95 duration-200">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<h1 class="text-xl font-bold text-emerald-900 dark:text-emerald-50 uppercase tracking-widest font-['Inter']">TKS.bd</h1>
+<div class="relative">
+<button class="text-emerald-900 dark:text-emerald-100 active:scale-95 duration-200">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+</button>
+<span class="absolute -top-1 -right-1 bg-secondary-container text-on-secondary-fixed text-[10px] font-bold px-1.5 py-0.5 rounded-full">3</span>
+</div>
+</div>
+</header>
+<main class="max-w-md mx-auto px-4 pt-6 pb-32">
+<!-- Page Headline -->
+<div class="mb-6">
+<h2 class="font-headline-md text-headline-md text-on-surface">Your Basket</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Review items from our direct harvest.</p>
+</div>
+<!-- Split Shipping Info Banner -->
+<div class="bg-primary-container/10 border border-primary-container/20 rounded-xl p-4 mb-8 flex gap-3 items-start">
+<span class="material-symbols-outlined text-primary-container" data-icon="info">info</span>
+<div>
+<p class="font-label-md text-primary-container mb-1">Advanced Split Delivery</p>
+<p class="font-label-sm text-on-surface-variant leading-relaxed">Items are grouped by harvest readiness to ensure peak freshness. Each package is shipped immediately after picking.</p>
+</div>
+</div>
+<!-- Package 1: Immediate Harvest -->
+<section class="mb-10">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-2">
+<span class="bg-primary text-on-primary text-[10px] font-bold px-2 py-0.5 rounded-full">Package 1</span>
+<h3 class="font-label-md text-on-surface uppercase tracking-wider">Ready for Harvest</h3>
+</div>
+<span class="font-label-sm text-primary">Ships Tomorrow</span>
+</div>
+<div class="space-y-4">
+<!-- Item 1 -->
+<div class="bg-white border border-outline-variant/30 rounded-2xl p-4 shadow-sm flex gap-4">
+<div class="w-20 h-20 rounded-xl overflow-hidden bg-surface-container flex-shrink-0">
+<img alt="Fresh Organic Tomatoes" class="w-full h-full object-cover" data-alt="close-up macro shot of ripe red vine tomatoes with water droplets and soft natural greenhouse lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA13_4LZyzOaEVkFQw3GkwnDwr6pZt0Ye8bFP8zskUn7WE3nDEg4zA6FrgS5F7Wh99bnwjPd0MnycNQZpb_rxxA5h7QjPvJhD32v5crN0dT8k8B0_U40FKs7rnQY2necduN9wFgNUu8tzFHG5lnEVoroV4ov900v_3pYnrxmh0Bw45GwtiWh0BHCrwkzfIwEZ0IIndYPThPHJ4npfVXHvaDcw2H1245qVyLBktyLTFV3hK3IAGc1ubBPvk5oBQG4rIfPA9hAMrg3TY"/>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-start">
+<h4 class="font-label-md text-on-surface">Vine-Ripened Cherry Tomatoes</h4>
+<span class="font-label-md text-on-surface">$4.50</span>
+</div>
+<p class="font-label-sm text-on-surface-variant mb-3">Organic • 500g</p>
+<div class="flex items-center justify-between">
+<div class="flex items-center bg-surface-container rounded-lg px-2 py-1 gap-4">
+<button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined text-sm" data-icon="remove">remove</span></button>
+<span class="font-label-md text-on-surface">2</span>
+<button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined text-sm" data-icon="add">add</span></button>
+</div>
+<button class="text-on-surface-variant hover:text-error"><span class="material-symbols-outlined" data-icon="delete">delete</span></button>
+</div>
+</div>
+</div>
+<!-- Shipping Charge for P1 -->
+<div class="flex justify-between items-center px-4 py-2 bg-surface-container-low rounded-xl border border-dashed border-outline-variant">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant text-sm" data-icon="local_shipping">local_shipping</span>
+<span class="font-label-sm text-on-surface-variant">Fresh-Lock Shipping</span>
+</div>
+<span class="font-label-sm text-on-surface font-bold">$3.00</span>
+</div>
+</div>
+</section>
+<!-- Package 2: Future Harvest -->
+<section class="mb-10">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-2">
+<span class="bg-tertiary text-on-tertiary text-[10px] font-bold px-2 py-0.5 rounded-full">Package 2</span>
+<h3 class="font-label-md text-on-surface uppercase tracking-wider">Harvesting Soon</h3>
+</div>
+<div class="flex items-center gap-1 text-secondary">
+<span class="material-symbols-outlined text-sm" data-icon="eco">eco</span>
+<span class="font-label-sm">Ships in 4 Days</span>
+</div>
+</div>
+<div class="space-y-4">
+<!-- Item 2 -->
+<div class="bg-white border border-outline-variant/30 rounded-2xl p-4 shadow-sm flex gap-4">
+<div class="w-20 h-20 rounded-xl overflow-hidden bg-surface-container flex-shrink-0 relative">
+<img alt="Fresh Organic Mangoes" class="w-full h-full object-cover" data-alt="professional product shot of vibrant yellow Alphonso mangoes on a rustic wooden table with leaves and bright morning light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNAlSbkHwgog2Xvn1fx8MkThoOzCYgfqOwSikW1tvZowTOmDtlme7-mfOJbL_vVZcMgNjzn7CqmKTwLaQNejtNO2u3UzOdn7Qabi27OWTMwCoSZ-LijU_WQwRoEyzQyat_rv20Pjv8-rxfxPTGKPpH3b3yefdI4_7j47mRNUCr3dA-N0zoh062yp4EUgqonQNpoqXG20ingvDH43NOgqkUAjGUWNQp5m5t9U6chUHlaaZmvEnQ1m1NyYo_xek5PMwcURkOf3FIDUU"/>
+<div class="absolute inset-0 bg-black/5"></div>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-start">
+<h4 class="font-label-md text-on-surface">Premium Alphonso Mango</h4>
+<span class="font-label-md text-on-surface">$12.00</span>
+</div>
+<p class="font-label-sm text-on-surface-variant mb-3">Farm Selection • 1kg</p>
+<div class="flex items-center justify-between">
+<div class="flex items-center bg-surface-container rounded-lg px-2 py-1 gap-4">
+<button class="text-on-surface-variant"><span class="material-symbols-outlined text-sm" data-icon="remove">remove</span></button>
+<span class="font-label-md text-on-surface">1</span>
+<button class="text-on-surface-variant"><span class="material-symbols-outlined text-sm" data-icon="add">add</span></button>
+</div>
+<button class="text-on-surface-variant"><span class="material-symbols-outlined" data-icon="delete">delete</span></button>
+</div>
+</div>
+</div>
+<!-- Shipping Charge for P2 -->
+<div class="flex justify-between items-center px-4 py-2 bg-surface-container-low rounded-xl border border-dashed border-outline-variant">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant text-sm" data-icon="local_shipping">local_shipping</span>
+<span class="font-label-sm text-on-surface-variant">Scheduled Harvest Express</span>
+</div>
+<span class="font-label-sm text-on-surface font-bold">$4.50</span>
+</div>
+</div>
+</section>
+<!-- Order Summary -->
+<section class="bg-surface-container-high rounded-3xl p-6 mb-12">
+<h3 class="font-label-md text-on-surface uppercase tracking-widest mb-6">Order Summary</h3>
+<div class="space-y-4">
+<div class="flex justify-between text-on-surface-variant">
+<span class="font-body-md">Subtotal (3 items)</span>
+<span class="font-body-md">$21.00</span>
+</div>
+<div class="flex justify-between text-on-surface-variant">
+<div class="flex items-center gap-1">
+<span class="font-body-md">Combined Shipping</span>
+<span class="material-symbols-outlined text-xs" data-icon="help_outline">help_outline</span>
+</div>
+<span class="font-body-md">$7.50</span>
+</div>
+<div class="flex justify-between text-on-surface-variant">
+<span class="font-body-md">Seasonal Discount</span>
+<span class="font-body-md text-primary">-$2.00</span>
+</div>
+<hr class="border-outline-variant/30 my-2"/>
+<div class="flex justify-between items-center">
+<span class="font-headline-sm text-on-surface">Grand Total</span>
+<span class="font-headline-sm text-primary">$26.50</span>
+</div>
+</div>
+<button class="w-full bg-primary text-on-primary font-label-md py-4 rounded-xl mt-8 shadow-lg active:scale-[0.98] transition-transform">
+                PROCEED TO CHECKOUT
+            </button>
+</section>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 bg-white/90 dark:bg-stone-950/90 backdrop-blur-xl border-t border-stone-100 dark:border-stone-800 shadow-[0_-4px_16px_rgba(45,90,39,0.08)]">
+<div class="flex justify-around items-center px-4 pt-2 pb-safe">
+<a class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-500 py-2 hover:text-emerald-700 active:translate-y-[-2px] transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="text-[11px] font-semibold font-['Inter'] uppercase tracking-tighter">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-500 py-2 hover:text-emerald-700 active:translate-y-[-2px] transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+<span class="text-[11px] font-semibold font-['Inter'] uppercase tracking-tighter">Explore</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-emerald-50 dark:bg-emerald-900/40 text-emerald-900 dark:text-emerald-100 rounded-2xl px-5 py-2 active:translate-y-[-2px] transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span class="text-[11px] font-semibold font-['Inter'] uppercase tracking-tighter">Orders</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-500 py-2 hover:text-emerald-700 active:translate-y-[-2px] transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="text-[11px] font-semibold font-['Inter'] uppercase tracking-tighter">Profile</span>
+</a>
+</div>
+</nav>
+</body></html>

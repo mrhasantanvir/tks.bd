@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed-dim": "#c1c9c0",
+                        "primary": "#154212",
+                        "surface-dim": "#d9dbd3",
+                        "surface-container-highest": "#e2e3dc",
+                        "secondary-container": "#feb300",
+                        "on-secondary-fixed": "#281900",
+                        "on-tertiary-container": "#bdc5bc",
+                        "surface-variant": "#e2e3dc",
+                        "tertiary-fixed": "#dde5dc",
+                        "tertiary-container": "#4a524b",
+                        "on-primary": "#ffffff",
+                        "outline": "#72796e",
+                        "on-tertiary-fixed": "#161d18",
+                        "background": "#f9faf2",
+                        "on-secondary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "primary-fixed-dim": "#a1d494",
+                        "primary-fixed": "#bcf0ae",
+                        "surface-container-lowest": "#ffffff",
+                        "on-surface-variant": "#42493e",
+                        "on-primary-fixed": "#002201",
+                        "surface-bright": "#f9faf2",
+                        "surface-container-high": "#e7e9e1",
+                        "outline-variant": "#c2c9bb",
+                        "on-tertiary-fixed-variant": "#414942",
+                        "on-primary-fixed-variant": "#23501e",
+                        "on-surface": "#191c18",
+                        "primary-container": "#2d5a27",
+                        "on-secondary-fixed-variant": "#604100",
+                        "inverse-on-surface": "#f0f1ea",
+                        "secondary-fixed-dim": "#ffba38",
+                        "on-error-container": "#93000a",
+                        "surface": "#f9faf2",
+                        "tertiary": "#333b35",
+                        "on-background": "#191c18",
+                        "secondary-fixed": "#ffdeac",
+                        "surface-tint": "#3b6934",
+                        "on-error": "#ffffff",
+                        "secondary": "#7e5700",
+                        "inverse-surface": "#2e312c",
+                        "on-primary-container": "#9dd090",
+                        "surface-container-low": "#f3f4ed",
+                        "surface-container": "#edefe7",
+                        "on-secondary-container": "#6a4800",
+                        "inverse-primary": "#a1d494",
+                        "on-tertiary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xl": "80px",
+                        "lg": "48px",
+                        "sm": "12px",
+                        "xs": "4px",
+                        "margin": "32px",
+                        "gutter": "24px",
+                        "base": "8px",
+                        "md": "24px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-sm": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                        "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                        "headline-md": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface font-body-md selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- Top Navigation Anchor -->
+<header class="bg-white/80 backdrop-blur-lg border-b border-stone-100 sticky top-0 z-50 shadow-[0_4px_12px_rgba(45,90,39,0.05)]">
+<div class="flex justify-between items-center h-16 px-6 w-full">
+<button class="text-emerald-900 active:scale-95 duration-200">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<span class="text-xl font-bold text-emerald-900 uppercase tracking-widest font-headline-sm">TKS.bd</span>
+<div class="flex gap-4">
+<button class="text-emerald-900 active:scale-95 duration-200">
+<span class="material-symbols-outlined" data-icon="favorite">favorite</span>
+</button>
+<button class="text-emerald-900 active:scale-95 duration-200">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+</button>
+</div>
+</div>
+</header>
+<main class="pb-32">
+<!-- Hero Gallery -->
+<section class="relative bg-white">
+<div class="aspect-[4/5] w-full overflow-hidden">
+<img alt="Premium Himsagar Mango" class="w-full h-full object-cover" data-alt="extreme close-up of a perfectly ripe golden Himsagar mango with water droplets, soft morning sunlight, lush green orchard background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_EwxPIxay3SUSzc3tQCReDU72e2ZP72UhhrP6Suj5XNmjytNJH-Z8aqBM08EiyijrLmfqnjRsTU8-HuonokgXW3vc73osmiRaLyByLjoot1GmCkqpeRLiaeQ4QMp7Dy29XsXBgGq30ytEWtO5AxwD8-NQ5KhI1bIjOnI1z1_1uDSS94h0712_bAFGduiXSeIaICvI_r0MmPB55dvWQPTUmF1j-YV8WN5kckT3hsMRqXhHAyFbscclbIFgaP8JwXvQ4ckZPYtcLKY"/>
+</div>
+<div class="absolute top-4 left-6 flex flex-col gap-2">
+<div class="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full border border-secondary flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-[14px]" data-icon="bolt" data-weight="fill" style="font-variation-settings: 'FILL' 1;">bolt</span>
+<span class="font-label-sm uppercase tracking-wider">Pre-order</span>
+</div>
+<div class="bg-emerald-50 text-primary px-3 py-1 rounded-full border border-primary-fixed flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-[14px]" data-icon="eco" data-weight="fill" style="font-variation-settings: 'FILL' 1;">eco</span>
+<span class="font-label-sm uppercase tracking-wider">Harvesting Soon</span>
+</div>
+</div>
+<!-- Pagination dots -->
+<div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
+<div class="w-8 h-1.5 rounded-full bg-primary"></div>
+<div class="w-1.5 h-1.5 rounded-full bg-stone-300"></div>
+<div class="w-1.5 h-1.5 rounded-full bg-stone-300"></div>
+</div>
+</section>
+<!-- Product Details -->
+<section class="px-6 pt-8">
+<div class="flex justify-between items-start mb-2">
+<h1 class="font-headline-md text-primary leading-tight">Premium Himsagar Mango</h1>
+<div class="text-right">
+<span class="block font-headline-sm text-primary">৳850</span>
+<span class="font-label-sm text-outline uppercase">Per Kilogram</span>
+</div>
+</div>
+<div class="flex items-center gap-2 mb-6">
+<div class="flex text-secondary">
+<span class="material-symbols-outlined text-[18px]" data-icon="star" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[18px]" data-icon="star" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[18px]" data-icon="star" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[18px]" data-icon="star" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[18px]" data-icon="star_half">star_half</span>
+</div>
+<span class="font-label-md text-on-surface-variant">(48 Reviews)</span>
+</div>
+<!-- Urgent Notices -->
+<div class="grid grid-cols-1 gap-4 mb-8">
+<div class="bg-error-container/30 border border-error-container p-4 rounded-xl flex items-center gap-4">
+<span class="material-symbols-outlined text-error" data-icon="inventory_2">inventory_2</span>
+<div>
+<p class="font-label-md text-on-error-container uppercase">Limited Stock Notice</p>
+<p class="text-on-surface-variant text-sm">Only 120kg remains for the first batch harvest.</p>
+</div>
+</div>
+<div class="bg-surface-container-high p-4 rounded-xl border border-outline-variant/30 flex items-center gap-4">
+<span class="material-symbols-outlined text-primary" data-icon="calendar_today">calendar_today</span>
+<div>
+<p class="font-label-md text-primary uppercase">Expected Shipping</p>
+<p class="text-on-surface-variant text-sm">Batch 01: May 25th – June 02nd</p>
+</div>
+</div>
+</div>
+<!-- Description -->
+<div class="mb-10">
+<h3 class="font-label-md text-primary uppercase tracking-widest mb-3">The Queen of Mangoes</h3>
+<p class="font-body-md text-on-surface-variant leading-relaxed">
+                    Sourced from the heritage orchards of Rajshahi, our Himsagar mangoes are characterized by their fiberless, buttery flesh and an aroma that defines the Bengali summer. Hand-picked at peak maturity to ensure the perfect brix level.
+                </p>
+</div>
+</section>
+<!-- Harvest Cycle (Bento Pattern) -->
+<section class="px-6 mb-10">
+<h3 class="font-label-md text-primary uppercase tracking-widest mb-6">The Harvest Cycle</h3>
+<div class="grid grid-cols-2 gap-3">
+<div class="bg-white p-4 rounded-2xl shadow-[0_4px_16px_rgba(45,90,39,0.04)] border border-emerald-50">
+<span class="material-symbols-outlined text-primary mb-2" data-icon="nature">nature</span>
+<p class="font-label-md text-primary">Flowering</p>
+<p class="text-xs text-on-surface-variant">Completed in Feb</p>
+</div>
+<div class="bg-white p-4 rounded-2xl shadow-[0_4px_16px_rgba(45,90,39,0.04)] border border-emerald-50">
+<span class="material-symbols-outlined text-primary mb-2" data-icon="water_drop">water_drop</span>
+<p class="font-label-md text-primary">Nurturing</p>
+<p class="text-xs text-on-surface-variant">Ongoing organic care</p>
+</div>
+<div class="col-span-2 bg-primary text-on-primary p-5 rounded-2xl flex justify-between items-center relative overflow-hidden">
+<div class="relative z-10">
+<p class="font-label-md uppercase tracking-tighter opacity-80">Current Stage</p>
+<h4 class="font-headline-sm">Maturation Phase</h4>
+<p class="text-sm mt-1">Sun-ripening on the branch</p>
+</div>
+<span class="material-symbols-outlined text-white/20 text-6xl absolute -right-2 -bottom-2" data-icon="wb_sunny">wb_sunny</span>
+</div>
+</div>
+</section>
+<!-- Farmer Story -->
+<section class="px-6 mb-10">
+<div class="bg-white rounded-3xl overflow-hidden border border-emerald-50 shadow-[0_8px_24px_rgba(45,90,39,0.06)]">
+<div class="h-48 w-full relative">
+<img alt="Farmer Profile" class="w-full h-full object-cover" data-alt="portrait of an elderly Bangladeshi farmer with a warm smile standing in a sun-drenched mango orchard, wearing traditional clothing, soft bokeh effect" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0ZbmU-dlP-Z1AcSxAd7BLTT2vXnUylNpCvKWG1oikhCEgM1fMNUmZ1lVKYM7xzI7KWlv1Yl38uA3zDSUD2ew_QQLNr8wcgz12XU4DaX4SwfnSr7V0QeiGWvQiihGkfPDwRWaTeQaL5f4HUWcZEnWaWyZCuTc-Y-Q_ICPBkIa-UpHS83NCx8AnI3cJhjJO6npOMhK9YUYmbUtzbc0IApovpSG35zx-AXHuPyNZxKXGQgiPqqdPL2lMPEK7r4g_QcXnO_vULFrhL6A"/>
+<div class="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black/60 to-transparent">
+<p class="text-white font-label-md uppercase">Grown By</p>
+<h4 class="text-white font-headline-sm">Abdur Rashid</h4>
+</div>
+</div>
+<div class="p-6">
+<p class="font-body-md text-on-surface-variant italic mb-4">"I have been tending to these trees for 40 years. For me, every Himsagar is a testament to the soil of my ancestors."</p>
+<div class="flex items-center gap-4 py-3 border-t border-stone-100">
+<div class="flex flex-col">
+<span class="font-label-sm text-outline uppercase">Location</span>
+<span class="font-label-md text-primary">Bagha, Rajshahi</span>
+</div>
+<div class="w-px h-8 bg-stone-100"></div>
+<div class="flex flex-col">
+<span class="font-label-sm text-outline uppercase">Method</span>
+<span class="font-label-md text-primary">100% Organic</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Related/Suggestions -->
+<section class="pl-6 mb-12">
+<h3 class="font-label-md text-primary uppercase tracking-widest mb-6">Also From This Orchard</h3>
+<div class="flex gap-4 overflow-x-auto hide-scrollbar pr-6">
+<div class="min-w-[160px] bg-white rounded-2xl overflow-hidden border border-stone-100">
+<img alt="Wildflower Honey" class="h-32 w-full object-cover" data-alt="small glass jar of golden wildflower honey on a rustic wooden table with a honey dipper, soft natural light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDgiXMTIw5cR9wTQZCVFqyRcId5E6VcgB_xRlltR-nSPhR0Q_0UufD0OPNLashnj9E3ajDr3Ld_xkJlyuJC8H2J1e-AS8MLD8xB_4aToDWe-o7BJeekRxA0NgvGAG6YOOEv_19Ah5R8A3VmMjOt6btxnGwfgovrtYv1EjJYOzKPI8GUiNWl_M1slRFsa39D69s2PRGTdouC1CEXU18OT8Ym11-hyeg9OezG5XxE2i3IK4jPd7NXmNGP-tjviw1OXXXbXcK66eeWANU"/>
+<div class="p-3">
+<p class="font-label-md text-on-surface">Lychee Honey</p>
+<p class="text-primary font-bold">৳450</p>
+</div>
+</div>
+<div class="min-w-[160px] bg-white rounded-2xl overflow-hidden border border-stone-100">
+<img alt="Mango Pickle" class="h-32 w-full object-cover" data-alt="traditional clay pot filled with spicy green mango pickle, oil glistening, textured dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-WP1AG4NTG6D34MYBrloz1lLF_RruGGpYGDDV_7wGLOa1doVZVqNCBIk18dpHCFbbtEu6NYBk3CPFbfS_1faj5FfqBH5oV-nqblMb5Jfwh_Gn0UXTZpNjMYvI1Ii3O2bm5PSGODjZ3NAu3573Srj-iDF_o3f9ZVqOqx-W5Hwvpn01BsfFK0cL4GMEOpSh_rw1HBlqSpKl8S5Awsv_zAgQIiN9GOpaSr6jkx_L8n2rtCKDRKqPZagUXyBgpGyJgywucELXc9z9Vl0"/>
+<div class="p-3">
+<p class="font-label-md text-on-surface">Spicy Achar</p>
+<p class="text-primary font-bold">৳320</p>
+</div>
+</div>
+<div class="min-w-[160px] bg-white rounded-2xl overflow-hidden border border-stone-100">
+<img alt="Fresh Guava" class="h-32 w-full object-cover" data-alt="pile of fresh green guavas with leaves, sliced open to show white flesh, bright airy farm setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDo0PjlyvAobMdRZcQYKL-j1664EwsadZcEFTaxRqYxF2hxK1SU_LWKVqwSxsFqhJaDOhjOwj9wCrukWIVUlvyo4VGx1F4tKXIETaWSWoOFliuuXDZP_htkJ_qOo6xx0BfKGhepjdpORh4KdDGB4hKKQRKZEVC4VPMro7iUu8arp0WuAptw14j2dWnlFVzIG9tTPMz9132RRwoZKBc8RAiWwtY87Z3olv3jMCDBAG0EHD3rha8vD-cHGqKncrD1d6BMNfzVPTBNnwQ"/>
+<div class="p-3">
+<p class="font-label-md text-on-surface">Thai Guava</p>
+<p class="text-primary font-bold">৳180</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Action Bar -->
+<div class="fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-xl border-t border-stone-100 px-6 py-4 flex items-center gap-4 z-[60] shadow-[0_-4px_16px_rgba(45,90,39,0.08)]">
+<div class="flex items-center bg-surface-container rounded-full px-4 py-2 border border-outline-variant/30">
+<button class="text-primary p-1 active:scale-90 transition-transform"><span class="material-symbols-outlined" data-icon="remove">remove</span></button>
+<span class="px-4 font-label-md text-on-surface">1kg</span>
+<button class="text-primary p-1 active:scale-90 transition-transform"><span class="material-symbols-outlined" data-icon="add">add</span></button>
+</div>
+<button class="flex-1 bg-secondary-container text-on-secondary-fixed h-14 rounded-full font-label-md uppercase tracking-widest flex items-center justify-center gap-2 active:translate-y-[-2px] transition-all shadow-lg shadow-secondary-container/20">
+<span>Pre-order Now</span>
+<span class="material-symbols-outlined" data-icon="shopping_basket">shopping_basket</span>
+</button>
+</div>
+<!-- Bottom Navigation Shell -->
+<nav class="fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-xl flex justify-around items-center px-4 pt-2 pb-safe z-50 border-t border-stone-100 hidden">
+<div class="flex flex-col items-center justify-center text-stone-400 py-2">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="text-[11px] font-semibold uppercase tracking-tighter font-['Inter']">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center text-stone-400 py-2">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+<span class="text-[11px] font-semibold uppercase tracking-tighter font-['Inter']">Explore</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-emerald-50 text-emerald-900 rounded-2xl px-5 py-2">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+<span class="text-[11px] font-semibold uppercase tracking-tighter font-['Inter']">Orders</span>
+</div>
+<div class="flex flex-col items-center justify-center text-stone-400 py-2">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="text-[11px] font-semibold uppercase tracking-tighter font-['Inter']">Profile</span>
+</div>
+</nav>
+</body></html>

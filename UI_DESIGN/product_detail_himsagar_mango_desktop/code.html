@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-background": "#191c18",
+                        "surface-container-highest": "#e2e3dc",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed-variant": "#414942",
+                        "surface-container-low": "#f3f4ed",
+                        "on-primary-fixed": "#002201",
+                        "secondary-container": "#feb300",
+                        "secondary": "#7e5700",
+                        "on-surface-variant": "#42493e",
+                        "error": "#ba1a1a",
+                        "tertiary": "#333b35",
+                        "secondary-fixed-dim": "#ffba38",
+                        "on-tertiary-fixed": "#161d18",
+                        "primary": "#154212",
+                        "background": "#f9faf2",
+                        "on-primary-container": "#9dd090",
+                        "on-secondary-fixed": "#281900",
+                        "on-primary": "#ffffff",
+                        "on-secondary-container": "#6a4800",
+                        "surface-tint": "#3b6934",
+                        "surface-bright": "#f9faf2",
+                        "on-primary-fixed-variant": "#23501e",
+                        "on-surface": "#191c18",
+                        "outline": "#72796e",
+                        "surface-container": "#edefe7",
+                        "on-secondary-fixed-variant": "#604100",
+                        "tertiary-fixed-dim": "#c1c9c0",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-on-surface": "#f0f1ea",
+                        "surface-dim": "#d9dbd3",
+                        "inverse-surface": "#2e312c",
+                        "on-tertiary-container": "#bdc5bc",
+                        "tertiary-container": "#4a524b",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed": "#dde5dc",
+                        "surface-container-high": "#e7e9e1",
+                        "error-container": "#ffdad6",
+                        "primary-fixed-dim": "#a1d494",
+                        "inverse-primary": "#a1d494",
+                        "outline-variant": "#c2c9bb",
+                        "secondary-fixed": "#ffdeac",
+                        "surface-variant": "#e2e3dc",
+                        "primary-fixed": "#bcf0ae",
+                        "primary-container": "#2d5a27",
+                        "surface": "#f9faf2",
+                        "on-error-container": "#93000a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "8px",
+                        "xs": "4px",
+                        "md": "24px",
+                        "xl": "80px",
+                        "sm": "12px",
+                        "lg": "48px",
+                        "gutter": "24px",
+                        "margin": "32px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "display-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "label-sm": ["12px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                        "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                        "headline-md": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "headline-sm": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                        "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body class="bg-background font-body-md text-on-background selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full flex justify-between items-center px-6 md:px-12 py-4 max-w-7xl mx-auto left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur-md dark:bg-stone-950/90 z-50 border-b border-stone-100 dark:border-stone-800 shadow-[0_4px_20px_-4px_rgba(45,90,39,0.08)]">
+<div class="text-xl font-black text-emerald-900 dark:text-emerald-500 tracking-tighter">TKS.bd</div>
+<div class="hidden md:flex gap-8 font-['Inter'] antialiased text-sm font-medium tracking-tight">
+<a class="text-emerald-900 dark:text-emerald-400 border-b-2 border-emerald-900 dark:border-emerald-400 pb-1 transition-colors duration-200 ease-in-out" href="#">Mangoes</a>
+<a class="text-stone-500 dark:text-stone-400 hover:text-emerald-800 dark:hover:text-emerald-300 transition-colors duration-200 ease-in-out" href="#">Tea</a>
+<a class="text-stone-500 dark:text-stone-400 hover:text-emerald-800 dark:hover:text-emerald-300 transition-colors duration-200 ease-in-out" href="#">Organic Honey</a>
+<a class="text-stone-500 dark:text-stone-400 hover:text-emerald-800 dark:hover:text-emerald-300 transition-colors duration-200 ease-in-out" href="#">Seasonal</a>
+<a class="text-stone-500 dark:text-stone-400 hover:text-emerald-800 dark:hover:text-emerald-300 transition-colors duration-200 ease-in-out" href="#">Sustainability</a>
+</div>
+<div class="flex items-center gap-6 text-emerald-900 dark:text-emerald-500">
+<span class="material-symbols-outlined cursor-pointer active:scale-95 transition-transform">notifications</span>
+<span class="material-symbols-outlined cursor-pointer active:scale-95 transition-transform">shopping_bag</span>
+<span class="material-symbols-outlined cursor-pointer active:scale-95 transition-transform">account_circle</span>
+</div>
+</nav>
+<main class="max-w-7xl mx-auto px-6 md:px-12 pt-32 pb-24">
+<!-- Product Hero Section -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+<!-- Image Gallery: Asymmetric Layout -->
+<div class="lg:col-span-7 grid grid-cols-2 gap-4 h-fit">
+<div class="col-span-2 overflow-hidden rounded-xl border border-outline-variant bg-surface-container shadow-sm">
+<img class="w-full h-[500px] object-cover hover:scale-105 transition-transform duration-700" data-alt="Macro photography of a ripe premium Himsagar mango with vibrant yellow skin and natural sunlight highlights in a Rajshahi garden" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBk0jVvcUZi0PwVx7tWE_QeLdpR_SRtsG8BDvMGmktc4CVjcmUCkkXB9iwTldljObVG7BrH_c3w5cbi4YVXP0FqMy7tBYPKESAFY-7vXUL5poaaByyqefo7aTnNDlTpLx0FHq48w8czH85TEl52A4xsC1YTLiIl-sSmbJemXN0W4xqPYM1CiTKzy1pLWpVopJM-BmvOSAQnSvxUNsGqYTT0RG5e85nDFNI7GY27nEEkUeM1CrOqgXWVdEX1RpfGxePM8hIrlPeG7CM"/>
+</div>
+<div class="overflow-hidden rounded-xl border border-outline-variant bg-surface-container shadow-sm">
+<img class="w-full h-64 object-cover hover:scale-105 transition-transform duration-700" data-alt="Close-up of freshly harvested mangoes neatly packed in sustainable artisan wooden crates on a farm morning" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDpDwlWXfehbAwVhkubxaqBksxgQh--he7LOEjN9jVQQxtzmWW1Xs1dMWFr4cSjHgAo6dQzPbxK4utW-HqSAE2k34Ft9Ls3ZUVKW2QQwC2GGSxEqZMfhBd18umHenm0nlm8hMd_9KUIbQC5iPh-QHjQkku0YB68TLdUZpMFDY_4oqvH5Tz26yMaDN_TxnC65yzaEI7LbVEWDV8nuO1bnXBGTbO8CP5rHb3BHwynmAE7oOLnX4FtAgDTV6aLytASQQbV6t9qLCzMV-w"/>
+</div>
+<div class="overflow-hidden rounded-xl border border-outline-variant bg-surface-container shadow-sm">
+<img class="w-full h-64 object-cover hover:scale-105 transition-transform duration-700" data-alt="Wide shot of a lush green mango orchard in Rajshahi during sunset with hanging fruit and golden light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBIXr9WWMBYOmNK0TNdn3vnlYmf0aZvQ-hXjx6EPsXmlhOyF4gbki-pOMKNmkLR6bOe3yOR9xPOqwS35W1TTi2JAUBzOB0XOSCOSWFOpCbchJHq-LvN1jXk_YMNzlhgsTHNU-J3wixHfWa4Dll7B5D_i18bKK4TDuGAHP7i3av2lYS_HMvz925RsbOHYEIrOWkiKbVRTNbmuG062XjdCjVWjsamY08IohFKfxMB5oH12ah3xVWQe2SGu0mz595FpLPfexjxNjneKcE"/>
+</div>
+</div>
+<!-- Product Details Sidebar -->
+<div class="lg:col-span-5 flex flex-col gap-8">
+<div class="flex flex-col gap-4">
+<div class="flex items-center gap-2">
+<span class="px-3 py-1 bg-surface-container text-primary font-label-md rounded-full border border-primary/20 flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">eco</span>
+                            Harvesting Soon
+                        </span>
+<span class="px-3 py-1 border border-secondary text-secondary font-label-md rounded-full">
+                            Pre-order
+                        </span>
+</div>
+<h1 class="font-display-lg text-display-lg text-primary tracking-tighter">Premium Himsagar Mango</h1>
+<p class="font-body-lg text-on-surface-variant max-w-prose">Experience the 'King of Mangoes' from Rajshahi. Renowned for its thin skin, fiberless pulp, and an aroma that defines the Bengali summer.</p>
+</div>
+<div class="p-6 bg-surface-container-lowest rounded-xl border border-stone-100 shadow-[0_4px_20px_-4px_rgba(45,90,39,0.08)] flex flex-col gap-6">
+<div class="flex justify-between items-baseline">
+<div class="flex flex-col">
+<span class="font-display-lg text-display-lg text-on-background">৳850<span class="text-headline-sm font-headline-sm text-on-surface-variant">/kg</span></span>
+<span class="text-error font-label-md mt-1">Limited Pre-order Stock: 45 units remaining</span>
+</div>
+</div>
+<div class="p-4 bg-surface-container-low rounded-lg border-l-4 border-secondary">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary">local_shipping</span>
+<div>
+<p class="font-label-md text-on-surface">Expected Shipping: June 1st Week</p>
+<p class="text-label-sm text-on-surface-variant">(Harvesting soon!)</p>
+</div>
+</div>
+</div>
+<button class="w-full py-4 bg-secondary-container text-on-secondary-container font-label-md text-lg rounded-lg hover:bg-secondary-fixed transition-all active:scale-95 shadow-md flex items-center justify-center gap-2">
+                        Pre-order Now
+                        <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+<!-- Trust Badges -->
+<div class="grid grid-cols-3 gap-4">
+<div class="flex flex-col items-center text-center gap-2">
+<div class="w-12 h-12 rounded-full bg-primary/5 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<span class="text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant">Chemical Free</span>
+</div>
+<div class="flex flex-col items-center text-center gap-2">
+<div class="w-12 h-12 rounded-full bg-primary/5 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">location_on</span>
+</div>
+<span class="text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant">Direct from Rajshahi</span>
+</div>
+<div class="flex flex-col items-center text-center gap-2">
+<div class="w-12 h-12 rounded-full bg-primary/5 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">package_2</span>
+</div>
+<span class="text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant">Safe Packaging</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Harvest Details Section -->
+<section class="mt-xl grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+<div class="order-2 md:order-1">
+<div class="flex flex-col gap-6">
+<h2 class="font-headline-md text-headline-md text-primary">The Rajshahi Harvest Cycle</h2>
+<div class="h-1 w-24 bg-primary/20 rounded-full"></div>
+<div class="space-y-4 text-on-surface-variant font-body-md leading-relaxed">
+<p>Our Himsagar mangoes follow a strictly traditional ripening schedule. Located in the fertile belt of Chapainawabganj and Rajshahi, these orchards benefit from unique soil composition that creates the signature honey-sweet flavor.</p>
+<p>The cycle begins with "Mukul" in February, followed by careful nurturing through the nor'westers of April. We wait until the mangoes reach "Poka" (maturity) on the tree before hand-picking them during the first week of June. This ensures you get fruit that hasn't been chemically induced to ripen early.</p>
+<div class="pt-4 grid grid-cols-2 gap-4">
+<div class="border-l-2 border-primary pl-4">
+<span class="block font-label-md text-primary">Varietal Type</span>
+<span class="block text-body-md font-medium">100% Pure Himsagar</span>
+</div>
+<div class="border-l-2 border-primary pl-4">
+<span class="block font-label-md text-primary">Sugar Content</span>
+<span class="block text-body-md font-medium">Brix 20-22%</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="order-1 md:order-2">
+<img class="w-full aspect-square object-cover rounded-3xl shadow-xl" data-alt="A portrait of an elderly farmer gently inspecting a cluster of mangoes in a sun-drenched orchard" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBv1bpcBbpZwZReiyF9DQr-0zDZVAHsG1FFRyqMgrtv23-d5woLoIKjYyxuril90q6ciIVNlZ7nBguDNr5qcSx6IY03SOy0XIfRsRwRuoMrgBu_tQ3QU_tgiQh2-IH979ggkdHwRNziFjnn-qQtobouNlhN0hw8zM5BYOqapX297suxN7v_deOkCXfO5nfF3sGxUUP5UouCpgGNxrLPtfsjk6nqqUtuMIFp4pg1qcsNxSKpAIMS3NU30gVBIpodoE2VTnfihLuSkMg"/>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full bg-stone-50 dark:bg-stone-900 border-t border-stone-200 dark:border-stone-800">
+<div class="w-full px-6 py-12 md:px-24 flex flex-col md:flex-row justify-between items-center gap-8 max-w-7xl mx-auto">
+<div class="flex flex-col items-center md:items-start gap-4">
+<div class="text-lg font-bold text-emerald-900 dark:text-emerald-500">TKS.bd</div>
+<p class="font-['Inter'] text-xs uppercase tracking-widest text-stone-500">© 2024 TKS.bd | Reg: 2023-AGRO-9921 | TIN: 882910293</p>
+</div>
+<div class="flex flex-wrap justify-center gap-6 font-['Inter'] text-xs uppercase tracking-widest text-stone-500">
+<a class="text-stone-400 hover:text-emerald-700 transition-all duration-300 hover:underline decoration-emerald-500 underline-offset-4" href="#">Return Policy</a>
+<a class="text-stone-400 hover:text-emerald-700 transition-all duration-300 hover:underline decoration-emerald-500 underline-offset-4" href="#">Trade License</a>
+<a class="text-stone-400 hover:text-emerald-700 transition-all duration-300 hover:underline decoration-emerald-500 underline-offset-4" href="#">Farmer Contact</a>
+<a class="text-stone-400 hover:text-emerald-700 transition-all duration-300 hover:underline decoration-emerald-500 underline-offset-4" href="#">Shipping Info</a>
+<a class="text-stone-400 hover:text-emerald-700 transition-all duration-300 hover:underline decoration-emerald-500 underline-offset-4" href="#">Privacy</a>
+</div>
+</div>
+</footer>
+</body></html>

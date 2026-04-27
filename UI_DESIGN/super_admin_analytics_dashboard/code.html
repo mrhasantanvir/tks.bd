@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Harvest Intel | Super Admin Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed-dim": "#a1d494",
+                        "surface-dim": "#d9dbd3",
+                        "on-error": "#ffffff",
+                        "inverse-primary": "#a1d494",
+                        "inverse-surface": "#2e312c",
+                        "on-background": "#191c18",
+                        "outline-variant": "#c2c9bb",
+                        "on-primary": "#ffffff",
+                        "surface-container-high": "#e7e9e1",
+                        "surface": "#f9faf2",
+                        "on-tertiary-container": "#bdc5bc",
+                        "surface-bright": "#f9faf2",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-on-surface": "#f0f1ea",
+                        "background": "#f9faf2",
+                        "surface-variant": "#e2e3dc",
+                        "tertiary-fixed": "#dde5dc",
+                        "on-primary-fixed": "#002201",
+                        "secondary-fixed": "#ffdeac",
+                        "on-tertiary-fixed-variant": "#414942",
+                        "surface-container": "#edefe7",
+                        "secondary-container": "#feb300",
+                        "surface-container-highest": "#e2e3dc",
+                        "error": "#ba1a1a",
+                        "primary": "#154212",
+                        "outline": "#72796e",
+                        "on-tertiary-fixed": "#161d18",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed-dim": "#ffba38",
+                        "primary-container": "#2d5a27",
+                        "error-container": "#ffdad6",
+                        "on-surface-variant": "#42493e",
+                        "secondary": "#7e5700",
+                        "tertiary": "#333b35",
+                        "surface-container-low": "#f3f4ed",
+                        "tertiary-fixed-dim": "#c1c9c0",
+                        "on-surface": "#191c18",
+                        "on-secondary": "#ffffff",
+                        "primary-fixed": "#bcf0ae",
+                        "on-secondary-fixed-variant": "#604100",
+                        "on-error-container": "#93000a",
+                        "surface-tint": "#3b6934",
+                        "on-primary-fixed-variant": "#23501e",
+                        "tertiary-container": "#4a524b",
+                        "on-primary-container": "#9dd090",
+                        "on-secondary-container": "#6a4800",
+                        "on-secondary-fixed": "#281900"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "base": "8px",
+                        "sm": "12px",
+                        "md": "24px",
+                        "lg": "48px",
+                        "xl": "80px",
+                        "margin": "32px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "label-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                        "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                        "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-sm": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .organic-shadow {
+            box-shadow: 0 10px 30px -10px rgba(45, 90, 39, 0.08);
+        }
+        body {
+            background-color: #f9faf2;
+        }
+    </style>
+</head>
+<body class="font-body-md text-on-surface antialiased">
+<!-- SideNavBar Anchor -->
+<aside class="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 border-r border-zinc-200 bg-zinc-50 py-6 px-4 space-y-2 z-50">
+<div class="px-2 mb-8">
+<h1 class="text-lg font-black text-emerald-900">Curated Earth</h1>
+<p class="text-[10px] uppercase tracking-widest text-zinc-500 font-bold">Super Admin Console</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2.5 bg-emerald-50 text-emerald-700 border-r-4 border-emerald-700 font-label-md text-label-md transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-zinc-600 hover:bg-zinc-100 hover:text-emerald-800 font-label-md text-label-md transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+                Revenue
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-zinc-600 hover:bg-zinc-100 hover:text-emerald-800 font-label-md text-label-md transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+                Inventory
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-zinc-600 hover:bg-zinc-100 hover:text-emerald-800 font-label-md text-label-md transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="potted_plant">potted_plant</span>
+                Harvest Yield
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-zinc-600 hover:bg-zinc-100 hover:text-emerald-800 font-label-md text-label-md transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="map">map</span>
+                Regional Growth
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-zinc-600 hover:bg-zinc-100 hover:text-emerald-800 font-label-md text-label-md transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+                Settings
+            </a>
+</nav>
+<div class="mt-auto pt-6 border-t border-zinc-200 space-y-1">
+<button class="w-full mb-4 bg-primary text-on-primary py-3 rounded-lg font-label-md text-label-md active:scale-95 transition-all">
+                Export Report
+            </button>
+<a class="flex items-center gap-3 px-3 py-2 text-zinc-600 hover:text-emerald-800 text-label-sm font-label-sm" href="#">
+<span class="material-symbols-outlined" data-icon="help_center">help_center</span>
+                Support
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-zinc-600 hover:text-error text-label-sm font-label-sm" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+                Sign Out
+            </a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="md:ml-64 min-h-screen">
+<!-- TopAppBar Anchor -->
+<header class="h-16 px-6 w-full flex justify-between items-center bg-white/80 backdrop-blur-md sticky top-0 z-40 border-b border-zinc-100">
+<div class="flex items-center gap-4">
+<h2 class="font-headline-sm text-headline-sm text-emerald-900">Harvest Intel</h2>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-4">
+<button class="text-zinc-500 hover:bg-zinc-50 p-2 rounded-full transition-colors active:scale-95">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-zinc-500 hover:bg-zinc-50 p-2 rounded-full transition-colors active:scale-95">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</div>
+<div class="flex items-center gap-3 pl-6 border-l border-zinc-200">
+<div class="text-right hidden sm:block">
+<p class="text-label-md font-label-md text-emerald-900">Admin User</p>
+<p class="text-[10px] text-zinc-500">Super Administrator</p>
+</div>
+<img alt="Super Admin Avatar" class="w-10 h-10 rounded-full border-2 border-primary-fixed-dim object-cover" data-alt="close-up portrait of a professional male administrator in a clean white office setting with soft professional lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDircp9GuA2JN0wJxXJrNn9_2stfQ3ONPlCJedy4iZd1fZ6ONKs0XTif5qAgoWXxYhp5SPA_fEQy-xEyzPKRAcWp5xbegqn25mp2_wPADcoqKCF9okW68JmrBPqeYTS7hbGRI2g1oSIiWszHxxqeoSq6iCGDtBRk_5kVg_-2DJF9QVpRY2iz-bQXDNCvyj2L-ZrYIpDlF1frUlxvMo41Zqxe9x3drAwP3RbI9fSbQ3eOodqUiuQJMqMqMaWZfSViYhEmXMK-DMaRWg"/>
+</div>
+</div>
+</header>
+<div class="p-6 md:p-margin max-w-7xl mx-auto space-y-md">
+<!-- Dashboard Title & Action -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+<div>
+<h3 class="font-display-lg text-display-lg text-primary">Operational Overview</h3>
+<p class="font-body-lg text-body-lg text-zinc-500">Real-time performance metrics for TKS.bd</p>
+</div>
+<div class="flex gap-sm">
+<button class="px-md py-sm rounded-lg bg-surface-container-highest text-primary font-label-md text-label-md hover:bg-zinc-200 transition-colors">
+                        Date Range: Last 30 Days
+                    </button>
+<button class="px-md py-sm rounded-lg bg-primary text-on-primary font-label-md text-label-md hover:shadow-lg transition-all active:scale-95">
+<span class="material-symbols-outlined text-[18px] align-middle mr-1" data-icon="file_download">file_download</span>
+                        Export Annual Report
+                    </button>
+</div>
+</div>
+<!-- KPI Cards Bento Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter">
+<!-- Revenue KPI -->
+<div class="bg-white p-6 rounded-xl border border-zinc-100 organic-shadow">
+<div class="flex items-center justify-between mb-4">
+<span class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="trending_up">trending_up</span>
+</span>
+<span class="text-emerald-600 bg-emerald-50 px-2 py-1 rounded text-[12px] font-bold">+12.4%</span>
+</div>
+<p class="text-label-sm font-label-sm text-zinc-500 uppercase tracking-wider">Total Revenue</p>
+<p class="font-headline-md text-headline-md text-emerald-900 mt-1">৳4,280,500</p>
+</div>
+<!-- Profit KPI -->
+<div class="bg-white p-6 rounded-xl border border-zinc-100 organic-shadow">
+<div class="flex items-center justify-between mb-4">
+<span class="w-10 h-10 rounded-lg bg-primary-fixed-dim/20 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+</span>
+<span class="text-emerald-600 bg-emerald-50 px-2 py-1 rounded text-[12px] font-bold">+8.2%</span>
+</div>
+<p class="text-label-sm font-label-sm text-zinc-500 uppercase tracking-wider">Net Profit</p>
+<p class="font-headline-md text-headline-md text-emerald-900 mt-1">৳1,142,000</p>
+</div>
+<!-- Yield KPI -->
+<div class="bg-white p-6 rounded-xl border border-zinc-100 organic-shadow">
+<div class="flex items-center justify-between mb-4">
+<span class="w-10 h-10 rounded-lg bg-tertiary-fixed text-tertiary flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="potted_plant">potted_plant</span>
+</span>
+<span class="text-zinc-600 bg-zinc-100 px-2 py-1 rounded text-[12px] font-bold">Stable</span>
+</div>
+<p class="text-label-sm font-label-sm text-zinc-500 uppercase tracking-wider">Total Harvest Yield</p>
+<p class="font-headline-md text-headline-md text-emerald-900 mt-1">12,450 kg</p>
+</div>
+<!-- Pre-orders KPI -->
+<div class="bg-white p-6 rounded-xl border border-zinc-100 organic-shadow">
+<div class="flex items-center justify-between mb-4">
+<span class="w-10 h-10 rounded-lg bg-secondary-fixed text-secondary flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="shopping_basket">shopping_basket</span>
+</span>
+<span class="text-secondary bg-secondary-fixed px-2 py-1 rounded text-[12px] font-bold">New: 42</span>
+</div>
+<p class="text-label-sm font-label-sm text-zinc-500 uppercase tracking-wider">Active Pre-orders</p>
+<p class="font-headline-md text-headline-md text-emerald-900 mt-1">856</p>
+</div>
+</div>
+<!-- Charts Section -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+<!-- Revenue Line Graph Placeholder -->
+<div class="lg:col-span-2 bg-white p-md rounded-xl border border-zinc-100 organic-shadow">
+<div class="flex items-center justify-between mb-6">
+<h4 class="font-headline-sm text-headline-sm text-emerald-900">Revenue Over Time</h4>
+<div class="flex gap-2">
+<span class="flex items-center gap-1 text-[12px] text-zinc-500"><div class="w-3 h-3 bg-primary rounded-full"></div> Sales</span>
+<span class="flex items-center gap-1 text-[12px] text-zinc-500"><div class="w-3 h-3 bg-secondary-container rounded-full"></div> Target</span>
+</div>
+</div>
+<!-- Mock Line Graph -->
+<div class="h-64 flex items-end justify-between gap-2 px-2 relative">
+<div class="absolute inset-x-0 bottom-0 h-[1px] bg-zinc-200"></div>
+<div class="absolute inset-x-0 bottom-1/4 h-[1px] bg-zinc-100"></div>
+<div class="absolute inset-x-0 bottom-1/2 h-[1px] bg-zinc-100"></div>
+<div class="absolute inset-x-0 bottom-3/4 h-[1px] bg-zinc-100"></div>
+<div class="flex-1 flex flex-col items-center group">
+<div class="w-full bg-emerald-100/30 rounded-t-sm relative h-32 hover:bg-emerald-200/50 transition-all">
+<div class="absolute bottom-0 w-full h-1 bg-primary"></div>
+</div>
+<span class="text-[10px] mt-2 text-zinc-400">JAN</span>
+</div>
+<div class="flex-1 flex flex-col items-center group">
+<div class="w-full bg-emerald-100/30 rounded-t-sm relative h-40 hover:bg-emerald-200/50 transition-all">
+<div class="absolute bottom-0 w-full h-1 bg-primary"></div>
+</div>
+<span class="text-[10px] mt-2 text-zinc-400">FEB</span>
+</div>
+<div class="flex-1 flex flex-col items-center group">
+<div class="w-full bg-emerald-100/30 rounded-t-sm relative h-36 hover:bg-emerald-200/50 transition-all">
+<div class="absolute bottom-0 w-full h-1 bg-primary"></div>
+</div>
+<span class="text-[10px] mt-2 text-zinc-400">MAR</span>
+</div>
+<div class="flex-1 flex flex-col items-center group">
+<div class="w-full bg-emerald-100/30 rounded-t-sm relative h-48 hover:bg-emerald-200/50 transition-all">
+<div class="absolute bottom-0 w-full h-1 bg-primary"></div>
+</div>
+<span class="text-[10px] mt-2 text-zinc-400">APR</span>
+</div>
+<div class="flex-1 flex flex-col items-center group">
+<div class="w-full bg-emerald-100/30 rounded-t-sm relative h-56 hover:bg-emerald-200/50 transition-all">
+<div class="absolute bottom-0 w-full h-1 bg-primary"></div>
+</div>
+<span class="text-[10px] mt-2 text-zinc-400">MAY</span>
+</div>
+<div class="flex-1 flex flex-col items-center group">
+<div class="w-full bg-emerald-100/30 rounded-t-sm relative h-64 hover:bg-emerald-200/50 transition-all">
+<div class="absolute bottom-0 w-full h-1 bg-primary"></div>
+</div>
+<span class="text-[10px] mt-2 text-zinc-400">JUN</span>
+</div>
+</div>
+</div>
+<!-- Product Breakdown Pie/Donut -->
+<div class="bg-white p-md rounded-xl border border-zinc-100 organic-shadow flex flex-col">
+<h4 class="font-headline-sm text-headline-sm text-emerald-900 mb-6">Category Breakdown</h4>
+<div class="flex-1 flex items-center justify-center relative">
+<!-- Custom Donut Chart CSS visualization -->
+<div class="w-48 h-48 rounded-full border-[16px] border-primary relative flex items-center justify-center">
+<div class="absolute w-full h-full rounded-full border-[16px] border-secondary-container border-t-transparent border-l-transparent -rotate-45"></div>
+<div class="absolute w-full h-full rounded-full border-[16px] border-tertiary-container border-t-transparent border-r-transparent border-b-transparent rotate-90"></div>
+<div class="text-center">
+<p class="text-headline-sm font-headline-sm text-primary">100%</p>
+<p class="text-[10px] text-zinc-400">DISTRIBUTION</p>
+</div>
+</div>
+</div>
+<div class="mt-6 space-y-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-primary"></div>
+<span class="text-label-md font-label-md">Mango Varieties</span>
+</div>
+<span class="text-zinc-600">45%</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-secondary-container"></div>
+<span class="text-label-md font-label-md">Assam Tea</span>
+</div>
+<span class="text-zinc-600">30%</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-tertiary-container"></div>
+<span class="text-label-md font-label-md">Organic Honey</span>
+</div>
+<span class="text-zinc-600">25%</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Lower Grid Section -->
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-gutter">
+<!-- Harvest Efficiency Matrix -->
+<div class="xl:col-span-2 bg-white rounded-xl border border-zinc-100 organic-shadow overflow-hidden">
+<div class="p-6 border-b border-zinc-50 flex items-center justify-between">
+<h4 class="font-headline-sm text-headline-sm text-emerald-900">Harvest Efficiency Matrix</h4>
+<button class="text-primary text-label-md font-label-md hover:underline">View Batch Details</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="bg-zinc-50/50 text-zinc-500 uppercase text-[11px] font-bold tracking-wider">
+<tr>
+<th class="px-6 py-4">Batch ID</th>
+<th class="px-6 py-4">Product</th>
+<th class="px-6 py-4">Quality (Brix)</th>
+<th class="px-6 py-4">Yield (kg)</th>
+<th class="px-6 py-4">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-zinc-100">
+<tr class="hover:bg-zinc-50/50 transition-colors">
+<td class="px-6 py-4 font-medium text-emerald-900">#B-2401</td>
+<td class="px-6 py-4">Himsagar Mango</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-24 h-2 bg-zinc-100 rounded-full overflow-hidden">
+<div class="w-[85%] h-full bg-emerald-600"></div>
+</div>
+<span class="text-[12px]">18.5</span>
+</div>
+</td>
+<td class="px-6 py-4">1,200</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600 mr-2"></span> Fulfilled
+                                        </span>
+</td>
+</tr>
+<tr class="hover:bg-zinc-50/50 transition-colors">
+<td class="px-6 py-4 font-medium text-emerald-900">#B-2402</td>
+<td class="px-6 py-4">Langra Mango</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-24 h-2 bg-zinc-100 rounded-full overflow-hidden">
+<div class="w-[72%] h-full bg-emerald-500"></div>
+</div>
+<span class="text-[12px]">16.2</span>
+</div>
+</td>
+<td class="px-6 py-4">850</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-600 mr-2"></span> Processing
+                                        </span>
+</td>
+</tr>
+<tr class="hover:bg-zinc-50/50 transition-colors">
+<td class="px-6 py-4 font-medium text-emerald-900">#B-2403</td>
+<td class="px-6 py-4">Assam Black Tea</td>
+<td class="px-6 py-4">
+<span class="text-zinc-400">Grade A++</span>
+</td>
+<td class="px-6 py-4">450</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-zinc-100 text-zinc-800">
+<span class="w-1.5 h-1.5 rounded-full bg-zinc-600 mr-2"></span> Queued
+                                        </span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Regional Growth Map Visualization -->
+<div class="bg-white p-md rounded-xl border border-zinc-100 organic-shadow flex flex-col">
+<h4 class="font-headline-sm text-headline-sm text-emerald-900 mb-4">Regional Distribution</h4>
+<div class="flex-1 bg-emerald-50/50 rounded-lg relative overflow-hidden flex items-center justify-center p-4">
+<img alt="Regional Map" class="w-full h-full object-contain opacity-80 mix-blend-multiply" data-alt="stylized vector map of bangladesh regions with soft green and amber glow highlights on major urban centers" data-location="Bangladesh" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCeTzjzhTnhgsp99PO-duf-ik95LxmupvWAlE30iDJcyPYlAN1FqLaxD5M56qd1gUlAA2_D5RT6p3UAEBLLlUAfhfU9m2QD-FSmAc8eUQVcAYUCHtB4hXBTK6MkFOvZeQvNK625ErvyrCTr-gH31iCnro-U0VnwtDbPmzbzM2BCrs1cdmMa0Bq_b279DusuhD-4Gk6iX7h_puMFjPtB0jJUnVmW_q42gc9Q_f8iRRl3o5GvxMGU97zxmVfKkESg3Tl65n3ViR0dVLU"/>
+<!-- Heatmap Pointers -->
+<div class="absolute top-[30%] left-[45%] group">
+<div class="w-4 h-4 bg-primary rounded-full animate-ping opacity-75 absolute"></div>
+<div class="w-4 h-4 bg-primary rounded-full relative shadow-lg"></div>
+<div class="absolute bottom-6 left-1/2 -translate-x-1/2 bg-white text-[10px] px-2 py-1 rounded shadow-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">Dhaka: 4,200 Orders</div>
+</div>
+<div class="absolute bottom-[35%] right-[25%] group">
+<div class="w-3 h-3 bg-secondary-container rounded-full animate-ping opacity-75 absolute"></div>
+<div class="w-3 h-3 bg-secondary-container rounded-full relative shadow-lg"></div>
+<div class="absolute bottom-5 left-1/2 -translate-x-1/2 bg-white text-[10px] px-2 py-1 rounded shadow-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">Chittagong: 2,150 Orders</div>
+</div>
+</div>
+<div class="mt-6 grid grid-cols-2 gap-4">
+<div class="p-3 bg-zinc-50 rounded-lg">
+<p class="text-[10px] text-zinc-500 font-bold uppercase">Primary Hub</p>
+<p class="text-label-md font-label-md text-emerald-900">Dhaka (45%)</p>
+</div>
+<div class="p-3 bg-zinc-50 rounded-lg">
+<p class="text-[10px] text-zinc-500 font-bold uppercase">Growth Market</p>
+<p class="text-label-md font-label-md text-emerald-900">Sylhet (+15%)</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Contextual FAB for quick actions -->
+<button class="fixed bottom-8 right-8 w-14 h-14 bg-secondary-container text-on-secondary-container rounded-full flex items-center justify-center shadow-xl hover:scale-110 active:scale-95 transition-all z-50">
+<span class="material-symbols-outlined text-3xl" data-icon="add">add</span>
+</button>
+</body></html>

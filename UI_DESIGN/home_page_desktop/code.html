@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-background": "#191c18",
+                        "surface-container-highest": "#e2e3dc",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed-variant": "#414942",
+                        "surface-container-low": "#f3f4ed",
+                        "on-primary-fixed": "#002201",
+                        "secondary-container": "#feb300",
+                        "secondary": "#7e5700",
+                        "on-surface-variant": "#42493e",
+                        "error": "#ba1a1a",
+                        "tertiary": "#333b35",
+                        "secondary-fixed-dim": "#ffba38",
+                        "on-tertiary-fixed": "#161d18",
+                        "primary": "#154212",
+                        "background": "#f9faf2",
+                        "on-primary-container": "#9dd090",
+                        "on-secondary-fixed": "#281900",
+                        "on-primary": "#ffffff",
+                        "on-secondary-container": "#6a4800",
+                        "surface-tint": "#3b6934",
+                        "surface-bright": "#f9faf2",
+                        "on-primary-fixed-variant": "#23501e",
+                        "on-surface": "#191c18",
+                        "outline": "#72796e",
+                        "surface-container": "#edefe7",
+                        "on-secondary-fixed-variant": "#604100",
+                        "tertiary-fixed-dim": "#c1c9c0",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-on-surface": "#f0f1ea",
+                        "surface-dim": "#d9dbd3",
+                        "inverse-surface": "#2e312c",
+                        "on-tertiary-container": "#bdc5bc",
+                        "tertiary-container": "#4a524b",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed": "#dde5dc",
+                        "surface-container-high": "#e7e9e1",
+                        "error-container": "#ffdad6",
+                        "primary-fixed-dim": "#a1d494",
+                        "inverse-primary": "#a1d494",
+                        "outline-variant": "#c2c9bb",
+                        "secondary-fixed": "#ffdeac",
+                        "surface-variant": "#e2e3dc",
+                        "primary-fixed": "#bcf0ae",
+                        "primary-container": "#2d5a27",
+                        "surface": "#f9faf2",
+                        "on-error-container": "#93000a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "8px",
+                        "xs": "4px",
+                        "md": "24px",
+                        "xl": "80px",
+                        "sm": "12px",
+                        "lg": "48px",
+                        "gutter": "24px",
+                        "margin": "32px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "display-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "label-sm": ["12px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                        "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                        "headline-md": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "headline-sm": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                        "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body {
+            background-color: #f9faf2;
+        }
+    </style>
+</head>
+<body class="font-body-md text-on-surface">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md dark:bg-stone-950/90 border-b border-stone-100 dark:border-stone-800 shadow-[0_4px_20px_-4px_rgba(45,90,39,0.08)]">
+<nav class="max-w-7xl mx-auto flex justify-between items-center px-6 md:px-12 py-4">
+<div class="text-xl font-black text-emerald-900 dark:text-emerald-500 tracking-tighter">TKS.bd</div>
+<div class="hidden md:flex items-center gap-8 font-['Inter'] antialiased text-sm font-medium tracking-tight">
+<a class="text-stone-500 dark:text-stone-400 hover:text-emerald-800 dark:hover:text-emerald-300 transition-colors duration-200 ease-in-out" href="#">Mangoes</a>
+<a class="text-stone-500 dark:text-stone-400 hover:text-emerald-800 dark:hover:text-emerald-300 transition-colors duration-200 ease-in-out" href="#">Tea</a>
+<a class="text-stone-500 dark:text-stone-400 hover:text-emerald-800 dark:hover:text-emerald-300 transition-colors duration-200 ease-in-out" href="#">Organic Honey</a>
+<a class="text-emerald-900 dark:text-emerald-400 border-b-2 border-emerald-900 dark:border-emerald-400 pb-1" href="#">Seasonal</a>
+<a class="text-stone-500 dark:text-stone-400 hover:text-emerald-800 dark:hover:text-emerald-300 transition-colors duration-200 ease-in-out" href="#">Sustainability</a>
+</div>
+<div class="flex items-center gap-5">
+<button class="cursor-pointer active:scale-95 transition-transform text-emerald-900 dark:text-emerald-500">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="cursor-pointer active:scale-95 transition-transform text-emerald-900 dark:text-emerald-500">
+<span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
+</button>
+<button class="cursor-pointer active:scale-95 transition-transform text-emerald-900 dark:text-emerald-500">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</nav>
+</header>
+<main class="pt-20">
+<!-- Hero Section -->
+<section class="relative h-[870px] min-h-[600px] flex items-center overflow-hidden">
+<div class="absolute inset-0 z-0">
+<img alt="Mango orchard" class="w-full h-full object-cover" data-alt="Lush green mango orchard in Rajshahi during sunset with golden sunlight filtering through leaves and rows of trees receding into distance" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzUF6J90SNFAAZVCgX-l-4c3wnc2BXcFwDHteK4Ny0Vg0wrjnEZ-CHY_i0Lf3ezj_YNJtw0GoxLT_Cy1ExxhYowRR56jjYiKuszpHjCp0ekX_3z98hOslF-mQU9vZ4SCZEKjW1d1_JXOfZw7k2vJaTGDC1fHcqj8-Odvh9Nw0k8I0iByvilalTHl6mr0JwTv4UzD7mBMfodxG-kg_CJzticqNGRD1AjCXbbdYf7_aZm8xL7bynhrPILMsRMcSr9zJSYVF0-oLWdYY"/>
+<div class="absolute inset-0 bg-gradient-to-r from-background/90 via-background/40 to-transparent"></div>
+</div>
+<div class="relative z-10 max-w-7xl mx-auto px-6 md:px-12 w-full">
+<div class="max-w-2xl">
+<span class="inline-block font-label-md text-label-md text-primary mb-4 uppercase tracking-[0.2em]">Authentic Harvest</span>
+<h1 class="font-display-lg text-display-lg text-on-background mb-6 leading-[1.1]">
+                        Fresh from Rajshahi, <br/>Delivered to Your Doorstep
+                    </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-10 max-w-lg">
+                        Premium Grade, Chemical-Free Seasonal Fruits &amp; Organic Goods. Experience the true taste of nature’s bounty.
+                    </p>
+<div class="flex flex-wrap gap-4">
+<button class="bg-primary text-on-primary font-label-md text-label-md px-10 py-5 rounded-none shadow-[0_8px_30px_rgb(21,66,18,0.2)] active:scale-95 transition-all">
+                            Pre-order Now
+                        </button>
+<button class="border border-primary text-primary font-label-md text-label-md px-10 py-5 rounded-none hover:bg-primary/5 active:scale-95 transition-all">
+                            Explore Catalog
+                        </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Trust Signals -->
+<section class="bg-surface-container-low py-20">
+<div class="max-w-7xl mx-auto px-6 md:px-12">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+<div class="flex flex-col items-center text-center group">
+<div class="w-16 h-16 rounded-full bg-white flex items-center justify-center mb-4 shadow-sm group-hover:shadow-md transition-shadow">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="potted_plant">potted_plant</span>
+</div>
+<h3 class="font-label-md text-label-md text-on-surface mb-1">Direct from Rajshahi</h3>
+<p class="text-xs text-on-surface-variant uppercase tracking-wider">Garden Fresh</p>
+</div>
+<div class="flex flex-col items-center text-center group">
+<div class="w-16 h-16 rounded-full bg-white flex items-center justify-center mb-4 shadow-sm group-hover:shadow-md transition-shadow">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="sanitizer">sanitizer</span>
+</div>
+<h3 class="font-label-md text-label-md text-on-surface mb-1">Chemical Free</h3>
+<p class="text-xs text-on-surface-variant uppercase tracking-wider">100% Organic</p>
+</div>
+<div class="flex flex-col items-center text-center group">
+<div class="w-16 h-16 rounded-full bg-white flex items-center justify-center mb-4 shadow-sm group-hover:shadow-md transition-shadow">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="local_shipping">local_shipping</span>
+</div>
+<h3 class="font-label-md text-label-md text-on-surface mb-1">Safe Delivery</h3>
+<p class="text-xs text-on-surface-variant uppercase tracking-wider">Across Country</p>
+</div>
+<div class="flex flex-col items-center text-center group">
+<div class="w-16 h-16 rounded-full bg-white flex items-center justify-center mb-4 shadow-sm group-hover:shadow-md transition-shadow">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="inventory_2">inventory_2</span>
+</div>
+<h3 class="font-label-md text-label-md text-on-surface mb-1">Hygienically Packed</h3>
+<p class="text-xs text-on-surface-variant uppercase tracking-wider">Safety First</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Harvesting Soon Section -->
+<section class="py-xl bg-background">
+<div class="max-w-7xl mx-auto px-6 md:px-12">
+<div class="flex justify-between items-end mb-12">
+<div>
+<span class="text-secondary font-label-md text-label-md uppercase tracking-[0.2em] mb-2 block">Coming Soon</span>
+<h2 class="font-headline-md text-headline-md text-on-background">The Harvest Countdown</h2>
+</div>
+<a class="font-label-md text-label-md text-primary flex items-center gap-2 hover:underline" href="#">
+                        View Season Calendar <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<!-- Product Card 1 -->
+<div class="group relative bg-white border border-stone-100 overflow-hidden hover:shadow-[0_20px_50px_rgba(45,90,39,0.12)] transition-all duration-500">
+<div class="grid md:grid-cols-2">
+<div class="relative h-64 md:h-full overflow-hidden">
+<img alt="Himsagar Mango" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" data-alt="Close-up macro shot of premium Himsagar mangoes with golden skin and a few green leaves on a minimalist neutral surface" src="https://lh3.googleusercontent.com/aida-public/AB6AXuANBfC8rGhjl-YHaNu_Y5zhR-THYr9p12LEEGHpoBlJzoeyNMBwOHLCuQOj1W87pE27RPlpPAAVfetZpK3Ml3m1sOuWv2Sf5TIJXX-76u72C7NMUbKK3hTDRp1_vzNkkddlxIc7ZEZqbme3sg1q2DYo_x9R1IUNjEdFldU7PZa671dItPUwgWLWPlXzyntgKIDYbtUdp5LJc9N8QBE2VSm5nQictGLga1DbeIy8DFoaYyLy7Mcd132TJhKDv2PKGYk-mjoJiSxD-VU"/>
+<div class="absolute top-4 left-4">
+<span class="bg-white/90 backdrop-blur-sm text-secondary border border-secondary px-3 py-1 font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="eco">eco</span> Harvesting Soon
+                                    </span>
+</div>
+</div>
+<div class="p-8 flex flex-col justify-between">
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-background mb-2">Himsagar Mango</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4">The 'King of Mangoes' from Rajshahi, known for its sweet aroma and creamy pulp.</p>
+<p class="font-label-sm text-label-sm text-secondary bg-secondary/5 inline-block px-2 py-1 mb-6">
+                                        Shipping starts from June 1st week
+                                    </p>
+</div>
+<button class="w-full bg-primary text-on-primary font-label-md text-label-md py-4 rounded-none active:scale-95 transition-all">
+                                    Pre-order Now
+                                </button>
+</div>
+</div>
+</div>
+<!-- Product Card 2 -->
+<div class="group relative bg-white border border-stone-100 overflow-hidden hover:shadow-[0_20px_50px_rgba(45,90,39,0.12)] transition-all duration-500">
+<div class="grid md:grid-cols-2">
+<div class="relative h-64 md:h-full overflow-hidden">
+<img alt="Langra Mango" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" data-alt="Top down view of several ripe Langra mangoes with characteristically thin skin and vibrant yellow color in a traditional wooden crate" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDeEWhSfbP8_fnTPSCDEvx3asyYvROCbWt9A9kxlDhJsYikJFRY0zN-El8JrV0-PYGvz71RRUfeoRwZxyg9Q1f-V6J3I8YpWEfgU9loHxtTQwjZKwTF1B2IgDxOGyupB7J0YWnB0EoJZTAsQQNRxmC6VBwCdJKoQ3YxN0seCmrDpZkVlUWZm3NgG2Qrj8WYSMxjtpm_TeSEEtolLYCYTgbGr1PfsgsnMTSbSDiglq1du9UXMKDEGwNAb9Pr1Xxt8zCcXQDV5dv-wk8"/>
+<div class="absolute top-4 left-4">
+<span class="bg-white/90 backdrop-blur-sm text-secondary border border-secondary px-3 py-1 font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="eco">eco</span> Harvesting Soon
+                                    </span>
+</div>
+</div>
+<div class="p-8 flex flex-col justify-between">
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-background mb-2">Langra Mango</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4">Distinctive aroma and exceptionally sweet flavor. Hand-picked at peak ripeness.</p>
+<p class="font-label-sm text-label-sm text-secondary bg-secondary/5 inline-block px-2 py-1 mb-6">
+                                        Shipping starts from June 1st week
+                                    </p>
+</div>
+<button class="w-full bg-primary text-on-primary font-label-md text-label-md py-4 rounded-none active:scale-95 transition-all">
+                                    Pre-order Now
+                                </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Premium Organic Goods -->
+<section class="py-xl bg-surface-container">
+<div class="max-w-7xl mx-auto px-6 md:px-12">
+<div class="text-center mb-16">
+<span class="text-primary font-label-md text-label-md uppercase tracking-[0.2em] mb-2 block">The Collection</span>
+<h2 class="font-headline-md text-headline-md text-on-background">Premium Organic Goods</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Tea Item -->
+<div class="bg-white p-4 group">
+<div class="aspect-[4/5] mb-6 overflow-hidden relative">
+<img alt="Organic Tea" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Elegant glass container filled with loose leaf green tea sitting on a bamboo mat with soft morning light from a nearby window" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJiOs4AXf7ZHWpeM-Z-5AD2CGroesPnto0wPgEccpsWr1qQBjBwiXOMxT_Y1zYHLWqEffMNOFq8Dq3M6Qhi0LsGsHo_PJRWesMStDnEya6JJCY9fnk0mYxB2qfm2XW1oRZkVqQTZ3PXp2vQHtZBEW9Qn3U8T7SaGE9ITzeJGiyOLPc7lca7x-chWBg9ivp6B7D5AcUHWG-KUiIPzFUco57A55d52kmSkyeXlUvHPCC8E38LuJGyfDuxgNPsB0dBQUodNxJ93BxR6I"/>
+<div class="absolute top-4 right-4">
+<span class="bg-primary text-white text-[10px] uppercase font-bold tracking-widest px-3 py-1">Premium Grade</span>
+</div>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-on-background mb-1">Hand-Picked Black Tea</h4>
+<p class="text-primary font-label-md text-label-md mb-4">BDT 850.00</p>
+<button class="w-full border border-primary text-primary font-label-md text-label-md py-3 hover:bg-primary hover:text-white transition-colors">Add to Cart</button>
+</div>
+<!-- Honey Item -->
+<div class="bg-white p-4 group">
+<div class="aspect-[4/5] mb-6 overflow-hidden relative">
+<img alt="Organic Honey" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Golden organic honey drizzling from a wooden dipper into a crystal jar, lit with warm backlighting to emphasize texture and color" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwpYW209ljAPQkQwnbr_WoXawst_rPS3-a4OCKOD7LvACqr0FYKeidlvIZQ-LPH_K0kCHY7qaw0Vin2JrGvl2JEQjaTy0gHjT5C151pNt1t5XGhtXJJ_8_CWX8D7J-RwoL02DmBwrbwPKp4w1Vt0wPI7jK8Cr1t3p24F9N21MOFM_zosMeTfp7sHgnJlpvkqswVFcXOtwW4pKwiobtH8O3_IuHAOjQF1NLSwmp6j12RYJ9auyYFhC9WTHdNKT06fo8N82MIe9cNYM"/>
+<div class="absolute top-4 right-4">
+<span class="bg-primary text-white text-[10px] uppercase font-bold tracking-widest px-3 py-1">Premium Grade</span>
+</div>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-on-background mb-1">Sundarban Wild Honey</h4>
+<p class="text-primary font-label-md text-label-md mb-4">BDT 1,200.00</p>
+<button class="w-full border border-primary text-primary font-label-md text-label-md py-3 hover:bg-primary hover:text-white transition-colors">Add to Cart</button>
+</div>
+<!-- Honey Item 2 -->
+<div class="bg-white p-4 group">
+<div class="aspect-[4/5] mb-6 overflow-hidden relative">
+<img alt="Litchi Flower Honey" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Artisanal glass jar of litchi flower honey on a rustic wooden table with small white flowers scattered around it" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVzX3_7xX0Ppd7kmNdezXRnrixEh4gke4BKkB1SlZY68kU43R4qzRMIxxfmKFwxN5WTL9Q9VKg3L0hRhikIM68rw8oqXo50xtkROpXsiQ1MCtBJvlCzIw8XU_CjAgF32s4RYPOo_wQPma-ODAG2_gPVkcw6ACYiLTT19_m1sBaUdlTNTTnefwvjOXYD721zL5trUWVYSL1poYTOzcBiZCYb96HoG6wLuZZDq2_ejyx-QjwDTQgX8aV520MVeRe-UiLDNi_Xx0q1HI"/>
+<div class="absolute top-4 right-4">
+<span class="bg-primary text-white text-[10px] uppercase font-bold tracking-widest px-3 py-1">Premium Grade</span>
+</div>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-on-background mb-1">Litchi Flower Honey</h4>
+<p class="text-primary font-label-md text-label-md mb-4">BDT 950.00</p>
+<button class="w-full border border-primary text-primary font-label-md text-label-md py-3 hover:bg-primary hover:text-white transition-colors">Add to Cart</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Seasonal CTA Section -->
+<section class="py-xl">
+<div class="max-w-7xl mx-auto px-6 md:px-12">
+<div class="relative bg-primary overflow-hidden p-12 md:p-24 text-center">
+<div class="absolute top-0 left-0 w-full h-full opacity-10">
+<div class="grid grid-cols-6 h-full w-full">
+<div class="border-r border-on-primary"></div>
+<div class="border-r border-on-primary"></div>
+<div class="border-r border-on-primary"></div>
+<div class="border-r border-on-primary"></div>
+<div class="border-r border-on-primary"></div>
+<div></div>
+</div>
+</div>
+<div class="relative z-10">
+<h2 class="font-display-lg text-display-lg text-on-primary mb-6">Join the Seasonal Harvest</h2>
+<p class="font-body-lg text-body-lg text-on-primary/80 mb-10 max-w-2xl mx-auto">
+                            Be the first to know when our premium mangoes are ready for shipping. Get exclusive pre-order access and limited seasonal updates.
+                        </p>
+<form class="flex flex-col md:flex-row gap-4 max-w-lg mx-auto">
+<input class="flex-grow bg-white/10 border-white/20 text-on-primary placeholder:text-on-primary/50 focus:border-white focus:ring-0 rounded-none py-4 px-6" placeholder="Your email address" type="email"/>
+<button class="bg-secondary-container text-on-secondary-container font-label-md text-label-md px-8 py-4 rounded-none hover:bg-secondary-container/90 transition-colors">Subscribe</button>
+</form>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-stone-50 dark:bg-stone-900 border-t border-stone-200 dark:border-stone-800">
+<div class="max-w-7xl mx-auto px-6 py-12 md:px-24 flex flex-col md:flex-row justify-between items-center gap-8">
+<div class="flex flex-col items-center md:items-start gap-4">
+<div class="text-lg font-bold text-emerald-900 dark:text-emerald-500 uppercase tracking-tighter">TKS.bd</div>
+<p class="font-['Inter'] text-xs uppercase tracking-widest text-stone-500">
+                    © 2024 TKS.bd | Reg: 2023-AGRO-9921 | TIN: 882910293
+                </p>
+</div>
+<div class="flex flex-wrap justify-center gap-6">
+<a class="font-['Inter'] text-xs uppercase tracking-widest text-stone-400 hover:text-emerald-700 transition-all duration-300 hover:underline decoration-emerald-500 underline-offset-4" href="#">Return Policy</a>
+<a class="font-['Inter'] text-xs uppercase tracking-widest text-stone-400 hover:text-emerald-700 transition-all duration-300 hover:underline decoration-emerald-500 underline-offset-4" href="#">Trade License</a>
+<a class="font-['Inter'] text-xs uppercase tracking-widest text-stone-400 hover:text-emerald-700 transition-all duration-300 hover:underline decoration-emerald-500 underline-offset-4" href="#">Farmer Contact</a>
+<a class="font-['Inter'] text-xs uppercase tracking-widest text-stone-400 hover:text-emerald-700 transition-all duration-300 hover:underline decoration-emerald-500 underline-offset-4" href="#">Shipping Info</a>
+<a class="font-['Inter'] text-xs uppercase tracking-widest text-stone-400 hover:text-emerald-700 transition-all duration-300 hover:underline decoration-emerald-500 underline-offset-4" href="#">Privacy</a>
+</div>
+</div>
+</footer>
+</body></html>

@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TKS.bd Admin - Order Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-high": "#e7e9e1",
+                        "outline": "#72796e",
+                        "inverse-surface": "#2e312c",
+                        "surface-bright": "#f9faf2",
+                        "surface": "#f9faf2",
+                        "surface-container": "#edefe7",
+                        "on-primary-fixed-variant": "#23501e",
+                        "on-surface": "#191c18",
+                        "error-container": "#ffdad6",
+                        "tertiary": "#333b35",
+                        "on-secondary": "#ffffff",
+                        "tertiary-container": "#4a524b",
+                        "secondary": "#7e5700",
+                        "on-secondary-fixed": "#281900",
+                        "on-background": "#191c18",
+                        "surface-tint": "#3b6934",
+                        "secondary-fixed-dim": "#ffba38",
+                        "secondary-fixed": "#ffdeac",
+                        "on-primary-container": "#9dd090",
+                        "on-error-container": "#93000a",
+                        "on-primary": "#ffffff",
+                        "inverse-on-surface": "#f0f1ea",
+                        "surface-container-low": "#f3f4ed",
+                        "on-tertiary-fixed": "#161d18",
+                        "secondary-container": "#feb300",
+                        "primary-container": "#2d5a27",
+                        "on-error": "#ffffff",
+                        "surface-container-highest": "#e2e3dc",
+                        "outline-variant": "#c2c9bb",
+                        "surface-container-lowest": "#ffffff",
+                        "primary": "#154212",
+                        "on-tertiary": "#ffffff",
+                        "primary-fixed-dim": "#a1d494",
+                        "background": "#f9faf2",
+                        "primary-fixed": "#bcf0ae",
+                        "tertiary-fixed-dim": "#c1c9c0",
+                        "on-tertiary-container": "#bdc5bc",
+                        "on-secondary-fixed-variant": "#604100",
+                        "on-secondary-container": "#6a4800",
+                        "surface-dim": "#d9dbd3",
+                        "surface-variant": "#e2e3dc",
+                        "inverse-primary": "#a1d494",
+                        "error": "#ba1a1a",
+                        "on-tertiary-fixed-variant": "#414942",
+                        "tertiary-fixed": "#dde5dc",
+                        "on-surface-variant": "#42493e",
+                        "on-primary-fixed": "#002201"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xl": "80px",
+                        "xs": "4px",
+                        "sm": "12px",
+                        "lg": "48px",
+                        "margin": "32px",
+                        "base": "8px",
+                        "md": "24px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "display-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "label-sm": ["12px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                        "headline-md": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                        "headline-sm": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                        "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #f9faf2;
+        }
+    </style>
+</head>
+<body class="font-body-md text-on-background">
+<!-- Sidebar Navigation Shell -->
+<aside class="h-screen w-64 border-r fixed left-0 top-0 bg-slate-50 border-slate-200 flex flex-col h-full overflow-y-auto z-50">
+<div class="px-6 py-8">
+<h1 class="text-xl font-black text-emerald-900 tracking-tight">TKS.bd</h1>
+<p class="text-xs text-slate-500 font-medium uppercase tracking-widest mt-1">Agro Admin Panel</p>
+</div>
+<nav class="flex-1 px-2 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-emerald-50/50 hover:text-emerald-800 transition-all duration-300 ease-in-out font-sans text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Overview</span>
+</a>
+<!-- Active State: Order Management -->
+<a class="flex items-center gap-3 px-4 py-3 bg-white text-emerald-700 border-r-4 border-emerald-700 shadow-sm font-sans text-sm font-semibold" href="#">
+<span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
+<span>Order Management</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-emerald-50/50 hover:text-emerald-800 transition-all duration-300 ease-in-out font-sans text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+<span>Inventory</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-emerald-50/50 hover:text-emerald-800 transition-all duration-300 ease-in-out font-sans text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span>Customers</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-emerald-50/50 hover:text-emerald-800 transition-all duration-300 ease-in-out font-sans text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+<div class="p-4 border-t border-slate-200">
+<div class="flex items-center gap-3 px-2">
+<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-white text-xs font-bold">AD</div>
+<div class="overflow-hidden">
+<p class="text-xs font-bold text-slate-900 truncate">Admin User</p>
+<p class="text-[10px] text-slate-500 truncate">admin@tks.bd</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Wrapper -->
+<div class="pl-64 min-h-screen">
+<!-- Top Navigation Bar -->
+<header class="sticky top-0 z-40 flex justify-between items-center px-6 py-2 w-full ml-auto bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
+<input class="w-full bg-slate-50 border-none rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-emerald-700/20" placeholder="Search orders, customers, or products..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="p-2 text-slate-500 hover:bg-slate-50 transition-colors rounded-full relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<div class="h-6 w-px bg-slate-200 mx-2"></div>
+<button class="flex items-center gap-2 p-1 pr-3 hover:bg-slate-50 rounded-full transition-colors text-emerald-800">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+<span class="font-sans text-sm font-semibold">TKS.bd Admin</span>
+</button>
+</div>
+</header>
+<!-- Main Dashboard Canvas -->
+<main class="p-8 max-w-[1400px] mx-auto">
+<!-- Page Header & Global Actions -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+<div>
+<h2 class="font-headline-md text-primary mb-1">Order Management</h2>
+<p class="text-on-surface-variant font-body-md">Manage harvests, logistics, and premium agro-orders.</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-4 py-2 bg-white border border-outline-variant text-on-surface font-label-md rounded-lg hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-sm">download</span>
+                        Export CSV
+                    </button>
+<button class="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary font-label-md rounded-lg shadow-sm active:scale-95 transition-all">
+<span class="material-symbols-outlined text-sm">add</span>
+                        Manual Order
+                    </button>
+</div>
+</div>
+<!-- Statistics Grid (Bento Style) -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+<div class="bg-white p-6 rounded-xl shadow-[0_4px_20px_rgba(45,90,39,0.06)] border border-[#E8F0E7]">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-emerald-50 rounded-lg">
+<span class="material-symbols-outlined text-emerald-700">shopping_cart</span>
+</div>
+<span class="text-emerald-600 text-xs font-bold bg-emerald-50 px-2 py-1 rounded">+12%</span>
+</div>
+<p class="text-on-surface-variant text-label-md">New Orders</p>
+<h3 class="text-display-lg text-primary mt-1">142</h3>
+</div>
+<div class="bg-white p-6 rounded-xl shadow-[0_4px_20px_rgba(45,90,39,0.06)] border border-[#E8F0E7]">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-secondary/10 rounded-lg">
+<span class="material-symbols-outlined text-secondary">eco</span>
+</div>
+<span class="text-secondary text-xs font-bold bg-secondary/10 px-2 py-1 rounded">Active</span>
+</div>
+<p class="text-on-surface-variant text-label-md">Harvesting</p>
+<h3 class="text-display-lg text-primary mt-1">86</h3>
+</div>
+<div class="bg-white p-6 rounded-xl shadow-[0_4px_20px_rgba(45,90,39,0.06)] border border-[#E8F0E7]">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-blue-50 rounded-lg">
+<span class="material-symbols-outlined text-blue-600">local_shipping</span>
+</div>
+<span class="text-blue-600 text-xs font-bold bg-blue-50 px-2 py-1 rounded">24 Today</span>
+</div>
+<p class="text-on-surface-variant text-label-md">In Transit</p>
+<h3 class="text-display-lg text-primary mt-1">54</h3>
+</div>
+<div class="bg-white p-6 rounded-xl shadow-[0_4px_20px_rgba(45,90,39,0.06)] border border-[#E8F0E7]">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-emerald-900 rounded-lg">
+<span class="material-symbols-outlined text-white">payments</span>
+</div>
+<span class="text-emerald-700 text-xs font-bold bg-emerald-50 px-2 py-1 rounded">Monthly</span>
+</div>
+<p class="text-on-surface-variant text-label-md">Total Revenue</p>
+<h3 class="text-display-lg text-primary mt-1">৳42.8k</h3>
+</div>
+</div>
+<!-- Filters Section -->
+<div class="bg-surface-container-low p-4 rounded-xl mb-6 flex flex-wrap items-center gap-4 border border-outline-variant/30">
+<div class="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-outline-variant">
+<span class="material-symbols-outlined text-slate-400 text-sm">filter_list</span>
+<select class="border-none bg-transparent text-sm font-label-md focus:ring-0 cursor-pointer">
+<option>Status: All Orders</option>
+<option>Waiting for Harvest</option>
+<option>Ready to Ship</option>
+<option>Shipped</option>
+</select>
+</div>
+<div class="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-outline-variant">
+<span class="material-symbols-outlined text-slate-400 text-sm">category</span>
+<select class="border-none bg-transparent text-sm font-label-md focus:ring-0 cursor-pointer">
+<option>Product: All Varieties</option>
+<option>Himsagar Mango</option>
+<option>Langra Mango</option>
+<option>Litchi</option>
+</select>
+</div>
+<div class="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-outline-variant">
+<span class="material-symbols-outlined text-slate-400 text-sm">calendar_today</span>
+<input class="border-none bg-transparent text-sm font-label-md focus:ring-0 w-32" placeholder="Date Range" type="text"/>
+</div>
+<div class="ml-auto flex items-center gap-2">
+<span class="text-xs font-label-md text-outline">Showing 15 of 1,240 orders</span>
+</div>
+</div>
+<!-- Order Table -->
+<div class="bg-white rounded-xl shadow-sm border border-[#E8F0E7] overflow-hidden mb-8">
+<table class="w-full text-left border-collapse">
+<thead class="bg-slate-50 border-b border-[#E8F0E7]">
+<tr>
+<th class="px-6 py-4 font-label-md text-on-surface-variant">Order ID</th>
+<th class="px-6 py-4 font-label-md text-on-surface-variant">Customer</th>
+<th class="px-6 py-4 font-label-md text-on-surface-variant">Product</th>
+<th class="px-6 py-4 font-label-md text-on-surface-variant">Type</th>
+<th class="px-6 py-4 font-label-md text-on-surface-variant">Harvest Date</th>
+<th class="px-6 py-4 font-label-md text-on-surface-variant">Shipping Status</th>
+<th class="px-6 py-4 font-label-md text-on-surface-variant text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100">
+<!-- Order Row 1 -->
+<tr class="hover:bg-slate-50 transition-colors group">
+<td class="px-6 py-4">
+<span class="font-label-md text-primary">#ORD-8821</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-xs font-bold text-slate-600">RH</div>
+<div>
+<p class="text-sm font-semibold text-on-surface">Rafiqul Hasan</p>
+<p class="text-xs text-outline">Dhaka, BD</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<img class="w-8 h-8 rounded object-cover" data-alt="vibrant ripe himsagar mangoes in a wooden crate with natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdv15TrPrmV5dcax2CPMwWIqUWApnXP1fl4AZoeZN47hiZmMEyJ-VIX-xSnT0LkA82yo61ooEHv2QIlVtSvI4cb6zjuQZFOhJC_zSedfcQGGUYpQI_poPQE0vJg6oeJD8C6QtIC-uTK-6kLUUv_5tZCBblvBCQ_Yda2eLVP1WLRFVvnpIpLKT-aGG_UYtgUuKiJ9JMPjMeKCkBzA83cJlp6-LTcnrXXAPoc8Z12Co8RRVSm8YXHzIljmOJtF0YRmV-2BfkDkL4eB8"/>
+<span class="text-sm font-medium">Himsagar Mango (5kg)</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider border border-secondary-container text-secondary-container">Pre-order</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-1 text-sm text-on-surface">
+<span class="material-symbols-outlined text-xs text-secondary" style="font-variation-settings: 'FILL' 1;">calendar_today</span>
+                                    May 24, 2024
+                                </div>
+</td>
+<td class="px-6 py-4">
+<span class="flex items-center gap-1.5 px-3 py-1 bg-surface-container-high text-primary-container rounded-full text-xs font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+                                    Waiting for Harvest
+                                </span>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 text-slate-400 hover:text-primary hover:bg-emerald-50 rounded-lg transition-all" title="View Details">
+<span class="material-symbols-outlined text-sm">visibility</span>
+</button>
+<button class="p-2 text-slate-400 hover:text-secondary hover:bg-mango-50 rounded-lg transition-all" title="Manage Harvest">
+<span class="material-symbols-outlined text-sm">agriculture</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Order Row 2 -->
+<tr class="hover:bg-slate-50 transition-colors group">
+<td class="px-6 py-4">
+<span class="font-label-md text-primary">#ORD-8822</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-xs font-bold text-slate-600">SJ</div>
+<div>
+<p class="text-sm font-semibold text-on-surface">Sara Jahan</p>
+<p class="text-xs text-outline">Sylhet, BD</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<img class="w-8 h-8 rounded object-cover" data-alt="basket of fresh red litchis with green leaves in a sunlit orchard" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAUmLs3_6riA6RpxVv4s3OvApxue4KMDc4m0Ae5CMPpICY3i4tO1aPqtGGqLB8yFw-7GBBy8lyOOu2LQhwgaUo5b7yb5bmUVhfeTelSHc3x4qSK-SJTV-1gscFlY7xjKY_dFwqLgHfu8YSXH0kBhlMtApCfx6nWf9Kb_aBI_vOVKUJTgrX6Uys889Fr5dQO9BGBhIJ80KbyZ41ICJhOhHXL60Z2ujHgXgCKpntwWerxcILBL6tISKMgf5gX-oxWXwhTQ47IexaaOLQ"/>
+<span class="text-sm font-medium">Bedana Litchi (100pcs)</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider border border-primary-container text-primary-container">Direct</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-1 text-sm text-on-surface">
+<span class="material-symbols-outlined text-xs text-secondary" style="font-variation-settings: 'FILL' 1;">calendar_today</span>
+                                    Ready
+                                </div>
+</td>
+<td class="px-6 py-4">
+<span class="flex items-center gap-1.5 px-3 py-1 bg-secondary-container/10 text-secondary-container rounded-full text-xs font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary-container"></span>
+                                    Ready to Ship
+                                </span>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="px-3 py-1.5 bg-primary text-on-primary text-xs font-bold rounded-lg hover:shadow-md transition-all">
+                                        Send to Courier
+                                    </button>
+</div>
+</td>
+</tr>
+<!-- Order Row 3 -->
+<tr class="hover:bg-slate-50 transition-colors group">
+<td class="px-6 py-4">
+<span class="font-label-md text-primary">#ORD-8795</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-xs font-bold text-slate-600">MK</div>
+<div>
+<p class="text-sm font-semibold text-on-surface">Mehedi Khan</p>
+<p class="text-xs text-outline">Chittagong, BD</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<img class="w-8 h-8 rounded object-cover" data-alt="close up of ripe langra mangoes with smooth skin in bright outdoor light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBOXqMwFj4MPv9ojQ7N1hqOKOOETZFp34pB9YhBCigN-qERtuMpv3pZ4ONy8IqgUsiqvAL9GCR_WQrr_7DWpnpePB_5EE2Q1qehIm6yxsSzUy9Ot-uoaDGnG3WiNgPFG_upYRsNT66Q-8oWlYT9CAB3BEM3phf6OhWLmqOKACLO34e8IkjYCQpQP2Pgu7zXHopcGyAllReNUQ-oOxTVosbBOE8-SzxqjQxp35IFupMH3816wQmCbxwGA-22QsFH9RA9qrRq9cK2180"/>
+<span class="text-sm font-medium">Langra Mango (10kg)</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider border border-primary-container text-primary-container">Direct</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-1 text-sm text-on-surface">
+<span class="material-symbols-outlined text-xs text-slate-400">calendar_today</span>
+                                    Shipped
+                                </div>
+</td>
+<td class="px-6 py-4">
+<span class="flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-xs font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
+                                    Shipped
+                                </span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="p-2 text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-sm">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Bottom Section: Courier Integration & Recent Activity -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Courier Integration Panel -->
+<div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-[#E8F0E7] p-6">
+<div class="flex items-center justify-between mb-6">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">local_shipping</span>
+<h4 class="font-headline-sm text-primary">Steadfast Courier Tracking</h4>
+</div>
+<button class="text-xs font-bold text-secondary-container hover:underline">View All Tracking</button>
+</div>
+<div class="space-y-4">
+<div class="flex items-center gap-4 p-4 rounded-lg bg-slate-50 border border-slate-100">
+<div class="w-10 h-10 bg-white rounded shadow-sm flex items-center justify-center">
+<span class="material-symbols-outlined text-slate-400">package_2</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-semibold text-on-surface">SF-889102341 <span class="mx-2 text-slate-300">|</span> ORD-8795</p>
+<p class="text-xs text-outline">En-route to Chittagong Hub</p>
+</div>
+<div class="text-right">
+<p class="text-xs font-bold text-blue-600">In Transit</p>
+<p class="text-[10px] text-outline">Updated 14m ago</p>
+</div>
+</div>
+<div class="flex items-center gap-4 p-4 rounded-lg bg-slate-50 border border-slate-100">
+<div class="w-10 h-10 bg-white rounded shadow-sm flex items-center justify-center">
+<span class="material-symbols-outlined text-slate-400">package_2</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-semibold text-on-surface">SF-889102312 <span class="mx-2 text-slate-300">|</span> ORD-8790</p>
+<p class="text-xs text-outline">Delivered at Client Doorstep</p>
+</div>
+<div class="text-right">
+<p class="text-xs font-bold text-emerald-700">Delivered</p>
+<p class="text-[10px] text-outline">Updated 2h ago</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Harvesting Soon Badges & Info -->
+<div class="bg-primary text-white rounded-xl p-6 shadow-lg flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-on-primary-container">info</span>
+<h4 class="font-label-md">Harvest Forecast</h4>
+</div>
+<h5 class="font-headline-sm mb-2">Himsagar Prime</h5>
+<p class="text-sm text-on-primary-container leading-relaxed mb-4">Next peak harvest scheduled for 5,000 units. Quality check pending for Satkhira Orchard Block B.</p>
+<div class="space-y-3">
+<div class="flex items-center justify-between text-xs p-2 bg-white/10 rounded">
+<span>Quality Status</span>
+<span class="font-bold">Excellent (9.2)</span>
+</div>
+<div class="flex items-center justify-between text-xs p-2 bg-white/10 rounded">
+<span>Sugar Content (Brix)</span>
+<span class="font-bold">18-20%</span>
+</div>
+</div>
+</div>
+<button class="mt-6 w-full py-2 bg-secondary-container text-on-secondary-fixed font-bold rounded-lg text-sm hover:brightness-110 transition-all">
+                        Update Harvest Schedule
+                    </button>
+</div>
+</div>
+</main>
+</div>
+<!-- Contextual FAB for Quick Actions -->
+<button class="fixed bottom-8 right-8 w-14 h-14 bg-secondary-container text-on-secondary-fixed rounded-full shadow-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all z-50">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add</span>
+</button>
+</body></html>

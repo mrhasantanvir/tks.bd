@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9faf2; /* surface-bright from config */
+        }
+        .tap-highlight-transparent {
+            -webkit-tap-highlight-color: transparent;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-bright": "#f9faf2",
+                        "outline-variant": "#c2c9bb",
+                        "secondary": "#7e5700",
+                        "surface-container": "#edefe7",
+                        "secondary-fixed": "#ffdeac",
+                        "background": "#f9faf2",
+                        "inverse-primary": "#a1d494",
+                        "on-secondary-fixed": "#281900",
+                        "on-primary-fixed-variant": "#23501e",
+                        "inverse-surface": "#2e312c",
+                        "tertiary-fixed": "#dde5dc",
+                        "on-secondary-container": "#6a4800",
+                        "on-primary-container": "#9dd090",
+                        "outline": "#72796e",
+                        "on-primary": "#ffffff",
+                        "tertiary-fixed-dim": "#c1c9c0",
+                        "surface-variant": "#e2e3dc",
+                        "on-background": "#191c18",
+                        "tertiary-container": "#4a524b",
+                        "primary-fixed-dim": "#a1d494",
+                        "on-tertiary-fixed-variant": "#414942",
+                        "primary-container": "#2d5a27",
+                        "surface": "#f9faf2",
+                        "on-error": "#ffffff",
+                        "surface-container-high": "#e7e9e1",
+                        "on-secondary-fixed-variant": "#604100",
+                        "on-tertiary-container": "#bdc5bc",
+                        "tertiary": "#333b35",
+                        "surface-container-low": "#f3f4ed",
+                        "error": "#ba1a1a",
+                        "surface-dim": "#d9dbd3",
+                        "primary": "#154212",
+                        "error-container": "#ffdad6",
+                        "secondary-container": "#feb300",
+                        "on-tertiary-fixed": "#161d18",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "on-surface-variant": "#42493e",
+                        "surface-tint": "#3b6934",
+                        "primary-fixed": "#bcf0ae",
+                        "inverse-on-surface": "#f0f1ea",
+                        "surface-container-lowest": "#ffffff",
+                        "on-surface": "#191c18",
+                        "on-primary-fixed": "#002201",
+                        "surface-container-highest": "#e2e3dc",
+                        "secondary-fixed-dim": "#ffba38",
+                        "on-error-container": "#93000a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xl": "80px",
+                        "md": "24px",
+                        "margin": "32px",
+                        "lg": "48px",
+                        "sm": "12px",
+                        "gutter": "24px",
+                        "xs": "4px",
+                        "base": "8px"
+                    },
+                    "fontFamily": {
+                        "headline-sm": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "label-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-sm": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                        "label-sm": ["12px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                        "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-md": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-surface-bright text-on-surface selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- TopNavBar -->
+<header class="bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md docked full-width top-0 sticky z-50 border-b border-green-100 dark:border-green-900/30 shadow-sm shadow-green-900/5">
+<div class="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
+<div class="text-2xl font-bold tracking-tighter text-green-900 dark:text-green-100">TKS.bd</div>
+<nav class="hidden md:flex items-center gap-8 font-inter antialiased tracking-tight">
+<a class="text-zinc-600 dark:text-zinc-400 hover:text-green-800 dark:hover:text-green-300 transition-colors" href="#">The Harvest</a>
+<a class="text-zinc-600 dark:text-zinc-400 hover:text-green-800 dark:hover:text-green-300 transition-colors" href="#">Farmers</a>
+<a class="text-zinc-600 dark:text-zinc-400 hover:text-green-800 dark:hover:text-green-300 transition-colors" href="#">Seasonals</a>
+<a class="text-green-900 dark:text-green-400 font-semibold border-b-2 border-green-800 pb-1" href="#">Subscription</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="p-2 text-zinc-600 hover:bg-green-50 rounded-full transition-all active:scale-95">
+<span class="material-symbols-outlined">shopping_cart</span>
+</button>
+<button class="p-2 text-zinc-600 hover:bg-green-50 rounded-full transition-all active:scale-95">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="w-10 h-10 rounded-full border-2 border-primary-container overflow-hidden">
+<img alt="User profile photo" class="w-full h-full object-cover" data-alt="Close-up studio portrait of a confident middle-aged man with a friendly smile, clean-shaven, wearing a linen shirt, soft natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBR4Og644lagZwwNUqjRUUMVfE6f1ipacY53npgsehYbDAnMN-f92qHObmRFAUxGLDixxLeoDxVRor3GKqqpgkV8qdED4g7RHunhqMcpHs_tQtfYzuGnyLpti6omyvB9QwaTMIDKs_h-dNRnIEvCuCSmyK5q2F9yZwOdn5NFFkBtGnvZrewEbTMFZcwiYQBximIVGqKfArRJSFgnt9mBf-dX0Bf0bS58Z2bzLmm64aHwgcqQKvZ7LynmWE8_yi8W_6-ac1YCaGa5pg"/>
+</div>
+</div>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-6 py-10 flex flex-col md:flex-row gap-10">
+<!-- Sidebar Navigation -->
+<aside class="w-full md:w-64 flex-shrink-0">
+<div class="sticky top-28 space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary-container text-white font-medium transition-all shadow-md shadow-primary-container/20" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container transition-all" href="#">
+<span class="material-symbols-outlined">local_shipping</span>
+<span class="font-label-md text-label-md">Orders</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container transition-all" href="#">
+<span class="material-symbols-outlined">location_on</span>
+<span class="font-label-md text-label-md">Addresses</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container transition-all" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+<div class="pt-6 mt-6 border-t border-outline-variant/30">
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-error hover:bg-error-container/20 transition-all" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-md text-label-md">Sign Out</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- Dashboard Content -->
+<section class="flex-1 space-y-10">
+<!-- Welcome Header -->
+<div class="relative overflow-hidden rounded-3xl bg-surface-container-high p-8 md:p-12 flex flex-col md:flex-row items-center gap-8 border border-white">
+<div class="absolute -right-20 -top-20 w-64 h-64 bg-primary-container/5 rounded-full blur-3xl"></div>
+<div class="relative z-10 flex-1 space-y-4 text-center md:text-left">
+<h1 class="font-display-lg text-display-lg text-primary tracking-tight">Welcome back, <br/>Arjun Sharma</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-md">Your curated earth selection is growing. Fresh harvests are scheduled for delivery this Thursday.</p>
+</div>
+<div class="relative z-10 grid grid-cols-2 gap-4 w-full md:w-auto">
+<div class="bg-white p-6 rounded-2xl shadow-sm border border-outline-variant/20 flex flex-col items-center">
+<span class="text-primary font-headline-md text-headline-md">12</span>
+<span class="text-on-surface-variant font-label-sm text-label-sm uppercase tracking-widest mt-1">Total Orders</span>
+</div>
+<div class="bg-white p-6 rounded-2xl shadow-sm border border-outline-variant/20 flex flex-col items-center">
+<span class="text-secondary font-headline-md text-headline-md">04</span>
+<span class="text-on-surface-variant font-label-sm text-label-sm uppercase tracking-widest mt-1">Active Harvests</span>
+</div>
+</div>
+</div>
+<!-- Active Orders / Package Splitting -->
+<div class="space-y-6">
+<div class="flex items-center justify-between">
+<h2 class="font-headline-md text-headline-md text-primary">Active Harvests</h2>
+<a class="text-primary font-label-md text-label-md hover:underline" href="#">View All History</a>
+</div>
+<!-- Order Card 01 -->
+<div class="bg-white rounded-3xl overflow-hidden shadow-[0_4px_24px_rgba(45,90,39,0.06)] border border-green-50">
+<div class="bg-surface-container-lowest px-8 py-4 border-b border-outline-variant/10 flex flex-wrap justify-between items-center gap-4">
+<div class="flex gap-8">
+<div>
+<p class="text-[10px] uppercase tracking-tighter text-outline font-bold">Order ID</p>
+<p class="font-label-md text-label-md text-on-surface">#TKS-88291</p>
+</div>
+<div>
+<p class="text-[10px] uppercase tracking-tighter text-outline font-bold">Placed On</p>
+<p class="font-label-md text-label-md text-on-surface">May 12, 2024</p>
+</div>
+<div>
+<p class="text-[10px] uppercase tracking-tighter text-outline font-bold">Delivery Estimate</p>
+<p class="font-label-md text-label-md text-secondary font-bold">May 18, 2024</p>
+</div>
+</div>
+<button class="px-6 py-2 rounded-full border border-primary text-primary font-label-md text-label-md hover:bg-primary hover:text-white transition-all">
+                            Track Order
+                        </button>
+</div>
+<div class="p-8 space-y-8">
+<!-- Package A -->
+<div class="flex flex-col md:flex-row gap-8 items-start">
+<div class="w-full md:w-48 aspect-square rounded-2xl overflow-hidden bg-surface-container">
+<img alt="Himsagar Mangoes" class="w-full h-full object-cover" data-alt="Close-up macro shot of vibrant yellow-green Himsagar mangoes with fresh water droplets in a woven bamboo basket, natural sunlight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCearCF43zx0qaWhECp02093fZDIKQZsuJVjQ9u5ePqWe2tkZ--Je8TVfWfNZSPFu73nCn1B6s9qlUCHGGzjUbxJvJY6S-FuKOJdH-Le60VZLQJpibHb7HVkynEDM56pUAQlcqY21XTfoslI8cmpxjkdbpsYZy2ss8R1HwGhoyJ_Hhp9hEU7fYoBrud8tKJ-kOPCKkNC40eufSKXq_82SRGNgvxUm4lbF3QGfAndNKBo5UFyU-yUPKK09XswsNB0PaZuOP4D5flXPE"/>
+</div>
+<div class="flex-1 space-y-4">
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center gap-2 px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed-variant w-fit mb-3">
+<span class="material-symbols-outlined text-[16px]">eco</span>
+<span class="text-[10px] font-bold uppercase tracking-widest">Harvesting Soon</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Premium Himsagar Variety</h3>
+<p class="text-on-surface-variant font-body-md text-body-md">Quantity: 5kg • Source: Rajshahi Orchards</p>
+</div>
+<p class="font-headline-sm text-headline-sm text-primary">৳ 1,250</p>
+</div>
+<div class="w-full bg-surface-container rounded-full h-1.5 overflow-hidden">
+<div class="bg-primary h-full w-[75%]"></div>
+</div>
+<div class="flex justify-between text-[11px] font-bold text-outline uppercase tracking-wider">
+<span>Soil Prep</span>
+<span class="text-primary">Harvesting</span>
+<span>Quality Check</span>
+<span>Shipped</span>
+</div>
+</div>
+</div>
+<div class="border-t border-outline-variant/20 pt-8">
+<!-- Package B -->
+<div class="flex flex-col md:flex-row gap-8 items-start">
+<div class="w-full md:w-48 aspect-square rounded-2xl overflow-hidden bg-surface-container opacity-60 grayscale-[0.5]">
+<img alt="Langra Mangoes" class="w-full h-full object-cover" data-alt="Top down view of unripe green Langra mangoes on a rustic wooden table with soft morning light from a side window" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCT4KXwetpfNIr5rIACYYmiFpaYhkr1X9TnkPggvINjcE-NO7IEMAg9clVXDmp-ppT_3l9nZehNu0PTGuky8q2dbOE9pCObbxnf84RkpeqwQS8JSOIN59AcBgamcvjwSU6Qr2VLfWpyMF7qON4EmKtygU5g91_bPqXNgleK5NaKh-ESsAk7VhJkVVrqLeNUQPkpdsTYajddyietK_8wtxqf2HlDWGSpxR3ZN5gfra0hawlLEr9r7CsFYyQzeUWU-y2pArMKTeslVkA"/>
+</div>
+<div class="flex-1 space-y-4">
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center gap-2 px-3 py-1 rounded-full border border-secondary-container text-secondary w-fit mb-3">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+<span class="text-[10px] font-bold uppercase tracking-widest">Waiting</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Langra Selection</h3>
+<p class="text-on-surface-variant font-body-md text-body-md">Quantity: 3kg • Source: Chapainawabganj</p>
+</div>
+<p class="font-headline-sm text-headline-sm text-on-surface">৳ 780</p>
+</div>
+<p class="text-sm italic text-on-surface-variant">This variety is still ripening on the tree. Estimated harvest: 4 days.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Bento Quick Actions -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="md:col-span-2 bg-primary-container p-8 rounded-3xl text-white flex flex-col justify-between relative overflow-hidden group">
+<div class="absolute right-0 bottom-0 w-48 h-48 bg-white/10 rounded-full blur-2xl group-hover:scale-125 transition-transform duration-700"></div>
+<div class="space-y-4 relative z-10">
+<h3 class="font-headline-md text-headline-md">Join the Organic Community</h3>
+<p class="font-body-md text-body-md opacity-80 max-w-sm">Share your harvest experience and earn Earth Points for your next purchase.</p>
+</div>
+<button class="mt-8 bg-secondary-container text-on-secondary-container px-8 py-3 rounded-xl font-label-md text-label-md w-fit active:scale-95 transition-all">
+                            Refer a Friend
+                        </button>
+</div>
+<div class="bg-white border border-outline-variant/30 p-8 rounded-3xl flex flex-col justify-center items-center text-center space-y-4 shadow-sm">
+<div class="w-16 h-16 bg-surface-container rounded-full flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-3xl">support_agent</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-on-surface">Need Help?</h4>
+<p class="font-body-md text-body-md text-on-surface-variant">Our harvest experts are online.</p>
+<button class="text-primary font-label-md text-label-md hover:underline">Start Chat</button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-zinc-50 dark:bg-zinc-900 w-full mt-24 border-t border-zinc-200 dark:border-zinc-800">
+<div class="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-center gap-6">
+<div class="flex flex-col items-center md:items-start gap-4">
+<span class="text-lg font-black text-green-900 dark:text-green-100">TKS.bd</span>
+<p class="text-sm font-light leading-relaxed text-zinc-500 text-center md:text-left max-w-xs">© 2024 TKS.bd Curated Earth. Sustainable Agriculture.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-8 font-label-sm text-label-sm uppercase tracking-widest text-zinc-500">
+<a class="hover:text-orange-500 transition-colors" href="#">Sustainability Report</a>
+<a class="hover:text-orange-500 transition-colors" href="#">Farmer Portal</a>
+<a class="hover:text-orange-500 transition-colors" href="#">Shipping Policy</a>
+<a class="hover:text-orange-500 transition-colors" href="#">Privacy</a>
+</div>
+</div>
+</footer>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full bg-white/90 dark:bg-zinc-950/90 backdrop-blur-lg flex justify-around items-center px-4 py-3 pb-safe z-50 rounded-t-2xl border-t border-green-100 shadow-[0_-4px_12px_rgba(45,90,39,0.08)]">
+<a class="flex flex-col items-center justify-center text-zinc-500 group active:bg-green-50 rounded-xl px-3 py-1" href="#">
+<span class="material-symbols-outlined">storefront</span>
+<span class="text-[10px] font-medium uppercase tracking-widest mt-1">Shop</span>
+</a>
+<a class="flex flex-col items-center justify-center text-zinc-500 group active:bg-green-50 rounded-xl px-3 py-1" href="#">
+<span class="material-symbols-outlined">local_shipping</span>
+<span class="text-[10px] font-medium uppercase tracking-widest mt-1">Orders</span>
+</a>
+<a class="flex flex-col items-center justify-center text-zinc-500 group active:bg-green-50 rounded-xl px-3 py-1" href="#">
+<span class="material-symbols-outlined">shopping_bag</span>
+<span class="text-[10px] font-medium uppercase tracking-widest mt-1">Cart</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-green-100 dark:bg-green-900/40 text-green-900 dark:text-green-200 rounded-xl px-3 py-1 animate-in slide-in-from-bottom-2" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] font-medium uppercase tracking-widest mt-1">Account</span>
+</a>
+</nav>
+</body></html>
