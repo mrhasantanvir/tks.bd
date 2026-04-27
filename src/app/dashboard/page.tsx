@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 // --- Sub-Components ---
 
-function Sidebar({ activeTab, setActiveTab, handleLogout }: any) {
+function Sidebar({ activeTab, setActiveTab, handleLogout, isOpen, setIsOpen }: any) {
   const menuItems = [
     { id: 'overview', icon: 'dashboard', label: 'Overview' },
     { id: 'orders', icon: 'shopping_cart', label: 'Orders' },
@@ -18,62 +18,83 @@ function Sidebar({ activeTab, setActiveTab, handleLogout }: any) {
   ];
 
   return (
-    <aside className="w-64 bg-primary text-white flex flex-col fixed h-full z-40 transition-all duration-300">
-      <div className="p-8">
-        <Link href="/" className="flex items-center gap-3 group">
-          <img src="/logo.png" alt="Logo" className="w-10 h-10 object-contain" />
-          <div className="flex flex-col">
-            <span className="text-sm font-black tracking-widest text-white uppercase">TK Solution</span>
-            <span className="text-[7px] font-bold text-stone-500 uppercase tracking-[0.2em] mt-1">Make Your Life Easier</span>
-          </div>
-        </Link>
-      </div>
-      <nav className="flex-1 px-4 space-y-2">
-        {menuItems.map((item) => (
-          <button
-            key={item.id}
-            onClick={() => setActiveTab(item.id)}
-            className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${activeTab === item.id ? 'bg-white/10 text-accent' : 'text-white/60 hover:bg-white/5 hover:text-white'}`}
-          >
-            <span className="material-symbols-outlined text-xl">{item.icon}</span>
-            {item.label}
+    <>
+      {/* Mobile Overlay */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-primary/40 backdrop-blur-sm z-40 lg:hidden"
+          onClick={() => setIsOpen(false)}
+        ></div>
+      )}
+
+      <aside className={`w-64 bg-primary text-white flex flex-col fixed h-full z-50 transition-all duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+        <div className="p-8 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-3 group">
+            <img src="/logo.png" alt="Logo" className="w-10 h-10 object-contain" />
+            <div className="flex flex-col">
+              <span className="text-sm font-black tracking-widest text-white uppercase">TK Solution</span>
+              <span className="text-[7px] font-bold text-stone-500 uppercase tracking-[0.2em] mt-1">Make Your Life Easier</span>
+            </div>
+          </Link>
+          <button onClick={() => setIsOpen(false)} className="lg:hidden text-white/60">
+            <span className="material-symbols-outlined">close</span>
           </button>
-        ))}
-      </nav>
-      <div className="p-8 border-t border-white/5">
-        <button onClick={handleLogout} className="w-full flex items-center gap-4 text-red-300 hover:text-red-400 text-[10px] font-bold uppercase tracking-widest transition-colors">
-          <span className="material-symbols-outlined text-xl">logout</span> Logout
-        </button>
-      </div>
-    </aside>
+        </div>
+        <nav className="flex-1 px-4 space-y-2 overflow-y-auto">
+          {menuItems.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => { setActiveTab(item.id); setIsOpen(false); }}
+              className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${activeTab === item.id ? 'bg-white/10 text-accent' : 'text-white/60 hover:bg-white/5 hover:text-white'}`}
+            >
+              <span className="material-symbols-outlined text-xl">{item.icon}</span>
+              {item.label}
+            </button>
+          ))}
+        </nav>
+        <div className="p-8 border-t border-white/5">
+          <button onClick={handleLogout} className="w-full flex items-center gap-4 text-red-300 hover:text-red-400 text-[10px] font-bold uppercase tracking-widest transition-colors">
+            <span className="material-symbols-outlined text-xl">logout</span> Logout
+          </button>
+        </div>
+      </aside>
+    </>
   );
 }
 
-function AdminHeader({ activeTab, user }: any) {
+function AdminHeader({ activeTab, user, setIsSidebarOpen }: any) {
   const titles: Record<string, string> = {
     overview: "Administrator Overview",
-    orders: "Fulfillment Command Center",
+    orders: "Fulfillment Center",
     products: "Inventory & Catalog",
-    reviews: "Customer Trust & Feedback",
-    couriers: "Logistics & Partners",
-    settings: "Global Site Configuration",
+    reviews: "Customer Feedback",
+    couriers: "Logistics Partners",
+    settings: "Global Configuration",
     reports: "Operational Insights"
   };
 
   return (
-    <header className="flex justify-between items-center mb-12">
-      <div>
-        <h1 className="text-3xl font-display font-bold text-primary tracking-tighter">{titles[activeTab] || "Dashboard"}</h1>
-        <p className="text-xs font-bold text-stone-400 uppercase tracking-widest mt-2">
-          Welcome back, {user?.name || 'Administrator'}. System status: <span className="text-emerald-500 animate-pulse">Operational</span>
-        </p>
-      </div>
-      <div className="flex items-center gap-6">
-        <div className="flex flex-col items-end">
-          <span className="text-[10px] font-black text-primary uppercase tracking-widest">{user?.name}</span>
-          <span className="text-[8px] font-bold text-stone-400 uppercase tracking-widest mt-1">System Root Access</span>
+    <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 md:mb-12 gap-6">
+      <div className="flex items-center gap-4 w-full md:w-auto">
+        <button 
+          onClick={() => setIsSidebarOpen(true)}
+          className="lg:hidden p-2 bg-stone-100 rounded-xl text-primary"
+        >
+          <span className="material-symbols-outlined">menu</span>
+        </button>
+        <div>
+          <h1 className="text-xl md:text-3xl font-display font-bold text-primary tracking-tighter">{titles[activeTab] || "Dashboard"}</h1>
+          <p className="hidden md:block text-[10px] font-bold text-stone-400 uppercase tracking-widest mt-1">
+            Welcome, {user?.name || 'Admin'}. System: <span className="text-emerald-500">Operational</span>
+          </p>
         </div>
-        <div className="w-12 h-12 rounded-2xl bg-stone-100 flex items-center justify-center text-primary font-black border border-stone-200 shadow-sm">
+      </div>
+      <div className="flex items-center gap-4 md:gap-6 ml-auto md:ml-0">
+        <div className="flex flex-col items-end">
+          <span className="text-[9px] md:text-[10px] font-black text-primary uppercase tracking-widest">{user?.name}</span>
+          <span className="text-[7px] md:text-[8px] font-bold text-stone-400 uppercase tracking-widest">Root Access</span>
+        </div>
+        <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-stone-100 flex items-center justify-center text-primary font-black border border-stone-200">
           {user?.name?.charAt(0) || 'A'}
         </div>
       </div>
@@ -140,76 +161,79 @@ function OverviewTab({ stats, announcements }: any) {
 
 function OrdersTab({ orders, loading, checkFraud, fraudResults, fraudLoading, setBookingOrder, setIsBookingModalOpen }: any) {
   if (loading) return <div className="p-20 text-center text-stone-400 animate-pulse uppercase font-black text-[10px] tracking-widest">Accessing Order Ledger...</div>;
-  
-  return (
-    <div className="bg-white rounded-[3rem] border border-stone-100 shadow-sm overflow-hidden animate-fade-in">
-      <table className="w-full text-left">
-        <thead className="bg-stone-50 border-b border-stone-100">
-          <tr>
-            <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest">Order ID</th>
-            <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest">Customer</th>
-            <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest">Total</th>
-            <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest">Status</th>
-            <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest">Fraud Check</th>
-            <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest text-right">Actions</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-stone-50">
-          {orders.map((order: any) => (
-            <tr key={order.id} className="hover:bg-stone-50/50 transition-colors group">
-              <td className="px-8 py-6">
-                <span className="text-[11px] font-black text-primary">#{order.id}</span>
-                <p className="text-[8px] text-stone-400 mt-1 uppercase font-bold">{new Date(order.created_at).toLocaleDateString()}</p>
-              </td>
-              <td className="px-8 py-6">
-                <span className="text-[11px] font-bold text-stone-700">{order.users?.full_name || 'Guest User'}</span>
-                <p className="text-[9px] text-stone-400 mt-1 font-bold">{order.users?.mobile_number}</p>
-              </td>
-              <td className="px-8 py-6">
-                <span className="text-[12px] font-black text-primary">৳{order.grand_total}</span>
-              </td>
-              <td className="px-8 py-6">
-                <span className={`px-4 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest ${
-                  order.order_status === 'pending' ? 'bg-orange-100 text-orange-600' : 
-                  order.order_status === 'confirmed' ? 'bg-emerald-100 text-emerald-600' : 'bg-stone-100 text-stone-600'
-                }`}>
-                  {order.order_status}
-                </span>
-              </td>
-              <td className="px-8 py-6">
-                {fraudResults[order.users?.mobile_number] ? (
-                  <div className="flex items-center gap-2">
-                     <span className={`text-[9px] font-black uppercase ${fraudResults[order.users?.mobile_number].total_orders > 3 ? 'text-emerald-500' : 'text-stone-400'}`}>
-                       {fraudResults[order.users?.mobile_number].total_orders} Orders
-                     </span>
-                  </div>
-                ) : (
-                  <button 
-                    onClick={() => checkFraud(order.users?.mobile_number)}
-                    disabled={fraudLoading[order.users?.mobile_number]}
-                    className="text-[8px] font-black text-primary uppercase tracking-widest hover:underline disabled:opacity-50"
-                  >
-                    {fraudLoading[order.users?.mobile_number] ? 'Checking...' : 'Check History'}
-                  </button>
-                )}
-              </td>
-              <td className="px-8 py-6 text-right flex items-center justify-end gap-3">
-                <button 
-                  onClick={() => { setBookingOrder(order); setIsBookingModalOpen(true); }}
-                  className="px-4 py-2 bg-stone-100 rounded-xl text-[9px] font-black uppercase tracking-widest text-primary hover:bg-primary hover:text-white transition-all flex items-center gap-2"
-                >
-                   <span className="material-symbols-outlined text-sm">local_shipping</span> Book
-                </button>
-                <button className="p-3 hover:bg-stone-50 rounded-xl text-stone-300 hover:text-primary transition-all">
-                  <span className="material-symbols-outlined text-xl">visibility</span>
-                </button>
-              </td>
+   return (
+    <div className="bg-white rounded-[2rem] md:rounded-[3rem] border border-stone-100 shadow-sm overflow-hidden animate-fade-in">
+      <div className="overflow-x-auto">
+        <table className="w-full text-left min-w-[800px]">
+          <thead className="bg-stone-50 border-b border-stone-100">
+            <tr>
+              <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest">Order ID</th>
+              <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest">Customer</th>
+              <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest">Total</th>
+              <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest">Status</th>
+              <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest">Fraud Check</th>
+              <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest text-right">Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="divide-y divide-stone-50">
+            {orders.map((order: any) => (
+              <tr key={order.id} className="hover:bg-stone-50/50 transition-colors group">
+                <td className="px-8 py-6">
+                  <span className="text-[11px] font-black text-primary">#{order.id}</span>
+                  <p className="text-[8px] text-stone-400 mt-1 uppercase font-bold">{new Date(order.created_at).toLocaleDateString()}</p>
+                </td>
+                <td className="px-8 py-6">
+                  <span className="text-[11px] font-bold text-stone-700">{order.users?.full_name || 'Guest User'}</span>
+                  <p className="text-[9px] text-stone-400 mt-1 font-bold">{order.users?.mobile_number}</p>
+                </td>
+                <td className="px-8 py-6">
+                  <span className="text-[12px] font-black text-primary">৳{order.grand_total}</span>
+                </td>
+                <td className="px-8 py-6">
+                  <span className={`px-4 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest ${
+                    order.order_status === 'pending' ? 'bg-orange-100 text-orange-600' : 
+                    order.order_status === 'confirmed' ? 'bg-emerald-100 text-emerald-600' : 'bg-stone-100 text-stone-600'
+                  }`}>
+                    {order.order_status}
+                  </span>
+                </td>
+                <td className="px-8 py-6">
+                  {fraudResults[order.users?.mobile_number] ? (
+                    <div className="flex items-center gap-2">
+                       <span className={`text-[9px] font-black uppercase ${fraudResults[order.users?.mobile_number].total_orders > 3 ? 'text-emerald-500' : 'text-stone-400'}`}>
+                         {fraudResults[order.users?.mobile_number].total_orders} Orders
+                       </span>
+                    </div>
+                  ) : (
+                    <button 
+                      onClick={() => checkFraud(order.users?.mobile_number)}
+                      disabled={fraudLoading[order.users?.mobile_number]}
+                      className="text-[8px] font-black text-primary uppercase tracking-widest hover:underline disabled:opacity-50"
+                    >
+                      {fraudLoading[order.users?.mobile_number] ? 'Checking...' : 'Check History'}
+                    </button>
+                  )}
+                </td>
+                <td className="px-8 py-6 text-right flex items-center justify-end gap-3">
+                  <button 
+                    onClick={() => { setBookingOrder(order); setIsBookingModalOpen(true); }}
+                    className="px-4 py-2 bg-stone-100 rounded-xl text-[9px] font-black uppercase tracking-widest text-primary hover:bg-primary hover:text-white transition-all flex items-center gap-2"
+                  >
+                     <span className="material-symbols-outlined text-sm">local_shipping</span> Book
+                  </button>
+                  <button className="p-3 hover:bg-stone-50 rounded-xl text-stone-300 hover:text-primary transition-all">
+                    <span className="material-symbols-outlined text-xl">visibility</span>
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
+}
+;
 }
 
 function ProductsTab({ products, loading, setIsAddModalOpen, setEditingProduct, setIsEditModalOpen, deleteProduct, units, fetchUnits, lots, fetchLots, categories }: any) {
@@ -234,70 +258,81 @@ function ProductsTab({ products, loading, setIsAddModalOpen, setEditingProduct, 
   return (
     <div className="space-y-8 animate-fade-in">
        {/* Feature Header */}
-       <div className="flex flex-wrap items-center justify-between gap-6 bg-white p-8 rounded-[3rem] border border-stone-100 shadow-sm">
-          <div className="flex gap-4 p-2 bg-stone-100 rounded-2xl">
-             <button onClick={() => setActiveSubTab('list')} className={`px-6 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${activeSubTab === 'list' ? 'bg-white text-primary shadow-sm' : 'text-stone-400'}`}>Product Ledger</button>
-             <button onClick={() => setActiveSubTab('units')} className={`px-6 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${activeSubTab === 'units' ? 'bg-white text-primary shadow-sm' : 'text-stone-400'}`}>Unit Management</button>
-             <button onClick={() => setActiveSubTab('lots')} className={`px-6 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${activeSubTab === 'lots' ? 'bg-white text-primary shadow-sm' : 'text-stone-400'}`}>Lot Presets</button>
+       <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-6 bg-white p-6 md:p-8 rounded-[2rem] md:rounded-[3rem] border border-stone-100 shadow-sm">
+          <div className="flex gap-2 md:gap-4 p-1.5 md:p-2 bg-stone-100 rounded-2xl overflow-x-auto">
+             <button onClick={() => setActiveSubTab('list')} className={`whitespace-nowrap px-4 md:px-6 py-2.5 rounded-xl text-[8px] md:text-[9px] font-black uppercase tracking-widest transition-all ${activeSubTab === 'list' ? 'bg-white text-primary shadow-sm' : 'text-stone-400'}`}>Product Ledger</button>
+             <button onClick={() => setActiveSubTab('units')} className={`whitespace-nowrap px-4 md:px-6 py-2.5 rounded-xl text-[8px] md:text-[9px] font-black uppercase tracking-widest transition-all ${activeSubTab === 'units' ? 'bg-white text-primary shadow-sm' : 'text-stone-400'}`}>Units</button>
+             <button onClick={() => setActiveSubTab('lots')} className={`whitespace-nowrap px-4 md:px-6 py-2.5 rounded-xl text-[8px] md:text-[9px] font-black uppercase tracking-widest transition-all ${activeSubTab === 'lots' ? 'bg-white text-primary shadow-sm' : 'text-stone-400'}`}>Lots</button>
           </div>
-          <button onClick={() => setIsAddModalOpen(true)} className="px-8 py-4 bg-primary text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl hover:scale-105 transition-all shadow-xl shadow-primary/20 flex items-center gap-3">
+          <button onClick={() => setIsAddModalOpen(true)} className="px-6 py-4 bg-primary text-white text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl hover:scale-105 transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-3">
              <span className="material-symbols-outlined text-lg">add</span> New Catalog Item
           </button>
        </div>
 
        {activeSubTab === 'list' && (
-          <div className="bg-white rounded-[3rem] border border-stone-100 shadow-sm overflow-hidden">
-             <table className="w-full text-left">
-                <thead className="bg-stone-50 border-b border-stone-100">
-                   <tr>
-                      <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest">Visual</th>
-                      <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest">Product Details</th>
-                      <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest">Inventory</th>
-                      <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest">Pricing</th>
-                      <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest">Status</th>
-                      <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest text-right">Actions</th>
-                   </tr>
-                </thead>
-                <tbody className="divide-y divide-stone-50">
-                   {products.map((product: any) => (
-                      <tr key={product.id} className="hover:bg-stone-50/50 transition-colors group">
-                         <td className="px-8 py-6">
-                            <div className="w-16 h-16 rounded-2xl overflow-hidden border border-stone-100">
-                               <img src={product.image_url || '/placeholder.jpg'} className="w-full h-full object-cover" />
-                            </div>
-                         </td>
-                         <td className="px-8 py-6">
-                            <span className="text-[11px] font-black text-primary uppercase">{product.name}</span>
-                            <p className="text-[8px] text-stone-400 mt-1 uppercase font-bold tracking-widest">{product.categories?.name} • {product.units?.name}</p>
-                         </td>
-                         <td className="px-8 py-6">
-                            <div className="flex flex-col">
-                               <span className={`text-[11px] font-black ${Number(product.available_stock) < 10 ? 'text-red-500' : 'text-primary'}`}>
-                                  {Number(product.available_stock)} Remaining
-                               </span>
-                               <p className="text-[8px] text-stone-400 mt-1 font-bold uppercase tracking-widest">Lot Size: {product.lot_size}</p>
-                            </div>
-                         </td>
-                         <td className="px-8 py-6">
-                            <div className="flex flex-col">
-                               <span className="text-[12px] font-black text-primary">৳{product.price_per_unit}</span>
-                               {Number(product.regular_price) > Number(product.price_per_unit) && (
-                                  <span className="text-[9px] text-stone-300 line-through font-bold">৳{product.regular_price}</span>
-                               )}
-                               <p className="text-[8px] text-stone-400 mt-1 font-bold uppercase tracking-widest">Pack: ৳{product.packaging_charge || 0}</p>
-                            </div>
-                         </td>
-                         <td className="px-8 py-6">
-                            <div className="flex gap-2">
-                               {product.is_preorder && <span className="px-3 py-1 bg-orange-100 text-orange-600 rounded-full text-[8px] font-black uppercase">Pre-Order</span>}
-                               <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase ${Number(product.available_stock) > 0 ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'}`}>
-                                  {Number(product.available_stock) > 0 ? 'Active' : 'Out'}
-                               </span>
-                            </div>
-                         </td>
-                         <td className="px-8 py-6 text-right">
-                            <div className="flex items-center justify-end gap-2">
-                               <button onClick={() => { setEditingProduct(product); setIsEditModalOpen(true); }} className="p-2 hover:bg-stone-50 rounded-xl text-stone-300 hover:text-primary transition-all"><span className="material-symbols-outlined text-lg">edit</span></button>
+          <div className="bg-white rounded-[2rem] md:rounded-[3rem] border border-stone-100 shadow-sm overflow-hidden">
+             <div className="overflow-x-auto">
+               <table className="w-full text-left min-w-[900px]">
+                  <thead className="bg-stone-50 border-b border-stone-100">
+                     <tr>
+                        <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest">Visual</th>
+                        <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest">Product Details</th>
+                        <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest">Inventory</th>
+                        <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest">Pricing</th>
+                        <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest">Status</th>
+                        <th className="px-8 py-6 text-[10px] font-black text-stone-400 uppercase tracking-widest text-right">Actions</th>
+                     </tr>
+                  </thead>
+                  <tbody className="divide-y divide-stone-50">
+                     {products.map((product: any) => (
+                        <tr key={product.id} className="hover:bg-stone-50/50 transition-colors group">
+                           <td className="px-8 py-6">
+                              <div className="w-16 h-16 rounded-2xl overflow-hidden border border-stone-100">
+                                 <img src={product.image_url || '/placeholder.jpg'} className="w-full h-full object-cover" />
+                              </div>
+                           </td>
+                           <td className="px-8 py-6">
+                              <span className="text-[11px] font-black text-primary uppercase">{product.name}</span>
+                              <p className="text-[8px] text-stone-400 mt-1 uppercase font-bold tracking-widest">{product.categories?.name} • {product.units?.name}</p>
+                           </td>
+                           <td className="px-8 py-6">
+                              <div className="flex flex-col">
+                                 <span className={`text-[11px] font-black ${Number(product.available_stock) < 10 ? 'text-red-500' : 'text-primary'}`}>
+                                    {Number(product.available_stock)} Remaining
+                                 </span>
+                                 <p className="text-[8px] text-stone-400 mt-1 font-bold uppercase tracking-widest">Lot Size: {product.lot_size}</p>
+                              </div>
+                           </td>
+                           <td className="px-8 py-6">
+                              <div className="flex flex-col">
+                                 <span className="text-[12px] font-black text-primary">৳{product.price_per_unit}</span>
+                                 {Number(product.regular_price) > Number(product.price_per_unit) && (
+                                    <span className="text-[9px] text-stone-300 line-through font-bold">৳{product.regular_price}</span>
+                                 )}
+                                 <p className="text-[8px] text-stone-400 mt-1 font-bold uppercase tracking-widest">Pack: ৳{product.packaging_charge || 0}</p>
+                              </div>
+                           </td>
+                           <td className="px-8 py-6">
+                              <div className="flex gap-2">
+                                 {product.is_preorder && <span className="px-3 py-1 bg-orange-100 text-orange-600 rounded-full text-[8px] font-black uppercase">Pre-Order</span>}
+                                 <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase ${Number(product.available_stock) > 0 ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'}`}>
+                                    {Number(product.available_stock) > 0 ? 'Active' : 'Out'}
+                                 </span>
+                              </div>
+                           </td>
+                           <td className="px-8 py-6 text-right">
+                              <div className="flex items-center justify-end gap-2">
+                                 <button onClick={() => { setEditingProduct(product); setIsEditModalOpen(true); }} className="p-2 hover:bg-stone-50 rounded-xl text-stone-300 hover:text-primary transition-all"><span className="material-symbols-outlined text-lg">edit</span></button>
+                                 <button onClick={() => deleteProduct(product.id)} className="p-2 hover:bg-red-50 rounded-xl text-stone-300 hover:text-red-500 transition-all"><span className="material-symbols-outlined text-lg">delete</span></button>
+                              </div>
+                           </td>
+                        </tr>
+                     ))}
+                  </tbody>
+               </table>
+             </div>
+          </div>
+       )}
                                <button onClick={() => deleteProduct(product.id)} className="p-2 hover:bg-red-50 rounded-xl text-stone-300 hover:text-red-500 transition-all"><span className="material-symbols-outlined text-lg">delete</span></button>
                             </div>
                          </td>
@@ -685,6 +720,7 @@ function DashboardContent() {
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [bookingOrder, setBookingOrder] = useState<any>(null);
   const [bookingLoading, setBookingLoading] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Special Mango Logic States
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('');
@@ -877,13 +913,27 @@ function DashboardContent() {
     await fetch("/api/admin/settings", { method: "POST", body: JSON.stringify({ key, value }) });
   };
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center bg-stone-50"><div className="animate-spin w-12 h-12 border-4 border-primary border-t-transparent rounded-full"></div></div>;
+  if (loading) return (
+    <div className="min-h-screen bg-stone-50 flex items-center justify-center">
+      <div className="text-center space-y-4">
+        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+        <p className="text-[10px] font-black text-primary uppercase tracking-[0.3em] animate-pulse">Syncing Core Systems...</p>
+      </div>
+    </div>
+  );
 
   return (
-    <div className="min-h-screen bg-stone-50 flex">
-      <Sidebar activeTab={activeTab} setActiveTab={(t:string) => router.push(`/dashboard?tab=${t}`, {scroll:false})} handleLogout={async () => { await fetch("/api/auth/logout", {method:"POST"}); router.push("/"); }} />
-      <main className="flex-1 ml-64 p-12">
-        <AdminHeader activeTab={activeTab} user={user} />
+    <div className="min-h-screen bg-stone-50 flex overflow-x-hidden">
+      <Sidebar 
+        activeTab={activeTab} 
+        setActiveTab={(t:string) => router.push(`/dashboard?tab=${t}`, {scroll:false})} 
+        handleLogout={async () => { await fetch("/api/auth/logout", {method:"POST"}); router.push("/"); }}
+        isOpen={isSidebarOpen}
+        setIsOpen={setIsSidebarOpen}
+      />
+      
+      <main className="flex-1 p-4 md:p-12 lg:pl-72 transition-all w-full max-w-full overflow-hidden">
+        <AdminHeader activeTab={activeTab} user={user} setIsSidebarOpen={setIsSidebarOpen} />
         
         {activeTab === 'overview' && <OverviewTab stats={dashboardStats} announcements={announcements} />}
         {activeTab === 'orders' && <OrdersTab orders={orders} loading={ordersLoading} checkFraud={async (m:string) => { 

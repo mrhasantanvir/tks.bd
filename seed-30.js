@@ -32,12 +32,13 @@ async function main() {
 
   // --- Mangoes (30 Products) ---
   for (let i = 1; i <= 30; i++) {
-    const name = `${mangoNames[i % mangoNames.length]} Variant ${i}`;
+    const mangoType = mangoNames[i % mangoNames.length];
+    const name = `${mangoType} Premium Variant ${i}`;
     const p = await prisma.products.create({
       data: {
         name: name,
-        short_description: `Freshly harvested ${name} from Rajshahi orchards.`,
-        detailed_description: `Enjoy the authentic taste of Rajshahi with our ${name}. Naturally grown and hand-picked for the best quality.`,
+        short_description: `Authentic ${mangoType} from Rajshahi, known for its incredible sweetness and aroma.`,
+        detailed_description: `Experience the true flavor of the "King of Fruits" with our ${name}. Sourced directly from the sun-drenched orchards of Rajshahi, these mangoes are grown using traditional organic methods without any harmful chemicals or carbides. Each mango is hand-picked at the perfect stage of maturity to ensure maximum sweetness and a buttery, fiber-less texture. Perfect for summer desserts or enjoying fresh. We guarantee 100% purity and safe delivery to your doorstep.`,
         price_per_unit: 100 + (i * 2),
         regular_price: 150 + (i * 2),
         available_stock: 500,
@@ -48,18 +49,18 @@ async function main() {
         harvest_date: new Date('2026-05-15')
       }
     });
-    // Add to gallery
     await prisma.product_gallery.create({ data: { product_id: p.id, image_url: '/uploads/premium_mango.png' } });
   }
 
   // --- Tea (30 Products) ---
   for (let i = 1; i <= 30; i++) {
-    const name = `${teaNames[i % teaNames.length]} Batch ${i}`;
+    const teaType = teaNames[i % teaNames.length];
+    const name = `${teaType} - Estate Selection ${i}`;
     const p = await prisma.products.create({
       data: {
         name: name,
-        short_description: `Exquisite ${name} from Sreemangal gardens.`,
-        detailed_description: `Experience the rich aroma and flavor of our ${name}. Carefully processed to maintain purity and freshness.`,
+        short_description: `Finest hand-picked tea leaves from the high-altitude gardens of Sreemangal.`,
+        detailed_description: `Indulge in the sophisticated flavors of our ${name}. This exclusive estate selection features young, tender leaves harvested during the prime flush. Each batch is carefully withered, rolled, and oxidized under expert supervision to bring out a complex profile of floral notes and a smooth, malty finish. Rich in antioxidants and naturally refreshing, this tea is perfect for your morning ritual or afternoon relaxation. Packaged in air-tight foil to preserve freshness and aroma.`,
         price_per_unit: 300 + (i * 10),
         regular_price: 400 + (i * 10),
         available_stock: 200,
@@ -68,18 +69,18 @@ async function main() {
         unit_id: packetUnit.id
       }
     });
-    // Add to gallery
     await prisma.product_gallery.create({ data: { product_id: p.id, image_url: '/uploads/premium_tea.png' } });
   }
 
   // --- Gur (30 Products) ---
   for (let i = 1; i <= 30; i++) {
-    const name = `${gurNames[i % gurNames.length]} Grade ${i}`;
+    const gurType = gurNames[i % gurNames.length];
+    const name = `${gurType} - Traditional Heritage ${i}`;
     const p = await prisma.products.create({
       data: {
         name: name,
-        short_description: `Pure and authentic ${name} from local artisans.`,
-        detailed_description: `Our ${name} is made using traditional methods to preserve its natural sweetness and nutritional value.`,
+        short_description: `Unadulterated date-palm jaggery made using centuries-old traditional techniques.`,
+        detailed_description: `Our ${name} is a seasonal delicacy that embodies the spirit of Bengal's winters. Collected at the crack of dawn from selected date trees, the sap is slowly boiled in large earthen or iron pots over wood fires. This slow-cooking process develops a unique smoky aroma and a rich, fudge-like sweetness that is incomparable to commercial sugars. Absolutely no alum, preservatives, or artificial colors are added. High in iron and magnesium, it is both a healthy sweetener and a gourmet treat for making classic Pithas and Payesh.`,
         price_per_unit: 200 + (i * 5),
         regular_price: 300 + (i * 5),
         available_stock: 100,
@@ -88,7 +89,6 @@ async function main() {
         unit_id: kgUnit.id
       }
     });
-    // Add to gallery
     await prisma.product_gallery.create({ data: { product_id: p.id, image_url: '/uploads/premium_gur.png' } });
   }
 
