@@ -87,13 +87,13 @@ export default function ProductCard({ product }: ProductCardProps) {
             >
               <span className="material-symbols-outlined text-xl">{isAdded ? 'done' : 'shopping_bag'}</span>
             </button>
-            <button 
-              onClick={handleBuyNow}
+            <Link 
+              href={`/products/${product.id}`}
               className="w-10 h-10 bg-accent rounded-full flex items-center justify-center text-primary shadow-xl hover:scale-110 transition-transform"
-              title="Buy Now"
+              title="View Details"
             >
               <span className="material-symbols-outlined text-xl">bolt</span>
-            </button>
+            </Link>
         </div>
       </Link>
 
@@ -125,20 +125,20 @@ export default function ProductCard({ product }: ProductCardProps) {
 
       {/* Action Buttons Footer */}
       <div className="mt-4 pt-4 border-t border-stone-50 grid grid-cols-2 gap-2">
-        <button 
-          onClick={handleAddToCart}
-          className={`py-2.5 rounded-xl text-[8px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 ${isAdded ? 'bg-emerald-500 text-white' : 'bg-stone-100 text-primary hover:bg-primary hover:text-white'}`}
+        <Link 
+          href={`/products/${product.id}`}
+          className="py-2.5 rounded-xl text-[8px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 bg-stone-100 text-primary hover:bg-primary hover:text-white"
         >
-          <span className="material-symbols-outlined text-[14px]">{isAdded ? 'done' : 'add_shopping_cart'}</span>
-          {isAdded ? 'Added' : 'Add'}
-        </button>
-        <button 
-          onClick={handleBuyNow}
+          <span className="material-symbols-outlined text-[14px]">add_shopping_cart</span>
+          Add
+        </Link>
+        <Link 
+          href={`/products/${product.id}`}
           className="py-2.5 bg-primary text-white rounded-xl text-[8px] font-black uppercase tracking-widest hover:bg-accent hover:text-primary transition-all flex items-center justify-center gap-2"
         >
           <span className="material-symbols-outlined text-[14px]">flash_on</span>
           {product.is_preorder ? 'Pre-order' : 'Buy Now'}
-        </button>
+        </Link>
       </div>
     </div>
   );
