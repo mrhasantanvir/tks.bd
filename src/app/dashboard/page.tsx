@@ -746,12 +746,17 @@ function DashboardContent() {
           const data = await res.json();
           setUser(data.user);
           setAnnouncements(data.announcements);
-        } else router.push("/auth/login");
-      } catch (err) { console.error(err); }
-      finally { setLoading(false); }
+          setLoading(false);
+        } else {
+          router.replace("/auth/login");
+        }
+      } catch (err) { 
+        console.error(err);
+        router.replace("/auth/login");
+      }
     }
     init();
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     if (activeTab === 'overview') fetchDashboardStats();
