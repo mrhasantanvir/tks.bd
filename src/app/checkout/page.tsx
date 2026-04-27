@@ -237,7 +237,7 @@ export default function CheckoutPage() {
                     className="w-full px-6 py-5 bg-stone-50 border border-stone-100 rounded-2xl outline-none focus:border-primary transition-all text-xs font-bold appearance-none"
                   >
                     <option value="">Select District</option>
-                    {districts.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
+                    {districts.map(d => <option key={d.id} value={d.id}>{d.name} {d.name_bn ? `- ${d.name_bn}` : ''}</option>)}
                   </select>
                </div>
                <div className="space-y-3">
@@ -248,7 +248,7 @@ export default function CheckoutPage() {
                     className="w-full px-6 py-5 bg-stone-50 border border-stone-100 rounded-2xl outline-none focus:border-primary transition-all text-xs font-bold appearance-none"
                   >
                     <option value="">Select Upazila</option>
-                    {upazilas.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
+                    {upazilas.map(u => <option key={u.id} value={u.id}>{u.name} {u.name_bn ? `- ${u.name_bn}` : ''}</option>)}
                   </select>
                </div>
             </div>

@@ -10,33 +10,33 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const { addToCart } = useCart();
+  const { addToCart, buyNow } = useCart();
   const router = useRouter();
   const [isAdded, setIsAdded] = useState(false);
 
   const price = Number(product.price_per_unit);
   const regularPrice = Number(product.regular_price || 0);
 
+  const getItemData = () => ({
+    id: product.id,
+    name: product.name,
+    price_per_unit: price,
+    unit_type: product.units?.name || 'kg',
+    lotSize: Number(product.lot_size || 1),
+    quantity: 1,
+    harvest_date: product.harvest_date ? product.harvest_date.toString() : null,
+    image_url: product.image_url,
+    allow_home_delivery: product.allow_home_delivery ?? true,
+    allow_point_delivery: product.allow_point_delivery ?? true,
+    available_couriers: JSON.parse(product.available_couriers || '["Steadfast", "Sundarban"]'),
+    payment_policy: product.payment_policy || 'cod',
+    partial_advance_val: product.partial_advance_val ? Number(product.partial_advance_val) : null,
+  });
+
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
-    addToCart({
-      id: product.id,
-      name: product.name,
-      price_per_unit: price,
-      unit_type: product.units?.name || 'kg',
-      lotSize: Number(product.lot_size || 1),
-      quantity: 1,
-      harvest_date: product.harvest_date ? product.harvest_date.toString() : null,
-      image_url: product.image_url,
-      allow_home_delivery: product.allow_home_delivery ?? true,
-      allow_point_delivery: product.allow_point_delivery ?? true,
-      available_couriers: JSON.parse(product.available_couriers || '["Steadfast", "Sundarban"]'),
-      payment_policy: product.payment_policy || 'cod',
-      partial_advance_val: product.partial_advance_val ? Number(product.partial_advance_val) : null,
-    });
-
+    addToCart(getItemData());
     setIsAdded(true);
     setTimeout(() => setIsAdded(false), 2000);
   };
@@ -44,23 +44,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   const handleBuyNow = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
-    addToCart({
-      id: product.id,
-      name: product.name,
-      price_per_unit: price,
-      unit_type: product.units?.name || 'kg',
-      lotSize: Number(product.lot_size || 1),
-      quantity: 1,
-      harvest_date: product.harvest_date ? product.harvest_date.toString() : null,
-      image_url: product.image_url,
-      allow_home_delivery: product.allow_home_delivery ?? true,
-      allow_point_delivery: product.allow_point_delivery ?? true,
-      available_couriers: JSON.parse(product.available_couriers || '["Steadfast", "Sundarban"]'),
-      payment_policy: product.payment_policy || 'cod',
-      partial_advance_val: product.partial_advance_val ? Number(product.partial_advance_val) : null,
-    });
-
+    buyNow(getItemData());
     router.push('/checkout');
   };
 
@@ -132,13 +116,13 @@ export default function ProductCard({ product }: ProductCardProps) {
           <span className="material-symbols-outlined text-[14px]">add_shopping_cart</span>
           Add
         </Link>
-        <Link 
-          href={`/products/${product.id}`}
-          className="py-2.5 bg-primary text-white rounded-xl text-[8px] font-black uppercase tracking-widest hover:bg-accent hover:text-primary transition-all flex items-center justify-center gap-2"
+        <div 
+          onClick={handleBuyNow}
+          className="py-2.5 bg-primary text-white rounded-xl text-[8px] font-black uppercase tracking-widest hover:bg-accent hover:text-primary transition-all flex items-center justify-center gap-2 cursor-pointer"
         >
           <span className="material-symbols-outlined text-[14px]">flash_on</span>
           {product.is_preorder ? 'Pre-order' : 'Buy Now'}
-        </Link>
+        </div>
       </div>
     </div>
   );
