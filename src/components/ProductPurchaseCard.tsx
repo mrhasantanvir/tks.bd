@@ -34,7 +34,7 @@ interface ProductPurchaseCardProps {
 }
 
 export default function ProductPurchaseCard({ product, lots }: ProductPurchaseCardProps) {
-  const { addToCart } = useCart();
+  const { addToCart, buyNow } = useCart();
   
   // State for selections
   const [selectedLot, setSelectedLot] = useState<Lot | null>(
@@ -54,24 +54,31 @@ export default function ProductPurchaseCard({ product, lots }: ProductPurchaseCa
   const totalPackagingPrice = currentPkgCharge * quantity;
   const totalPrice = totalProductPrice + totalPackagingPrice;
 
+  const getItemData = () => ({
+    id: product.id,
+    name: product.name,
+    price_per_unit: pricePerUnit,
+    unit_type: product.unit?.name || 'kg',
+    lotSize: currentLotSize,
+    quantity,
+    packaging_charge: currentPkgCharge,
+    harvest_date: product.harvest_date ? product.harvest_date.toString() : null,
+    image_url: product.image_url,
+    allow_home_delivery: product.allow_home_delivery ?? true,
+    allow_point_delivery: product.allow_point_delivery ?? true,
+    available_couriers: JSON.parse(product.available_couriers || '["Steadfast", "Sundarban"]'),
+    payment_policy: product.payment_policy || 'cod',
+    partial_advance_val: product.partial_advance_val ? Number(product.partial_advance_val) : null,
+  });
+
   const handleAddToCart = () => {
-    addToCart({
-      id: product.id,
-      name: product.name,
-      price_per_unit: pricePerUnit,
-      unit_type: product.unit?.name || 'kg',
-      lotSize: currentLotSize,
-      quantity,
-      packaging_charge: currentPkgCharge,
-      harvest_date: product.harvest_date ? product.harvest_date.toString() : null,
-      image_url: product.image_url,
-      allow_home_delivery: product.allow_home_delivery ?? true,
-      allow_point_delivery: product.allow_point_delivery ?? true,
-      available_couriers: JSON.parse(product.available_couriers || '["Steadfast", "Sundarban"]'),
-      payment_policy: product.payment_policy || 'cod',
-      partial_advance_val: product.partial_advance_val ? Number(product.partial_advance_val) : null,
-    });
+    addToCart(getItemData());
     alert(`Added ${totalWeight} ${product.unit?.name || 'KG'} of ${product.name} to your cart!`);
+  };
+
+  const handleBuyNow = () => {
+    buyNow(getItemData());
+    window.location.href = "/checkout";
   };
 
   return (
@@ -193,10 +200,7 @@ export default function ProductPurchaseCard({ product, lots }: ProductPurchaseCa
 
         {!product.is_preorder && (
           <button 
-            onClick={() => {
-              handleAddToCart();
-              window.location.href = "/checkout";
-            }}
+            onClick={handleBuyNow}
             className="w-full py-6 bg-accent text-primary font-black text-[11px] uppercase tracking-[0.3em] rounded-3xl transition-all shadow-2xl shadow-accent/20 active:scale-[0.98] flex items-center justify-center gap-4 hover:translate-y-[-2px]"
           >
             Express Buy Now
