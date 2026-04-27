@@ -2,118 +2,99 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('Seeding products, categories, and units...');
-
-  // 1. Setup Categories (Matching slugs with homepage queries)
-  const mangoCat = await prisma.categories.upsert({
-    where: { slug: 'mango' },
-    update: {},
-    create: { name: 'Mango', slug: 'mango' }
-  });
-
-  const teaCat = await prisma.categories.upsert({
-    where: { slug: 'tea' },
-    update: {},
-    create: { name: 'Tea', slug: 'tea' }
-  });
-
-  const gurCat = await prisma.categories.upsert({
-    where: { slug: 'gur' },
-    update: {},
-    create: { name: 'Honey & Gur', slug: 'gur' }
-  });
-
-  // 2. Setup Units
-  const kgUnit = await prisma.units.upsert({
-    where: { name: 'kg' },
-    update: {},
-    create: { name: 'kg' }
-  });
-
-  const gmUnit = await prisma.units.upsert({
-    where: { name: 'gm' },
-    update: {},
-    create: { name: 'gm' }
-  });
-
-  // 3. Setup Admin User
-  await prisma.users.upsert({
-    where: { mobile_number: '01700000000' },
-    update: { role: 'admin' },
-    create: { mobile_number: '01700000000', full_name: 'Admin User', role: 'admin', is_verified: true }
-  });
-
-  // 4. Setup Site Announcements
-  await prisma.site_announcements.deleteMany({});
-  await prisma.site_announcements.create({
-    data: { message: "স্বাগতম TKS.bd-এ! নতুন মৌসুমের সেরা আম ও খাঁটি পণ্য পেতে অর্ডার করুন।", type: "info" }
-  });
-
-  // 5. Insert 30 Products
-  console.log('Clearing old products...');
+  console.log('🧹 Cleaning old data...');
+  await prisma.order_items.deleteMany({});
+  await prisma.product_gallery.deleteMany({});
+  await prisma.reviews.deleteMany({});
   await prisma.products.deleteMany({});
+  await prisma.lots.deleteMany({});
+  await prisma.categories.deleteMany({});
+  await prisma.units.deleteMany({});
 
-  const mangoNames = ['Himsagar', 'Langra', 'Fazli', 'Amrapali', 'Gopalbhog', 'Haribhanga', 'Khirsapat', 'Lakhna', 'Mohanbhog', 'Surma Fazli'];
-  for (let i = 0; i < 10; i++) {
-    await prisma.products.create({
+  console.log('🌱 Seeding 90 premium products (30 per category)...');
+
+  // 1. Categories
+  const mangoCat = await prisma.categories.create({ data: { name: 'Mangoes', slug: 'mango' } });
+  const teaCat = await prisma.categories.create({ data: { name: 'Tea', slug: 'tea' } });
+  const gurCat = await prisma.categories.create({ data: { name: 'Date-Palm Gur', slug: 'gur' } });
+
+  // 2. Units
+  const kgUnit = await prisma.units.create({ data: { name: 'KG' } });
+  const packetUnit = await prisma.units.create({ data: { name: 'Packet' } });
+
+  // 3. Lots
+  await prisma.lots.create({ data: { name: '5 KG Box', size: 5, packaging_charge: 50, category_id: mangoCat.id } });
+  await prisma.lots.create({ data: { name: '10 KG Box', size: 10, packaging_charge: 80, category_id: mangoCat.id } });
+
+  const mangoNames = ['Himsagar', 'Langra', 'Amrapali', 'Fazli', 'Gopalbhog', 'Khirsapati', 'Lakkhanbhog', 'Ashwini', 'Mallika', 'Chousa'];
+  const teaNames = ['Premium Black Tea', 'Organic Green Tea', 'Silver Needle White Tea', 'Oolong Specialty', 'Masala Chai Blend', 'Earl Grey Heritage'];
+  const gurNames = ['Nolen Gur (Liquid)', 'Patali Gur (Solid)', 'Jhola Gur', 'Dhana Gur', 'Premium Khejur Gur'];
+
+  // --- Mangoes (30 Products) ---
+  for (let i = 1; i <= 30; i++) {
+    const name = `${mangoNames[i % mangoNames.length]} Variant ${i}`;
+    const p = await prisma.products.create({
       data: {
-        name: `Premium ${mangoNames[i]} Mango`,
-        short_description: `${mangoNames[i]} Mango directly from Rajshahi orchards.`,
-        detailed_description: "Enjoy the sweet and juicy Rajshahi mangoes. 100% organic and chemical-free.",
-        price_per_unit: 120 + (i * 10),
+        name: name,
+        short_description: `Freshly harvested ${name} from Rajshahi orchards.`,
+        detailed_description: `Enjoy the authentic taste of Rajshahi with our ${name}. Naturally grown and hand-picked for the best quality.`,
+        price_per_unit: 100 + (i * 2),
+        regular_price: 150 + (i * 2),
         available_stock: 500,
+        image_url: '/uploads/premium_mango.png',
         category_id: mangoCat.id,
         unit_id: kgUnit.id,
-        image_url: `https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?auto=format&fit=crop&w=500&q=60`,
-        is_preorder: true,
-        harvest_date: new Date("2026-05-15")
+        is_preorder: i % 5 === 0,
+        harvest_date: new Date('2026-05-15')
       }
     });
+    // Add to gallery
+    await prisma.product_gallery.create({ data: { product_id: p.id, image_url: '/uploads/premium_mango.png' } });
   }
 
-  const teaNames = ['Panchagarh Black Tea', 'Sylhet Green Tea', 'Organic Oolong', 'Lemon Infusion', 'Masala Chai Blend', 'Silver Needle White', 'Strong CTC Tea', 'Dust Tea Premium', 'Golden Flowery Orange Pekoe', 'Flowery Broken Orange Pekoe'];
-  for (let i = 0; i < 10; i++) {
-    await prisma.products.create({
+  // --- Tea (30 Products) ---
+  for (let i = 1; i <= 30; i++) {
+    const name = `${teaNames[i % teaNames.length]} Batch ${i}`;
+    const p = await prisma.products.create({
       data: {
-        name: teaNames[i],
-        short_description: `Finest ${teaNames[i]} from the hills of Bangladesh.`,
-        detailed_description: "Expertly picked and processed tea leaves for the perfect cup.",
-        price_per_unit: 450 + (i * 50),
-        available_stock: 100,
+        name: name,
+        short_description: `Exquisite ${name} from Sreemangal gardens.`,
+        detailed_description: `Experience the rich aroma and flavor of our ${name}. Carefully processed to maintain purity and freshness.`,
+        price_per_unit: 300 + (i * 10),
+        regular_price: 400 + (i * 10),
+        available_stock: 200,
+        image_url: '/uploads/premium_tea.png',
         category_id: teaCat.id,
-        unit_id: gmUnit.id,
-        lot_size: 500,
-        image_url: "https://images.unsplash.com/photo-1594631252845-29fc4cc8cde9?auto=format&fit=crop&w=500&q=60",
-        is_preorder: false
+        unit_id: packetUnit.id
       }
     });
+    // Add to gallery
+    await prisma.product_gallery.create({ data: { product_id: p.id, image_url: '/uploads/premium_tea.png' } });
   }
 
-  const honeyNames = ['Sundarban Khalisha Honey', 'Litchi Flower Honey', 'Black Seed (Kalo Jira) Honey', 'Mustard Flower Honey', 'Wild Multi-flower Honey', 'Premium Date Molasses (Gur)', 'Nolen Gur Solid', 'Liquid Khejur Gur', 'Sugarcane Molasses', 'Organic Honeycomb'];
-  for (let i = 0; i < 10; i++) {
-    await prisma.products.create({
+  // --- Gur (30 Products) ---
+  for (let i = 1; i <= 30; i++) {
+    const name = `${gurNames[i % gurNames.length]} Grade ${i}`;
+    const p = await prisma.products.create({
       data: {
-        name: honeyNames[i],
-        short_description: `Pure and authentic ${honeyNames[i]}.`,
-        detailed_description: "Ethically sourced and tested for purity. Traditional taste of Bengal.",
-        price_per_unit: 600 + (i * 100),
-        available_stock: 50,
+        name: name,
+        short_description: `Pure and authentic ${name} from local artisans.`,
+        detailed_description: `Our ${name} is made using traditional methods to preserve its natural sweetness and nutritional value.`,
+        price_per_unit: 200 + (i * 5),
+        regular_price: 300 + (i * 5),
+        available_stock: 100,
+        image_url: '/uploads/premium_gur.png',
         category_id: gurCat.id,
-        unit_id: kgUnit.id,
-        image_url: "https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=500&q=60",
-        is_preorder: false
+        unit_id: kgUnit.id
       }
     });
+    // Add to gallery
+    await prisma.product_gallery.create({ data: { product_id: p.id, image_url: '/uploads/premium_gur.png' } });
   }
 
-  console.log('✅ Seeding completed successfully with correct slugs (mango, tea, gur)!');
+  console.log('✅ Successfully seeded 90 premium products!');
 }
 
 main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+  .catch((e) => { console.error(e); process.exit(1); })
+  .finally(async () => { await prisma.$disconnect(); });
